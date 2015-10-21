@@ -17,5 +17,4 @@ var Tasks = Backbone.Collection.extend({
      debugger;
      return _(response.rows).map(function(row) { return row.value ;});
      }*/
-    3434
 });
