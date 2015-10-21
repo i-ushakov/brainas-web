@@ -26,7 +26,7 @@ class SPAAsset extends AssetBundle
         'js/view/MainPanelView.js',
         'js/view/TaskPanelView.js',
         'js/view/TaskTileView.js',
-        'js/collections/Tasks1.js',
+        'js/collections/Tasks.js',
         'js/app.js'
     ];
     public $depends = [
