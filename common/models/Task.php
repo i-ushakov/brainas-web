@@ -16,4 +16,8 @@ class Task extends ActiveRecord {
     {
         return 'tasks';
     }
+
+    public function getConditions() {
+        return $this->hasMany(Condition::className(), ['task_id' => 'id']);
+    }
 }

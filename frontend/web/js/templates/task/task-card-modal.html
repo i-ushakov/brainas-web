@@ -1,0 +1,38 @@
+<script type="text/template" id="task-card-modal-template">
+    <div class="modal fade task-card" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- <div class="modal-header"></div> -->
+                <div class="modal-body">
+                    <div class="task-card-top container">
+                        <div class="task-picture-cont col-md-2">
+                            <img class='task-card-image' src="images/pictures.png" />
+                        </div>
+                        <div class="task-general-info-cont col-md-4">
+                            <div class="task-message-cont"><%= message %></div>
+                            <div class="task-info-icons">
+                                <div class="category-label task-info-icon"
+                                     category-id="1"
+                                     category-color="red"
+                                     title="Category">
+                                    Homework
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-card-middle">
+                        <div class="task-description-cont">
+                            <%= description %>
+                        </div>
+                        <div class="task-conditions-cont"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" style="display: none">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>

@@ -6,8 +6,6 @@ var app = app || {};
 
 var TaskPanelView = Backbone.View.extend({
 
-    el : '#task-panel',
-
     template: _.template($('#task-panel-template').html()),
 
     initialize: function() {
@@ -20,22 +18,14 @@ var TaskPanelView = Backbone.View.extend({
         self.model.tasks.on("remove", function(model) {
             //$('tr[id=' + model.id + ']').remove();
         });
-
-        self.render();
-
-        self.model.loadTasks();
     },
 
     render: function() {
-        debugger;
-        var params = {};
-        this.$el.html(this.template(params));
-        return this;
+        this.$el.html(this.template());
     },
 
     addTask: function(task) {
-        var self = this;
         var taskEl = new TaskTileView({model : task}).render();
-        self.$el.append(taskEl);
+        this.$el.append(taskEl);
     }
 });

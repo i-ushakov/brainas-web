@@ -12,10 +12,11 @@ namespace frontend\controllers;
 use Yii;
 use yii\web\Controller;
 use common\models\Task;
+use yii\helpers\Json;
 
 class TaskController extends Controller {
     /**
-     * Displays main panel.
+     * Return tasks
      *
      * @return mixed
      */
@@ -30,13 +31,20 @@ class TaskController extends Controller {
         foreach ($tasks as $task) {
             $item['id'] = $task->id;
             $item['message'] = $task->message;
+            $item['description'] = $task->description;
+            $conditions = $task->conditions;
+            foreach($conditions as $condition){
+                $c = array();
+                $events = $condition->events;
+                foreach($events as $event) {
+                    $c[$event->eventType->name]['type'] = $event->eventType->name;
+                    $c[$event->eventType->name]['params'] = json_decode($event->params);
+                }
+                $item['conditions'][] = $c;
+            }
             $items[] = $item;
         }
 
-        /*$items = [
-            ['id' => 1, 'message' => 'Test message'],
-            ['id' => 2, 'message' => 'Test message2']
-        ];*/
         \Yii::$app->response->format = 'json';
         return $items;
     }

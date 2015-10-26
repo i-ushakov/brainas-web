@@ -89,6 +89,11 @@ a.desc:after {
     padding: 10px 20px;
     margin: 0 0 15px 0;
 }
+/* Global */
+.clear {
+    clear: both;
+    float: none;
+}
 
 /* Task's Panel */
 .task-tile {
@@ -128,4 +133,80 @@ a.desc:after {
     margin: 5px;
     font-size: 22px;
     text-align: center;
+}
+
+/* Task's card */
+.task-card .task-card-top .task-card-image {
+    min-width: 150px;
+    max-width: 150px;
+    min-height: 150px;
+    max-height: 150px;
+}
+
+.task-card-top {
+    margin-top: 10px;
+}
+
+.task-card-middle {
+    width: 570px;
+}
+.task-message-cont {
+    font-style: italic;
+    font-size: larger;
+    font-weight: bold;
+    text-align: center;
+    background-color: lightcyan;
+    border: 1px solid lightgrey;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    border-radius: 3px;
+}
+
+.task-info-icon {
+    float: left;
+}
+
+[category-color=red] {
+    background-color: red;
+    font-style: italic;
+    font-weight: bold;
+    padding: 3px;
+    margin: 3px;
+    border-radius: 3px;
+}
+.task-description-cont {
+    margin-bottom: 20px;
+}
+.task-conditions-cont .google-map {
+    min-width: 530px;
+    max-width: 530px;
+    min-height: 400px;
+    max-height: 400px;
+}
+
+.task-condition {
+    border-radius: 2px;
+    border: 1px solid gainsboro;
+    background-color: lightyellow;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.condition-event {
+    float: left;
+}
+
+.condition-event:hover {
+    text-decoration: underline;
+}
+
+.condition-event.gps-event {
+    background-image: url("../images/gps-icon.png");
+    background-repeat: no-repeat;
+    background-size: 20px;
+    padding-left: 20px;
+}
+
+.condition-event.gps-event span {
+    font-weight: bold;
 }

@@ -6,6 +6,8 @@
  * Time: 12:01 PM
  */
 
-require_once(Yii::$app->basePath . '/web/js/templates/main-panel.html');
-require_once(Yii::$app->basePath . '/web/js/templates/task-panel.html');
-require_once(Yii::$app->basePath . '/web/js/templates/task-tile.html');
+require_once(Yii::$app->basePath . '/web/js/templates/panels/main-panel.html');
+require_once(Yii::$app->basePath . '/web/js/templates/panels/task-panel.html');
+require_once(Yii::$app->basePath . '/web/js/templates/task/task-tile.html');
+require_once(Yii::$app->basePath . '/web/js/templates/task/task-card-modal.html');
+require_once(Yii::$app->basePath . '/web/js/templates/task/task-condition.html');

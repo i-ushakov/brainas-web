@@ -20,12 +20,17 @@ class SPAAsset extends AssetBundle
     public $js = [
         'js/libs/underscore.js',
         'js/libs/backbone.js',
-        'js/models/MainPanel.js',
-        'js/models/TaskPanel.js',
-        'js/models/Task.js',
-        'js/view/MainPanelView.js',
-        'js/view/TaskPanelView.js',
-        'js/view/TaskTileView.js',
+        'https://maps.googleapis.com/maps/api/js',
+        'js/models/panels/MainPanel.js',
+        'js/models/panels/TaskPanel.js',
+        'js/models/task/Task.js',
+        'js/models/task/Condition.js',
+        'js/models/task/Event.js',
+        'js/view/panels/MainPanelView.js',
+        'js/view/panels/TaskPanelView.js',
+        'js/view/task/TaskTileView.js',
+        'js/view/task/TaskConditionView.js',
+        'js/view/task/TaskCardView.js',
         'js/collections/Tasks.js',
         'js/app.js'
     ];
