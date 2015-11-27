@@ -42,10 +42,39 @@ return $response->send();
         $xmlWithTasks = "";
         $xmlWithTasks .= '<?xml version="1.0" encoding="UTF-8"?>';
         $xmlWithTasks .= '<tasks>';
-        $xmlWithTasks .= '<task global-id="' . $tasks[0]->id . '"><message>' . $tasks[0]->message . '</message></task>';
+        $xmlWithTasks .= '' .
+            '<task global-id="' . $tasks[0]->id . '">' .
+                '<message>' . $tasks[0]->message . '</message>' .
+                '<conditions>' . $this->getConditionsPart($tasks[0]) . '</conditions>' .
+            '</task>';
         $xmlWithTasks .= '</tasks>';
 
         echo $xmlWithTasks;
+    }
+
+    private function getConditionsPart($task) {
+        $xml = "";
+        $conditions = $task->conditions;
+        foreach($conditions as $condition){
+            $xml .= "<condition>";
+            $c = array();
+            $events = $condition->events;
+            foreach($events as $event) {
+                $xml .= "<event type='" . $event->eventType->name . "'>";
+                $c[$event->eventType->name]['type'] = $event->eventType->name;
+                $xml .= "<params>";
+                $params = json_decode($event->params);
+                foreach ($params as $name => $value) {
+                    $xml .= "<$name>$value</$name>";
+                }
+                $xml .= "</params>";
+                $xml .= "</event>";
+            }
+            $item['conditions'][] = $c;
+            $xml .= "</condition>";
+        }
+        $items[] = $item;
+        return $xml;
     }
 
 }
