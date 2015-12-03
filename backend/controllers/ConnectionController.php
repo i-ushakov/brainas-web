@@ -34,6 +34,12 @@ return $response->send();
         //$response = Yii::$app->getResponse();
         //$response->headers->set('Content-Type', 'image/jpeg');
 
+        if (isset($_SESSION["was_send"])) {
+            return null;
+        }
+
+        $_SESSION["was_send"] = true;
+
         $tasks = Task::find()
             ->where(['id' => 1])
             ->orderBy('id')
@@ -44,8 +50,9 @@ return $response->send();
         $xmlWithTasks .= '<tasks>';
         $xmlWithTasks .= '' .
             '<task global-id="' . $tasks[0]->id . '">' .
-                '<message>' . $tasks[0]->message . '</message>' .
+                '<message>' . $tasks[0]->message . '11</message>' .
                 '<conditions>' . $this->getConditionsPart($tasks[0]) . '</conditions>' .
+                '<status>WAITING</status>' .
             '</task>';
         $xmlWithTasks .= '</tasks>';
 
@@ -56,11 +63,11 @@ return $response->send();
         $xml = "";
         $conditions = $task->conditions;
         foreach($conditions as $condition){
-            $xml .= "<condition>";
+            $xml .= "<condition id='" . $condition->id . "' task-id='" . $condition->task_id ."'>";
             $c = array();
             $events = $condition->events;
             foreach($events as $event) {
-                $xml .= "<event type='" . $event->eventType->name . "'>";
+                $xml .= "<event type='" . $event->eventType->name . "' id='" . $event->id . "'>";
                 $c[$event->eventType->name]['type'] = $event->eventType->name;
                 $xml .= "<params>";
                 $params = json_decode($event->params);
