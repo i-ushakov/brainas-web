@@ -50,7 +50,8 @@ return $response->send();
         $xmlWithTasks .= '<tasks>';
         $xmlWithTasks .= '' .
             '<task global-id="' . $tasks[0]->id . '">' .
-                '<message>' . $tasks[0]->message . '11</message>' .
+                '<message>' . $tasks[0]->message . '</message>' .
+                '<description>' . $tasks[0]->description . '</description>' .
                 '<conditions>' . $this->getConditionsPart($tasks[0]) . '</conditions>' .
                 '<status>WAITING</status>' .
             '</task>';
