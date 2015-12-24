@@ -22,10 +22,16 @@ var TaskPanelView = Backbone.View.extend({
 
     render: function() {
         this.$el.html(this.template());
+        this.addNewTaskButton();
     },
 
     addTask: function(task) {
         var taskEl = new TaskTileView({model : task}).render();
+        this.$el.find(".add-new-task-btn").after(taskEl);
+    },
+
+    addNewTaskButton: function() {
+        var taskEl = new TaskTileView({addTaskButton: true}).render();
         this.$el.append(taskEl);
     }
 });

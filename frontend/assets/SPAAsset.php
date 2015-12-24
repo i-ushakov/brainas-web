@@ -21,6 +21,7 @@ class SPAAsset extends AssetBundle
         'js/libs/underscore.js',
         'js/libs/backbone.js',
         'https://maps.googleapis.com/maps/api/js',
+        'js/settings.js',
         'js/models/panels/MainPanel.js',
         'js/models/panels/TaskPanel.js',
         'js/models/task/Task.js',

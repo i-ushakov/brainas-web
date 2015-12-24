@@ -9,6 +9,8 @@
 namespace frontend\controllers;
 
 
+use common\models\Condition;
+use common\models\Event;
 use Yii;
 use yii\web\Controller;
 use common\models\Task;
@@ -29,23 +31,105 @@ class TaskController extends Controller {
 
         $items = array();
         foreach ($tasks as $task) {
-            $item['id'] = $task->id;
-            $item['message'] = $task->message;
-            $item['description'] = $task->description;
-            $conditions = $task->conditions;
-            foreach($conditions as $condition){
-                $c = array();
-                $events = $condition->events;
-                foreach($events as $event) {
-                    $c[$event->eventType->name]['type'] = $event->eventType->name;
-                    $c[$event->eventType->name]['params'] = json_decode($event->params);
-                }
-                $item['conditions'][] = $c;
-            }
-            $items[] = $item;
+            $items[] = $this->prepareTsakForSending($task);
         }
 
         \Yii::$app->response->format = 'json';
         return $items;
+    }
+
+
+    public function actionSave() {
+        $result = array();
+
+        $post = Yii::$app->request->post();
+        $taskForSave = Json::decode($post['task']);
+        $taskId = $taskForSave['id'];
+
+        if (is_null($taskId)) {
+            $task = new Task();
+        } else {
+            $task = Task::find($taskId)
+                ->where(['id' => $taskId])
+                ->one();
+        }
+
+        if (isset($taskForSave['message'])) {
+            $task->message = $taskForSave['message'];
+        }
+
+        if (isset($taskForSave['conditions']) && count($taskForSave['conditions']) > 0) {
+            $conditionsAr = Json::decode($post['conditions']);
+            foreach($conditionsAr as $conditionAr) {
+                $condition = null;
+                if (isset($conditionAr['conditionId'])) {
+                    $conditionId = $conditionAr['conditionId'];
+                    $condition = Condition::find($conditionId)
+                        ->where(['id' => $conditionId])
+                        ->one();
+                } else {
+
+                }
+                foreach($conditionAr['events'] as $eventType => $eventAr) {
+                    if (isset($eventAr['eventId'])) {
+                        $eventId = $eventAr['eventId'];
+                        $event = Event::find($eventId)
+                            ->where(['id' => $eventId])
+                            ->one();
+
+                        if (isset($eventAr['deleted'])) {
+                            $event->delete();
+                        }
+                        var_dump("params");
+                        var_dump($eventAr['params']);
+                        var_dump($event->params);
+                        $event->params = Json::encode($eventAr['params']);
+                        var_dump($event->params);
+                        $event->save();
+                    } else {
+                        $event = new Event();
+                        $condition->addNewEvent($event);
+                    }
+
+
+                ///if(isset($conditionAr['GPS'])) {
+                    //$event = new Event();
+                //}
+                }
+            }
+        }
+
+        if ($task->validate()) {
+            $task->save();
+            $result['status'] = "OK";
+            $result['task'] = $this->prepareTsakForSending($task);
+        } else {
+            $errors = $task->errors;
+            $result['status'] = "FAILED";
+            $result['errors'] = $errors;
+        }
+
+        \Yii::$app->response->format = 'json';
+        return $result;
+    }
+
+    private function prepareTsakForSending($task){
+        $item['id'] = $task->id;
+        $item['message'] = $task->message;
+        $item['description'] = $task->description;
+        $conditions = $task->conditions;
+        foreach($conditions as $condition){
+            $c = array();
+            $c['conditionId'] = $condition->id;
+            $events = $condition->events;
+            foreach($events as $event) {
+                $c[$event->eventType->name]['eventId'] = $event->id;
+                $c[$event->eventType->name]['type'] = $event->eventType->name;
+                $c[$event->eventType->name]['params'] = json_decode($event->params);
+            }
+            $item['conditions'][] = $c;
+        }
+
+        return $item;
     }
 }

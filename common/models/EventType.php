@@ -15,4 +15,11 @@ class EventType extends ActiveRecord {
     public static function tableName() {
         return 'event_types';
     }
+
+    public static function  getTypeIdByName($typeName) {
+        $typeId = self::find()
+            ->where(['name' => $typeName])
+            ->one()->id;
+        return $typeId;
+    }
 }

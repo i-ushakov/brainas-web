@@ -1,13 +1,24 @@
-<!-- Template of Main Panel -->
+<!-- Template of Task Tile -->
 <script type="text/template" id="task-tile-template">
     <div class="col-md-3">
         <div class="task-tile tile-lightgree">
             <div class="task-tile-top">
-                <img class="task-picture" src="images/pictures.png">
+                <img class="task-picture" src="<%= app.url %>images/pictures.png">
             </div>
             <div class="task-message">
                 <%= message %>
             </div>
             </div>
         </div>
+</script>
+
+<!-- Template of "Add new" Tile -->
+<script type="text/template" id="task-tile-new-template">
+    <div class="col-md-3 add-new-task-btn">
+        <div class="add-new-task-tile tile-lightgree">
+            <div class="task-tile-top">
+                <img class="add-new-task-picture" src="<%= app.url %>images/plus_button.png">
+            </div>
+        </div>
+    </div>
 </script>

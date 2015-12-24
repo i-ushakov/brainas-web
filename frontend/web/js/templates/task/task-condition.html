@@ -1,10 +1,12 @@
 <script type="text/template" id="task-condition-template">
     <div class="task-condition" condition-id="1">
-        <% if (typeof(GPS) !== "undefined" && GPS != null) { %>
-        <div class="condition-event gps-event">
-            <span>GPS:</span> {lat:<%=GPS.params.lat.toFixed(3)%>, lng:<%=GPS.params.lng.toFixed(3)%>, rad:<%=GPS.params.radius%>}
+        <div class="condition-row">
+            <% if (typeof(GPS) !== "undefined" && GPS != null) { %>
+            <div class="condition-event gps-event">
+                <span>GPS:</span> {lat:<%=GPS.params.lat.toFixed(3)%>, lng:<%=GPS.params.lng.toFixed(3)%>, rad:<%=GPS.params.radius%>}
+            </div>
+            <% } %>
         </div>
-        <% } %>
         <div class="clear"></div>
         <div class="condition-collapse collapse">
             <div class="well">

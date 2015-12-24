@@ -11,9 +11,8 @@ $(function () {
     Backbone.View.prototype.close = function(){
         this.remove();
         this.unbind();
-    }
+    };
 
-    app.MainPanel = new MainPanel();
-    app.MainPanelView = new MainPanelView({model: app.MainPanel});
-    app.MainPanel.toggleToTaskPanel();
+    //Backbone.Model.prototype.toJSON = function(){
+    //};
 });

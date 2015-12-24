@@ -5,5 +5,5 @@
 var Tasks = Backbone.Collection.extend({
     model: Task,
 
-    url: '/frontend/web/index.php?r=task/get',
+    url: '/frontend/web/task/get',
 });

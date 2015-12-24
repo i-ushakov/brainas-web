@@ -19,4 +19,8 @@ class Condition extends ActiveRecord {
     public function getEvents() {
         return $this->hasMany(Event::className(), ['condition_id' => 'id']);
     }
+
+    public function addNewEvent($event) {
+        return true;
+    }
 }

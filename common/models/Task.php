@@ -17,6 +17,18 @@ class Task extends ActiveRecord {
         return 'tasks';
     }
 
+    public function rules()
+    {
+        return [
+            // the name, email, subject and body attributes are required
+            [['message'], 'required'],
+            [['message'], 'string','max'=>100]
+
+            // the email attribute should be a valid email address
+            //['email', 'email'],
+        ];
+    }
+
     public function getConditions() {
         return $this->hasMany(Condition::className(), ['task_id' => 'id']);
     }

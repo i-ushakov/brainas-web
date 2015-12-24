@@ -96,7 +96,7 @@ a.desc:after {
 }
 
 /* Task's Panel */
-.task-tile {
+.task-tile, .add-new-task-tile {
     min-width: 250px;
     max-width: 250px;
     min-height: 250px;
@@ -121,6 +121,20 @@ a.desc:after {
     max-width: 80px;
     min-height: 80px;
     max-height: 80px;
+    margin: 5px;
+}
+
+.add-new-task-tile {
+    text-align: center;
+    height: 250px;
+    line-height: 250px;
+}
+
+.add-new-task-picture {
+    min-width: 50%;
+    max-width: 50%;
+    min-height: 50%;
+    max-height: 50%;
     margin: 5px;
 }
 
@@ -160,6 +174,28 @@ a.desc:after {
     margin-bottom: 10px;
     margin-top: 20px;
     border-radius: 3px;
+}
+
+.task-message-cont:hover {
+    cursor: pointer;
+}
+
+.task-message-edit textarea {
+    width: 100%;
+}
+
+
+.cancel-edit-icon-cont {
+    text-align: right;
+}
+
+.cancel-edit-icon {
+    position: relative;
+    top: 18px;
+    margin-right: 2px;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
 }
 
 .task-info-icon {

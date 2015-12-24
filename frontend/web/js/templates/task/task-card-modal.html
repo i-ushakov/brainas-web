@@ -4,12 +4,22 @@
             <div class="modal-content">
                 <!-- <div class="modal-header"></div> -->
                 <div class="modal-body">
+                    <!-- Bootstrap info alert -->
+                    <div class="alerts-cont"></div>
                     <div class="task-card-top container">
                         <div class="task-picture-cont col-md-2">
-                            <img class='task-card-image' src="images/pictures.png" />
+                            <img class='task-card-image' src="<%= app.url %>images/pictures.png" />
                         </div>
                         <div class="task-general-info-cont col-md-4">
                             <div class="task-message-cont"><%= message %></div>
+                            <div class="task-message-edit" style="display:none">
+                                <% if (createMode == false) { %>
+                                    <div class="cancel-edit-icon-cont">
+                                        <img class="cancel-edit-icon" src = "<%= app.url %>images/cancel_edit_icon.png" />
+                                    </div>
+                                <% } %>
+                                <textarea maxlength="100"><%= message %></textarea>
+                            </div>
                             <div class="task-info-icons">
                                 <div class="category-label task-info-icon"
                                      category-id="1"
@@ -30,7 +40,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" style="display: none">Save changes</button>
+                    <button type="button" id="save-changes-btn" class="btn btn-primary" style="display: none">Save changes</button>
                 </div>
             </div>
         </div>

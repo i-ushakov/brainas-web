@@ -7,15 +7,20 @@ var app = app || {};
 
 
 var Condition = Backbone.Model.extend({
-    id : null,
+    default : {
+        id : null,
+        events: {},
+    },
 
-    events: {},
 
 
     initialize : function(condition) {
-        this.id = condition.id;
-        this.events = {
+        this.unset('conditionId');
+        this.unset('GPS');
+        this.set('conditionId', condition.conditionId);
+        var events = {
             GPS: new Event(condition.GPS) || null
         }
+        this.set('events', events);
     }
 });
