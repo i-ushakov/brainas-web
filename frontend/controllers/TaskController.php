@@ -58,6 +58,10 @@ class TaskController extends Controller {
             $task->message = $taskForSave['message'];
         }
 
+        if (isset($taskForSave['description'])) {
+            $task->description = $taskForSave['description'];
+        }
+
         if (isset($taskForSave['conditions']) && count($taskForSave['conditions']) > 0) {
             $conditionsAr = Json::decode($post['conditions']);
             foreach($conditionsAr as $conditionAr) {
@@ -80,11 +84,7 @@ class TaskController extends Controller {
                         if (isset($eventAr['deleted'])) {
                             $event->delete();
                         }
-                        var_dump("params");
-                        var_dump($eventAr['params']);
-                        var_dump($event->params);
                         $event->params = Json::encode($eventAr['params']);
-                        var_dump($event->params);
                         $event->save();
                     } else {
                         $event = new Event();

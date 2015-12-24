@@ -43,7 +43,6 @@ var Task = Backbone.Model.extend({
             data: data,
             success: function(result){
                 if (result.status == "OK") {
-                    debugger;
                     self.trigger("save", result);
                     return true;
                 }
@@ -64,7 +63,6 @@ var Task = Backbone.Model.extend({
             data: data,
             success: function(result){
                 if (result.status == "OK") {
-                    debugger;
                     app.MainPanel.taskPanel.tasks.remove(self.id);
                     return true;
                 }

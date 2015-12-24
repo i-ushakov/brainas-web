@@ -20,9 +20,12 @@ var TaskCardView = Backbone.View.extend({
 
     events: {
         'click .task-message-cont': 'editMessage',
-        'click .cancel-edit-icon': 'cancelEditMessage',
+        'click .task-description-cont': 'editDescription',
+        'click .task-message-edit .cancel-edit-icon': 'cancelEditMessage',
+        'click .task-description-edit .cancel-edit-icon': 'cancelEditDescription',
         'click #save-changes-btn': 'save',
         'keyup .task-message-edit textarea': 'changeMessageHandler',
+        'keyup .task-description-edit textarea': 'changeDescriptionHandler',
     },
 
     template: _.template( $('#task-card-modal-template').html()),
@@ -34,7 +37,9 @@ var TaskCardView = Backbone.View.extend({
         this.messageView = this.$el.find('.task-message-cont');
         this.messageEditView = this.$el.find('.task-message-edit');
         this.cancelEditIcon = this.messageEditView.find('.cancel-edit-icon-cont');
-        debugger;
+        this.descriptionView = this.$el.find('.task-description-cont');
+        this.descriptionEditView = this.$el.find('.task-description-edit');
+
         this.saveBtn = this.$el.find('#save-changes-btn');
         if (options.createMode == true) {
             this.prepareForNewTask();
@@ -62,6 +67,12 @@ var TaskCardView = Backbone.View.extend({
 
     addConditions: function() {
         var self = this;
+        debugger;
+
+        if (self.model.get("conditions").length == 0) {
+            self.$el.find('.task-conditions-cont').append("<div class='task-condition'>+ Add condition</div>");
+        }
+
         _.each(self.model.get("conditions"), function(condition) {
             self.$el.find('.task-conditions-cont').append(
             new TaskConditionView({
@@ -82,12 +93,26 @@ var TaskCardView = Backbone.View.extend({
         this.messageEditView.toggle();
     },
 
+    cancelEditDescription: function() {
+        this.descriptionView.toggle();
+        this.descriptionEditView.toggle();
+    },
+
+    editDescription: function() {
+        this.descriptionView.toggle();
+        this.descriptionEditView.toggle();
+    },
+
     changeMessageHandler: function() {
         this.messageTextArea.css('background-color', '');
         $('#save-changes-btn').show();
         if (this.messageTextArea.val().length >= 100) {
             this.addInfoAlert('moreThan100Chars');
         }
+    },
+
+    changeDescriptionHandler: function() {
+        $('#save-changes-btn').show();
     },
 
     changeGPSHandler: function() {
@@ -99,6 +124,7 @@ var TaskCardView = Backbone.View.extend({
             return false;
         }
         this.model.set("message", this.messageEditView.find("textarea").val());
+        this.model.set("description", this.descriptionEditView.find("textarea").val());
         var result = this.model.save();
     },
 
@@ -130,10 +156,10 @@ var TaskCardView = Backbone.View.extend({
 
     onSaveHandler: function(result) {
         if (result.status == "OK") {
+            debugger;
             this.saveBtn.hide();
             if (this.createMode == true) {
                 this.$el.modal("hide");
-                debugger;
                 app.MainPanelView.taskPanelView.model.tasks.add(new Task(result.task))
             }
         }

@@ -76,7 +76,6 @@ var TaskConditionView = Backbone.View.extend({
 
     changeGPSParams: function(latLng) {
         var gpsParams = this.model.get("events").GPS.get("params");
-        debugger;
         if (gpsParams) {
             gpsParams.lat = latLng.lat();
             gpsParams.lng = latLng.lng();

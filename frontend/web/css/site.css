@@ -198,6 +198,7 @@ a.desc:after {
 
 .task-message-cont:hover {
     cursor: pointer;
+    opacity: 0.7;
 }
 
 .task-message-edit textarea {
@@ -207,6 +208,15 @@ a.desc:after {
 
 .cancel-edit-icon-cont {
     text-align: right;
+}
+
+.task-description-edit {
+
+}
+
+.task-description-edit textarea {
+    width: 100%;
+    min-height: 200px;
 }
 
 .cancel-edit-icon {
@@ -232,6 +242,34 @@ a.desc:after {
 }
 .task-description-cont {
     margin-bottom: 20px;
+    border: solid 1px white;
+    margin-top: 20px;
+}
+
+.task-description-cont:hover {
+    cursor: pointer;
+    border: solid 1px black;
+    background-color: cornsilk;
+    opacity: 0.7;
+}
+.task-empty-description{
+    font-style: italic;
+    height: 30px;
+    line-height: 30px;
+}
+.task-empty-description .plus-desc {
+    font-weight: bold;
+    font-size: 30px;
+    height: 30px;
+    line-height: 30px;
+    float: left;
+}
+
+.task-empty-description .add-desc {
+    height: 30px;
+    line-height: 30px;
+    padding-bottom: 10px;
+    float: left;
 }
 .task-conditions-cont .google-map {
     min-width: 530px;

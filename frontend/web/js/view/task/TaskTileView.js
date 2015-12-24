@@ -24,8 +24,6 @@ var TaskTileView = Backbone.View.extend({
             this.addTaskButton = true;
             return;
         }
-        debugger;
-        this.model.on({"remove": this.onRemoveHandler});
     },
 
     render: function() {
@@ -42,8 +40,9 @@ var TaskTileView = Backbone.View.extend({
         return this.$el;
     },
 
-    openTaskCard: function() {
+    openTaskCard: function(e) {
         new TaskCardView({model: this.model});
+        e.stopPropagation()
     },
 
     addNewTaskHandler: function() {
@@ -58,8 +57,7 @@ var TaskTileView = Backbone.View.extend({
         return false;
     },
 
-    onRemoveHandler: function() {
-
+    refresh: function() {
+        this.render();
     }
-
 });
