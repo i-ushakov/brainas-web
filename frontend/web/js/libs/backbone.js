@@ -688,7 +688,7 @@
         // that will be called.
         url: function() {
             var base =
-                _.result(this, 'urlRoot') ||
+                _.result(this, 'urlSave') ||
                 _.result(this.collection, 'url') ||
                 urlError();
             if (this.isNew()) return base;

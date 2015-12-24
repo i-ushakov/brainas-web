@@ -113,6 +113,31 @@ class TaskController extends Controller {
         return $result;
     }
 
+    public function actionRemove() {
+        $result = array();
+        $result['status'] = "FAILED";
+
+        $post = Yii::$app->request->post();
+        $taskForRemove = Json::decode($post['task']);
+        $taskId = $taskForRemove['id'];
+
+        $task = Task::find($taskId)
+            ->where(['id' => $taskId])
+            ->one();
+
+        if (!empty($task)) {
+            if($task->delete()) {
+                $result['status'] = "OK";
+            }
+        } else {
+            $result['message'] = "No task with id = " . $taskId . " not exists";
+        }
+
+
+        \Yii::$app->response->format = 'json';
+        return $result;
+    }
+
     private function prepareTsakForSending($task){
         $item['id'] = $task->id;
         $item['message'] = $task->message;

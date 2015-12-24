@@ -149,6 +149,26 @@ a.desc:after {
     text-align: center;
 }
 
+.delete-img-cont {
+    position: absolute;
+    top: 20px;
+    left: 243px;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.delete-img-cont:hover {
+    opacity: 1;
+}
+
+.delete-img-cont img {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+}
+
+
 /* Task's card */
 .task-card .task-card-top .task-card-image {
     min-width: 150px;

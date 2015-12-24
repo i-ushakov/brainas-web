@@ -16,7 +16,8 @@ var TaskPanelView = Backbone.View.extend({
         });
 
         self.model.tasks.on("remove", function(model) {
-            //$('tr[id=' + model.id + ']').remove();
+            debugger;
+            self.removeTask(model);
         });
     },
 
@@ -28,6 +29,10 @@ var TaskPanelView = Backbone.View.extend({
     addTask: function(task) {
         var taskEl = new TaskTileView({model : task}).render();
         this.$el.find(".add-new-task-btn").after(taskEl);
+    },
+
+    removeTask: function(task) {
+        this.$el.find("#task-tile-view-" + task.id).remove();
     },
 
     addNewTaskButton: function() {

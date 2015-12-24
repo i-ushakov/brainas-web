@@ -16,12 +16,16 @@ var TaskTileView = Backbone.View.extend({
     events: {
         'click .task-tile': 'openTaskCard',
         'click .add-new-task-btn': 'addNewTaskHandler',
+        'click .delete-img-cont': 'removeTask',
     },
 
     initialize: function (options) {
         if (options.addTaskButton == true) {
             this.addTaskButton = true;
+            return;
         }
+        debugger;
+        this.model.on({"remove": this.onRemoveHandler});
     },
 
     render: function() {
@@ -31,7 +35,7 @@ var TaskTileView = Backbone.View.extend({
         }
 
         var params = {
-            item : this.model.id,
+            id : this.model.id,
             message : this.model.get("message")
         };
         this.$el.html(this.template(params));
@@ -47,6 +51,15 @@ var TaskTileView = Backbone.View.extend({
         emptyTask.message = null;
         emptyTask.description = null;
         new TaskCardView({model: new Task(emptyTask), createMode: true});
+    },
+
+    removeTask: function() {
+        this.model.remove();
+        return false;
+    },
+
+    onRemoveHandler: function() {
+
     }
 
 });

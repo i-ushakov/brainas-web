@@ -6,7 +6,8 @@ var app = app || {};
 
 
 var Task = Backbone.Model.extend({
-    urlRoot: app.url + 'task/save/',
+    urlSave: app.url + 'task/save/',
+    urlRemove: app.url + 'task/remove/',
 
     id : null,
     message : null,
@@ -33,17 +34,38 @@ var Task = Backbone.Model.extend({
         var self = this;
         data = {
             conditions: JSON.stringify(this.get("conditions")),
-            task: JSON.stringify(this),
+            task: JSON.stringify(this)
         };
 
         $.ajax({
             type: "POST",
-            url: this.urlRoot,
+            url: this.urlSave,
             data: data,
             success: function(result){
-                if (result.status = "OK") {
+                if (result.status == "OK") {
                     debugger;
                     self.trigger("save", result);
+                    return true;
+                }
+            },
+            dataType: 'json'
+        });
+    },
+
+    remove: function() {
+        var self = this;
+        var data = {
+            task: JSON.stringify(self)
+        };
+
+        $.ajax({
+            type: "POST",
+            url: this.urlRemove,
+            data: data,
+            success: function(result){
+                if (result.status == "OK") {
+                    debugger;
+                    app.MainPanel.taskPanel.tasks.remove(self.id);
                     return true;
                 }
             },

@@ -1,7 +1,8 @@
 <!-- Template of Task Tile -->
 <script type="text/template" id="task-tile-template">
-    <div class="col-md-3">
+    <div class="col-md-3" id="task-tile-view-<%= id %>">
         <div class="task-tile tile-lightgree">
+            <div class="delete-img-cont"><img src="<%=app.url%>images/delete_icon_100.png"/></div>
             <div class="task-tile-top">
                 <img class="task-picture" src="<%= app.url %>images/pictures.png">
             </div>
