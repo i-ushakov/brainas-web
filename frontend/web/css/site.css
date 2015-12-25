@@ -257,7 +257,8 @@ a.desc:after {
     height: 30px;
     line-height: 30px;
 }
-.task-empty-description .plus-desc {
+.task-empty-description .plus-desc,
+.task-condition .plus-condition {
     font-weight: bold;
     font-size: 30px;
     height: 30px;
@@ -265,11 +266,22 @@ a.desc:after {
     float: left;
 }
 
-.task-empty-description .add-desc {
+.task-empty-description .add-desc,
+.task-condition .add-condition {
     height: 30px;
     line-height: 30px;
     padding-bottom: 10px;
     float: left;
+    font-style: italic;
+    margin-left: 10px;
+}
+.task-condition .add-condition {
+}
+.empty-condition {
+    line-height: 30px;
+}
+.empty-condition:hover {
+    opacity:0.7;
 }
 .task-conditions-cont .google-map {
     min-width: 530px;
@@ -303,6 +315,10 @@ a.desc:after {
 
 .condition-event.gps-event span {
     font-weight: bold;
+}
+
+.add-button-bottom {
+    text-align: right;
 }
 
 

@@ -14,6 +14,7 @@ use common\models\Event;
 use Yii;
 use yii\web\Controller;
 use common\models\Task;
+use common\models\EventType;
 use yii\helpers\Json;
 
 class TaskController extends Controller {
@@ -72,7 +73,9 @@ class TaskController extends Controller {
                         ->where(['id' => $conditionId])
                         ->one();
                 } else {
-
+                    $condition = new Condition();
+                    $condition->task_id = $taskId;
+                    $condition->save();
                 }
                 foreach($conditionAr['events'] as $eventType => $eventAr) {
                     if (isset($eventAr['eventId'])) {
@@ -88,7 +91,10 @@ class TaskController extends Controller {
                         $event->save();
                     } else {
                         $event = new Event();
-                        $condition->addNewEvent($event);
+                        $event->condition_id = $condition->id;
+                        $event->type = EventType::getTypeIdByName($eventAr['type']);
+                        $event->params = Json::encode($eventAr['params']);
+                        $event->save();
                     }
 
 

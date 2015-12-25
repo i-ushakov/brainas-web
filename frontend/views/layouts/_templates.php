@@ -11,3 +11,4 @@ require_once(Yii::$app->basePath . '/web/js/templates/panels/task-panel.html');
 require_once(Yii::$app->basePath . '/web/js/templates/task/task-tile.html');
 require_once(Yii::$app->basePath . '/web/js/templates/task/task-card-modal.html');
 require_once(Yii::$app->basePath . '/web/js/templates/task/task-condition.html');
+require_once(Yii::$app->basePath . '/web/js/templates/condition-type-selector.html');

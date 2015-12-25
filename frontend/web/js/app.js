@@ -6,6 +6,12 @@ var app = app || {};
 
 app.url = '/frontend/web/',
 
+app.getCurrentUserLocation = function() {
+    var location = {};
+    location.lat = 55.595865;
+    location.lng = 38.113754;
+    return location;
+}
 
 $(function () {
     Backbone.View.prototype.close = function(){

@@ -24,6 +24,8 @@ var TaskCardView = Backbone.View.extend({
         'click .task-message-edit .cancel-edit-icon': 'cancelEditMessage',
         'click .task-description-edit .cancel-edit-icon': 'cancelEditDescription',
         'click #save-changes-btn': 'save',
+        'click .add-condition-btn': 'addConditionHandler',
+
         'keyup .task-message-edit textarea': 'changeMessageHandler',
         'keyup .task-description-edit textarea': 'changeDescriptionHandler',
     },
@@ -31,7 +33,7 @@ var TaskCardView = Backbone.View.extend({
     template: _.template( $('#task-card-modal-template').html()),
 
     initialize: function (options) {
-        _.bindAll(this, 'onSaveHandler');
+        _.bindAll(this, 'onSaveHandler', 'onConditionReadyHandler');
         this.render();
         this.messageTextArea = this.$el.find('.task-message-edit textarea');
         this.messageView = this.$el.find('.task-message-cont');
@@ -67,10 +69,14 @@ var TaskCardView = Backbone.View.extend({
 
     addConditions: function() {
         var self = this;
-        debugger;
+
+        self.$el.find('.task-conditions-cont').html('');
 
         if (self.model.get("conditions").length == 0) {
-            self.$el.find('.task-conditions-cont').append("<div class='task-condition'>+ Add condition</div>");
+            self.$el.find('.task-conditions-cont').append("<div class='task-condition empty-condition add-condition-btn'>" +
+                "<div class='plus-condition'>+</div><div class='add-condition'>Add condition</div>" +
+                "<div class='clear'></div>" +
+                "</div>");
         }
 
         _.each(self.model.get("conditions"), function(condition) {
@@ -79,7 +85,6 @@ var TaskCardView = Backbone.View.extend({
                     model: condition,
                     parent:self}
             ).render());})
-
     },
 
     editMessage: function() {
@@ -156,12 +161,25 @@ var TaskCardView = Backbone.View.extend({
 
     onSaveHandler: function(result) {
         if (result.status == "OK") {
-            debugger;
             this.saveBtn.hide();
             if (this.createMode == true) {
                 this.$el.modal("hide");
                 app.MainPanelView.taskPanelView.model.tasks.add(new Task(result.task))
             }
         }
+    },
+
+    addConditionHandler: function(event) {
+        var conditions = this.model.get("conditions");
+        var condition = new Condition(null);
+        condition.on('eventWasAdded', this.onConditionReadyHandler);
+        conditions.push(condition);
+        var conditionSelectorView = new ConditionTypeSelectorView(condition);
+        $(this.el).off('click', '.add-condition-btn');
+        $(".add-condition-btn").html(conditionSelectorView.$el);
+    },
+
+    onConditionReadyHandler: function (obj) {
+        this.addConditions();
     }
 });

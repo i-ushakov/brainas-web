@@ -30,7 +30,6 @@ var TaskPanelView = Backbone.View.extend({
     },
 
     addTask: function(task) {
-        debugger;
         var taskTileView = new TaskTileView({model : task})
         this.$el.find(".add-new-task-btn").after(taskTileView.render());
         this.taskTileViews[task.id] = taskTileView;

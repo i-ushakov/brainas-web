@@ -27,6 +27,7 @@ class SPAAsset extends AssetBundle
         'js/models/task/Task.js',
         'js/models/task/Condition.js',
         'js/models/task/Event.js',
+        'js/view/ConditionTypeSelectorView.js',
         'js/view/panels/MainPanelView.js',
         'js/view/panels/TaskPanelView.js',
         'js/view/task/TaskTileView.js',

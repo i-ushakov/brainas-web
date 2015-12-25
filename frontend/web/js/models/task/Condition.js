@@ -15,12 +15,14 @@ var Condition = Backbone.Model.extend({
 
 
     initialize : function(condition) {
-        this.unset('conditionId');
-        this.unset('GPS');
-        this.set('conditionId', condition.conditionId);
-        var events = {
-            GPS: new Event(condition.GPS) || null
+        if (condition != null) {
+            this.unset('conditionId');
+            this.unset('GPS');
+            this.set('conditionId', condition.conditionId);
+            var events = {
+                GPS: new Event(condition.GPS) || null
+            }
+            this.set('events', events);
         }
-        this.set('events', events);
     }
 });
