@@ -83,10 +83,10 @@ return $response->send();
         // Removed (deleted) Tasks
         $xmlWithTasks .= '<deleted>';
         foreach ($deleted as $id => $d) {
-            $xmlWithTasks .= '<item ' .
+            $xmlWithTasks .= '<deletedTask ' .
                     'global-id="' . $id . '" ' .
                     'time-changes="' . $d['datetime'] . '"' .
-                '></item>';
+                '></deletedTask>';
         }
 
         $xmlWithTasks .= '</deleted>';
