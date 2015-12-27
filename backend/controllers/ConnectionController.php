@@ -18,8 +18,8 @@ class ConnectionController extends Controller {
 
 
     public function beforeAction($action) {
+        Yii::$app->controller->enableCsrfValidation = false;
         return parent::beforeAction($action);
-        $this->enableCsrfValidation = false;
     }
 
     public function actionGetTasks()
