@@ -51,9 +51,16 @@ class Task extends ActiveRecord {
     }
 
     private function loggingChangfesForSync($action) {
-        $changedTask = new ChangedTask();
-        $changedTask->task_id = $this->id;
-        $changedTask->user_id = $this->user;
+        $changedTask = ChangedTask::find()
+            ->where(['user_id' => $this->user, 'task_id' => $this->id])
+            ->orderBy('id')
+            ->one();
+        if (empty($changedTask)) {
+            $changedTask = new ChangedTask();
+            $changedTask->task_id = $this->id;
+            $changedTask->user_id = $this->user;
+        }
+
         $datetime = new \DateTime();
         $datetime->setTimezone(new \DateTimeZone("Europe/London"));
         $changedTask->action = $action;
