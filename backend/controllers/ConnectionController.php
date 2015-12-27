@@ -103,7 +103,14 @@ return $response->send();
         $acceptedChangesJSON = file_get_contents("php://input");
         $acceptedChanges = Json::decode($acceptedChangesJSON);
         //$acceptedChanges = Json::decode($acceptedChangesJSON);
-        var_dump($acceptedChanges);
+        $records = ChangedTask::find()
+            ->where(array('in', 'task_id', array_keys($acceptedChanges['tasks'])))
+            ->andWhere(['user_id' => 1])
+            ->orderBy('id')
+            ->all();
+        foreach($records as $record) {
+            $record->delete();
+        }
     }
 
     private function buildTaskXml($task, $datetime) {
