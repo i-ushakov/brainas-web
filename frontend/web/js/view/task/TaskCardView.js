@@ -14,6 +14,8 @@ var TaskCardView = Backbone.View.extend({
         moreThan100Chars: "Message cannot be more than 100 character!"
     },
 
+    conditionViews: [],
+
     messageTextArea : null,
     messageView: null,
     messageEditView: null,
@@ -49,6 +51,7 @@ var TaskCardView = Backbone.View.extend({
             this.model.set("id", null);
             this.saveBtn.text("Create");
         }
+
         this.model.on({"save": this.onSaveHandler});
     },
 
@@ -80,11 +83,14 @@ var TaskCardView = Backbone.View.extend({
         }
 
         _.each(self.model.get("conditions"), function(condition) {
-            self.$el.find('.task-conditions-cont').append(
-            new TaskConditionView({
+            var conditionView = new TaskConditionView({
                     model: condition,
                     parent:self}
-            ).render());})
+            );
+            self.$el.find('.task-conditions-cont').append(
+                conditionView.render());
+            self.conditionViews.push(conditionView);
+        })
     },
 
     editMessage: function() {
@@ -181,5 +187,7 @@ var TaskCardView = Backbone.View.extend({
 
     onConditionReadyHandler: function (obj) {
         this.addConditions();
+        var addedConditionView = this.conditionViews[this.conditionViews.length - 1];
+        addedConditionView.$el.find('.condition-row').trigger("click");
     }
 });

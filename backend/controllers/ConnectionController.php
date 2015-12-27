@@ -9,6 +9,7 @@
 namespace backend\controllers;
 
 
+use common\infrastructure\ChangedTask;
 use common\models\Task;
 use yii\web\Controller;
 
@@ -20,7 +21,8 @@ class ConnectionController extends Controller {
         return parent::beforeAction($action);
     }
 
-    public function actionGetTasks(){
+    public function actionGetTasks()
+    {
         /*
          * $response = Yii::$app->getResponse();
 $response->headers->set('Content-Type', 'image/jpeg');
@@ -34,42 +36,84 @@ return $response->send();
         //$response = Yii::$app->getResponse();
         //$response->headers->set('Content-Type', 'image/jpeg');
 
-        if (isset($_SESSION["was_send"])) {
-            return null;
+        $changedTasks = $this->getChangedTasks();
+
+        $created = array();
+        $updated = array();
+        $deleted = array();
+        foreach ($changedTasks as $changedTask) {
+            if ($changedTask->action == "Created") {
+                $created[$changedTask->task_id]['action'] = $changedTask->action;
+                $created[$changedTask->task_id]['datetime'] = $changedTask->datetime;
+            } else if ($changedTask->action == "Changed") {
+                $updated[$changedTask->task_id]['action'] = $changedTask->action;
+                $updated[$changedTask->task_id]['datetime'] = $changedTask->datetime;
+            } else if ($changedTask->action == "Deleted") {
+                $deleted[$changedTask->task_id]['action'] = $changedTask->action;
+                $deleted[$changedTask->task_id]['datetime'] = $changedTask->datetime;
+            }
         }
-
-        $_SESSION["was_send"] = true;
-
-        $tasks = Task::find()
-            ->where(['id' => 1])
-            ->orderBy('id')
-            ->all();
 
         $xmlWithTasks = "";
         $xmlWithTasks .= '<?xml version="1.0" encoding="UTF-8"?>';
         $xmlWithTasks .= '<tasks>';
-        $xmlWithTasks .= '' .
-            '<task global-id="' . $tasks[0]->id . '">' .
-                '<message>' . $tasks[0]->message . '</message>' .
-                '<description>' . $tasks[0]->description . '</description>' .
-                '<conditions>' . $this->getConditionsPart($tasks[0]) . '</conditions>' .
-                '<status>WAITING</status>' .
-            '</task>';
-        $xmlWithTasks .= '</tasks>';
 
+        // New (created) Tasks
+        $xmlWithTasks .= '<created>';
+        $createdTasks = Task::find()
+            ->where(array('in', 'id', array_keys($created)))
+            ->orderBy('id')
+            ->all();
+        foreach ($createdTasks as $createdTask) {
+            $xmlWithTasks .= $this->buildTaskXml($createdTask,  $created[$createdTask->id]['datetime']);
+        }
+        $xmlWithTasks .= '</created>';
+
+        // Old (updated) Tasks
+        $xmlWithTasks .= '<updated>';
+        $updatedTasks = Task::find()
+            ->where(array('in', 'id', array_keys($updated)))
+            ->orderBy('id')
+            ->all();
+        foreach ($updatedTasks as $updatedTask) {
+            $xmlWithTasks .= $this->buildTaskXml($updatedTask, $updated[$updatedTask->id]['datetime']);
+        }
+        $xmlWithTasks .= '</updated>';
+
+        // Removed (deleted) Tasks
+        $xmlWithTasks .= '<deleted>';
+        foreach ($deleted as $id => $d) {
+            $xmlWithTasks .= '<item ' .
+                    'global-id="' . $id . '" ' .
+                    'time-changes="' . $d['datetime'] . '"' .
+                '></item>';
+        }
+
+        $xmlWithTasks .= '</deleted>';
+        $xmlWithTasks .= '</tasks>';
         echo $xmlWithTasks;
     }
 
-    private function getConditionsPart($task) {
+
+    private function buildTaskXml($task, $datetime) {
+        $xml = '' .
+            '<task global-id="' . $task->id . '" time-changes="' . $datetime . '">' .
+                '<message>' . $task->message . '</message>' .
+                '<description>' . $task->description . '</description>' .
+                '<conditions>' . $this->buildConditionsPart($task) . '</conditions>' .
+                '<status>WAITING</status>' .
+            '</task>';
+        return $xml;
+    }
+
+    private function buildConditionsPart($task) {
         $xml = "";
         $conditions = $task->conditions;
         foreach($conditions as $condition){
             $xml .= "<condition id='" . $condition->id . "' task-id='" . $condition->task_id ."'>";
-            $c = array();
             $events = $condition->events;
             foreach($events as $event) {
                 $xml .= "<event type='" . $event->eventType->name . "' id='" . $event->id . "'>";
-                $c[$event->eventType->name]['type'] = $event->eventType->name;
                 $xml .= "<params>";
                 $params = json_decode($event->params);
                 foreach ($params as $name => $value) {
@@ -78,11 +122,16 @@ return $response->send();
                 $xml .= "</params>";
                 $xml .= "</event>";
             }
-            $item['conditions'][] = $c;
             $xml .= "</condition>";
         }
-        $items[] = $item;
         return $xml;
     }
 
+    private function getChangedTasks() {
+        $changedTasks = ChangedTask::find()
+            ->where(['user_id' => 1])
+            ->orderBy('datetime')
+            ->all();
+        return $changedTasks;
+    }
 }

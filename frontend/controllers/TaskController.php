@@ -49,6 +49,7 @@ class TaskController extends Controller {
 
         if (is_null($taskId)) {
             $task = new Task();
+            $task->user = 1;
         } else {
             $task = Task::find($taskId)
                 ->where(['id' => $taskId])

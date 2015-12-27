@@ -9,6 +9,7 @@
 namespace common\models;
 
 use yii\db\ActiveRecord;
+use common\infrastructure\ChangedTask;
 
 class Task extends ActiveRecord {
 
@@ -32,5 +33,31 @@ class Task extends ActiveRecord {
 
     public function getConditions() {
         return $this->hasMany(Condition::className(), ['task_id' => 'id']);
+    }
+
+    public function afterSave($insert, $changedAttributes) {
+        parent::afterSave($insert, $changedAttributes);
+        if($insert == true) {
+            $action = "Created";
+        } else {
+            $action = "Changed";
+        }
+        $this->loggingChangfesForSync($action);
+    }
+
+    public function afterDelete() {
+        parent::afterDelete();
+        $this->loggingChangfesForSync("Deleted");
+    }
+
+    private function loggingChangfesForSync($action) {
+        $changedTask = new ChangedTask();
+        $changedTask->task_id = $this->id;
+        $changedTask->user_id = $this->user;
+        $datetime = new \DateTime();
+        $datetime->setTimezone(new \DateTimeZone("Europe/London"));
+        $changedTask->action = $action;
+        $changedTask->datetime = $datetime->format('Y-m-d H:i:s');
+        $changedTask->save();
     }
 }
