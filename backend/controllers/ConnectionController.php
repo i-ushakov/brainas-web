@@ -11,6 +11,7 @@ namespace backend\controllers;
 
 use common\infrastructure\ChangedTask;
 use common\models\Task;
+use yii\helpers\Json;
 use yii\web\Controller;
 
 class ConnectionController extends Controller {
@@ -94,6 +95,10 @@ return $response->send();
         echo $xmlWithTasks;
     }
 
+    public function actionAcceptedChanges($acceptedChangesJSON) {
+        $acceptedChanges = Json::decode($acceptedChangesJSON);
+        var_dump($acceptedChanges);
+    }
 
     private function buildTaskXml($task, $datetime) {
         $xml = '' .
