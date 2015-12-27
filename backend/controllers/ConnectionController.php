@@ -100,8 +100,9 @@ return $response->send();
         $this->enableCsrfValidation = false;
         Yii::$app->controller->enableCsrfValidation = false;
         $post = Yii::$app->request->post();
+        $post_json = file_get_contents("php://input");
         //$acceptedChanges = Json::decode($acceptedChangesJSON);
-        var_dump($post);
+        var_dump($post_json);
     }
 
     private function buildTaskXml($task, $datetime) {
