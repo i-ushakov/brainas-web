@@ -95,9 +95,10 @@ return $response->send();
         echo $xmlWithTasks;
     }
 
-    public function actionAcceptedChanges($acceptedChangesJSON) {
+    public function actionAcceptedChanges() {
+        $post = Yii::$app->request->post();
         $acceptedChanges = Json::decode($acceptedChangesJSON);
-        var_dump($acceptedChanges);
+        var_dump($post);
     }
 
     private function buildTaskXml($task, $datetime) {
