@@ -8,7 +8,7 @@
 
 namespace backend\controllers;
 
-
+use Yii;
 use common\infrastructure\ChangedTask;
 use common\models\Task;
 use yii\helpers\Json;
@@ -97,7 +97,7 @@ return $response->send();
 
     public function actionAcceptedChanges() {
         $post = Yii::$app->request->post();
-        $acceptedChanges = Json::decode($acceptedChangesJSON);
+        //$acceptedChanges = Json::decode($acceptedChangesJSON);
         var_dump($post);
     }
 
