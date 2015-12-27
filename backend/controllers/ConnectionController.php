@@ -96,12 +96,12 @@ return $response->send();
         echo $xmlWithTasks;
     }
 
-    public function actionAcceptedChanges($test) {
+    public function actionAcceptedChanges() {
         $this->enableCsrfValidation = false;
         Yii::$app->controller->enableCsrfValidation = false;
         $post = Yii::$app->request->post();
         //$acceptedChanges = Json::decode($acceptedChangesJSON);
-        var_dump($test);
+        var_dump($post);
     }
 
     private function buildTaskXml($task, $datetime) {
