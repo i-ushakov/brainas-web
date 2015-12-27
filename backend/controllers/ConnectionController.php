@@ -97,10 +97,11 @@ return $response->send();
     }
 
     public function actionAcceptedChanges() {
+        $this->enableCsrfValidation = false;
         Yii::$app->controller->enableCsrfValidation = false;
         $post = Yii::$app->request->post();
         //$acceptedChanges = Json::decode($acceptedChangesJSON);
-        var_dump($post);
+        var_dump("<kz");
     }
 
     private function buildTaskXml($task, $datetime) {
