@@ -1809,7 +1809,7 @@
                 }
 
                 // If you've told us that you explicitly don't want fallback hashchange-
-                // based history, then `navigate` becomes a page refresh.
+                // based history, then `navigate` becomes a page refreshCard.
             } else {
                 return this.location.assign(url);
             }

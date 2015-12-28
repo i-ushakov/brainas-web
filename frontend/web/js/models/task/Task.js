@@ -61,7 +61,7 @@ var Task = Backbone.Model.extend({
             type: "POST",
             url: this.urlRemove,
             data: data,
-            success: function(result){
+            success: function(result) {
                 if (result.status == "OK") {
                     app.MainPanel.taskPanel.tasks.remove(self.id);
                     return true;
