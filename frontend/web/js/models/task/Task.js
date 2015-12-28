@@ -81,6 +81,5 @@ var Task = Backbone.Model.extend({
             conditions.push(condition);
         });
         this.set('conditions', conditions);
-        debugger;
     }
 });

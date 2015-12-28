@@ -76,7 +76,6 @@ var TaskCardView = Backbone.View.extend({
 
     addConditions: function() {
         var self = this;
-        debugger;
         self.conditionViews = [];
 
         self.$el.find('.task-conditions-cont').html('');
@@ -180,7 +179,6 @@ var TaskCardView = Backbone.View.extend({
                 var newTask = new Task(result.task);
                 app.MainPanelView.taskPanelView.model.tasks.add(newTask);
             }
-            debugger;
             this.model.update(result.task);
             this.refreshCard();
         }
