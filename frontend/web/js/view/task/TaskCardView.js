@@ -76,6 +76,8 @@ var TaskCardView = Backbone.View.extend({
 
     addConditions: function() {
         var self = this;
+        debugger;
+        self.conditionViews = [];
 
         self.$el.find('.task-conditions-cont').html('');
 
@@ -141,6 +143,7 @@ var TaskCardView = Backbone.View.extend({
         this.model.set("message", this.messageEditView.find("textarea").val());
         this.model.set("description", this.descriptionEditView.find("textarea").val());
         var result = this.model.save();
+        $('#save-changes-btn').hide();
     },
 
     validate: function() {
@@ -171,14 +174,14 @@ var TaskCardView = Backbone.View.extend({
 
     onSaveHandler: function(result) {
         if (result.status == "OK") {
-            var updatedTask = new Task(result.task);
             this.saveBtn.hide();
             if (this.createMode == true) {
                 this.$el.modal("hide");
-                app.MainPanelView.taskPanelView.model.tasks.add(updatedTask);
-
+                var newTask = new Task(result.task);
+                app.MainPanelView.taskPanelView.model.tasks.add(newTask);
             }
-            this.model = updatedTask;
+            debugger;
+            this.model.update(result.task);
             this.refreshCard();
         }
     },
@@ -197,5 +200,6 @@ var TaskCardView = Backbone.View.extend({
         this.addConditions();
         var addedConditionView = this.conditionViews[this.conditionViews.length - 1];
         addedConditionView.$el.find('.condition-row').trigger("click");
+        $('#save-changes-btn').show();
     }
 });

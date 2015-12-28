@@ -69,6 +69,9 @@ class TaskController extends Controller {
         if (isset($taskForSave['conditions']) && count($taskForSave['conditions']) > 0) {
             $conditionsAr = Json::decode($post['conditions']);
             foreach($conditionsAr as $conditionAr) {
+                if (empty($conditionAr)) {
+                    continue;
+                }
                 $condition = null;
                 if (isset($conditionAr['conditionId'])) {
                     $conditionId = $conditionAr['conditionId'];
@@ -81,6 +84,9 @@ class TaskController extends Controller {
                     $condition->save();
                 }
                 foreach($conditionAr['events'] as $eventType => $eventAr) {
+                    if (empty($eventAr)) {
+                        continue;
+                    }
                     if (isset($eventAr['eventId'])) {
                         $eventId = $eventAr['eventId'];
                         $event = Event::find($eventId)

@@ -69,5 +69,18 @@ var Task = Backbone.Model.extend({
             },
             dataType: 'json'
         });
+    },
+
+    update: function(task) {
+        this.set("id", task.id);
+        this.set("message", task.message);
+        this.set("description", task.description);
+        var conditions = [];
+        _.each(task.conditions, function(condition) {
+            var condition = new Condition(condition);
+            conditions.push(condition);
+        });
+        this.set('conditions', conditions);
+        debugger;
     }
 });
