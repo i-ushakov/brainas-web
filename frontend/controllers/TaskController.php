@@ -50,6 +50,7 @@ class TaskController extends Controller {
         if (is_null($taskId)) {
             $task = new Task();
             $task->user = 1;
+            $task->message = "New task";
             $task->save();
         } else {
             $task = Task::find($taskId)
