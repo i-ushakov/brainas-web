@@ -50,6 +50,7 @@ class TaskController extends Controller {
         if (is_null($taskId)) {
             $task = new Task();
             $task->user = 1;
+            $task->save();
         } else {
             $task = Task::find($taskId)
                 ->where(['id' => $taskId])
@@ -75,7 +76,7 @@ class TaskController extends Controller {
                         ->one();
                 } else {
                     $condition = new Condition();
-                    $condition->task_id = $taskId;
+                    $condition->task_id = $task->id;
                     $condition->save();
                 }
                 foreach($conditionAr['events'] as $eventType => $eventAr) {
