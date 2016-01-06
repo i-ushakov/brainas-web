@@ -321,4 +321,17 @@ a.desc:after {
     text-align: right;
 }
 
+#navbar.google-sign-btn a {
+    display: none;
+}
+
+#navbar.google-sign-btn {
+    line-height: 50px;
+}
+
+#navbar.google-sign-btn button {
+    cursor: pointer;
+}
+
+
 

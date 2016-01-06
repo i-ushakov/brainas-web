@@ -1,0 +1,8 @@
+{
+  "name": "gitkit/quickstart",
+  "description": "This quick-start app is built in PHP and lets you get started with Google Identity Toolkit in a few minutes.",
+  "license": "Apache-2.0",
+  "require": {
+    "google/identity-toolkit-php-client": "^1.0"
+  }
+}

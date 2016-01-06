@@ -23,6 +23,7 @@ SPAAsset::register($this);
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+    <?require_once(Yii::$app->basePath . '/views/layouts/_google_identity_head.php');?>
 </head>
 <body>
 <?php $this->beginBody() ?>
@@ -42,8 +43,8 @@ SPAAsset::register($this);
         ['label' => 'Contact', 'url' => ['/site/contact']],
     ];
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
-        $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
+        $menuItems[] = ['label' => 'Signup',];
+        $menuItems[] = ['label' => '', 'url' => ['/site/login'], 'options'=> ['id'=>'navbar', 'class' => 'google-sign-btn'],];
     } else {
         $menuItems[] = [
             'label' => 'Logout (' . Yii::$app->user->identity->username . ')',
@@ -55,6 +56,8 @@ SPAAsset::register($this);
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => $menuItems,
     ]);
+    echo "<div id='navbar'>111</div>";
+
     NavBar::end();
     ?>
     <div class="container">
