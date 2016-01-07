@@ -34,7 +34,7 @@
 <script type="text/javascript">
     var config = {
         apiKey: 'AIzaSyALoOSAt19qKApEaQxnDEuHxsn9f7Kn46E',
-        signInSuccessUrl: '/test',
+        signInSuccessUrl: '/',
         signInOptions: ["google"],
         oobActionUrl: '/',
         siteName: 'Brain Assistant',
