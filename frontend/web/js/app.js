@@ -4,7 +4,7 @@
 
 var app = app || {};
 
-app.url = '/frontend/web/',
+app.url = '/',
 
 app.getCurrentUserLocation = function() {
     var location = {};
