@@ -2,6 +2,6 @@
   "clientId": "925705811320-rc2nvhmqfe8ts6cgkbul2qqqje28cvne.apps.googleusercontent.com",
   "serviceAccountEmail": "brainas-net-service-account@brainas-project.iam.gserviceaccount.com",
   "serviceAccountPrivateKeyFile": "INSERT/PATH/TO/PRIVATEKEY",
-  "widgetUrl": "http://brainas.net/frontend/web/site/login",
+  "widgetUrl": "http://brainas.vm/login",
   "cookieName": "gtoken"
 }
