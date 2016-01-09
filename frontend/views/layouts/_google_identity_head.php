@@ -6,7 +6,7 @@
     window.google.identitytoolkit.signInButton(
         '#navbar', // accepts any CSS selector
         {
-            widgetUrl: "/frontend/web/site/login",
+            widgetUrl: "/site/login",
             signOutUrl: "/",
             // Optional - Begin the sign-in flow in a popup window
             //popupMode: true,
