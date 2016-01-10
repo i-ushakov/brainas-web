@@ -13,6 +13,10 @@ app.getCurrentUserLocation = function() {
     return location;
 }
 
+app.isAuthorized = function() {
+    return false;
+}
+
 $(function () {
     Backbone.View.prototype.close = function(){
         this.remove();

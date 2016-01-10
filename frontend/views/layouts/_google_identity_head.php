@@ -1,3 +1,14 @@
+<!-- 1: Load the Google Identity Toolkit helpers -->
+<?php
+$pathToGITFolder = __DIR__ .'/../../identity-toolkit-php-master/';
+$pathToConfigFolder = __DIR__ .'/../../config/';
+set_include_path(get_include_path() . PATH_SEPARATOR . $pathToGITFolder . 'vendor/google/apiclient/src');
+require_once $pathToGITFolder . 'vendor/autoload.php';
+
+$gitkitClient = Gitkit_Client::createFromFile($pathToConfigFolder . '/gitkit-server-config.json');
+$gitkitUser = $gitkitClient->getUserInRequest();
+?>
+
 <!-- Begin custom code copied from Developer Console -->
 <!-- Note: this is just an example. The html you download from Developer Console will be tailored for your site -->
 <script type="text/javascript" src="//www.gstatic.com/authtoolkit/js/gitkit.js"></script>
@@ -85,6 +96,7 @@
         config,
         'JAVASCRIPT_ESCAPED_POST_BODY');
 </script>
-
 <!-- End modification -->
+
+
 
