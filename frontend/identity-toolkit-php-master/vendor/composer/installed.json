@@ -1,0 +1,90 @@
+[
+    {
+        "name": "google/apiclient",
+        "version": "1.1.6",
+        "version_normalized": "1.1.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/google/google-api-php-client.git",
+            "reference": "a25dc9d5c109ebb02945ba1ff6336cc937c27628"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/google/google-api-php-client/zipball/a25dc9d5c109ebb02945ba1ff6336cc937c27628",
+            "reference": "a25dc9d5c109ebb02945ba1ff6336cc937c27628",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.2.1"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "3.7.*",
+            "squizlabs/php_codesniffer": "~2.3"
+        },
+        "time": "2015-10-16 22:11:08",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.1.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "src/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "description": "Client library for Google APIs",
+        "homepage": "http://developers.google.com/api-client-library/php",
+        "keywords": [
+            "google"
+        ]
+    },
+    {
+        "name": "google/identity-toolkit-php-client",
+        "version": "1.0.8",
+        "version_normalized": "1.0.8.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/google/identity-toolkit-php-client.git",
+            "reference": "8dd6995f5dd0635c8c1adaff976b700acf7a6225"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/google/identity-toolkit-php-client/zipball/8dd6995f5dd0635c8c1adaff976b700acf7a6225",
+            "reference": "8dd6995f5dd0635c8c1adaff976b700acf7a6225",
+            "shasum": ""
+        },
+        "require": {
+            "google/apiclient": "~1.0",
+            "php": ">=5.2.1"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "4.1.*"
+        },
+        "time": "2015-12-10 20:25:19",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "src/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "include-path": [
+            "src/"
+        ],
+        "license": [
+            "Apache-2.0"
+        ],
+        "description": "Client library for Google Identity Toolkit APIs",
+        "homepage": "https://developers.google.com/identity-toolkit/",
+        "keywords": [
+            "gitkit"
+        ]
+    }
+]
