@@ -5,7 +5,7 @@ $pathToConfigFolder = __DIR__ .'/../../config/';
 set_include_path(get_include_path() . PATH_SEPARATOR . $pathToGITFolder . 'vendor/google/apiclient/src');
 require_once $pathToGITFolder . 'vendor/autoload.php';
 
-$gitkitClient = Gitkit_Client::createFromFile($pathToConfigFolder . '/gitkit-server-config.json');
+$gitkitClient = Gitkit_Client::createFromFile($pathToConfigFolder . 'gitkit-server-config.json');
 $gitkitUser = $gitkitClient->getUserInRequest();
 ?>
 
