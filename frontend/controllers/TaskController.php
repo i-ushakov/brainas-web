@@ -52,19 +52,33 @@ class TaskController extends Controller {
     public function actionSave() {
         $result = array();
 
+        if (Yii::$app->user->isGuest) {
+            $errors[] = "User must be signed in";
+            $result['status'] = "FAILED";
+            $result['errors'] = $errors;
+            \Yii::$app->response->format = 'json';
+            return $result;
+        }
+
         $post = Yii::$app->request->post();
         $taskForSave = Json::decode($post['task']);
         $taskId = $taskForSave['id'];
 
         if (is_null($taskId)) {
             $task = new Task();
-            $task->user = 1;
+            $task->user = Yii::$app->user->id;
             $task->message = "New task";
             $task->save();
         } else {
             $task = Task::find($taskId)
-                ->where(['id' => $taskId])
+                ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
                 ->one();
+            if(empty($task)) {
+                $result['status'] = "FAILED";
+                $result['errors'][] = "No task with id = " . $taskId . "that is owned of user  " . $task->user->name;
+                \Yii::$app->response->format = 'json';
+                return $result;
+            }
         }
 
         if (isset($taskForSave['message'])) {
@@ -146,7 +160,7 @@ class TaskController extends Controller {
         $taskId = $taskForRemove['id'];
 
         $task = Task::find($taskId)
-            ->where(['id' => $taskId])
+            ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
             ->one();
 
         if (!empty($task)) {
@@ -154,7 +168,7 @@ class TaskController extends Controller {
                 $result['status'] = "OK";
             }
         } else {
-            $result['message'] = "No task with id = " . $taskId . " not exists";
+            $result['message'] = "No task with id = " . $taskId . "that is owned of user  " . $task->user->name;;
         }
 
 
