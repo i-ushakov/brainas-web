@@ -25,8 +25,6 @@ if (is_null($gitkitUser)) {
         $user->save();
     }
 }
-
-
 ?>
 
 <!-- Begin custom code copied from Developer Console -->
@@ -39,6 +37,20 @@ if (is_null($gitkitUser)) {
         {
             widgetUrl: "/site/login",
             signOutUrl: "/",
+            /*dropDownMenu: [
+                {
+                    'label': 'Sign out',
+                    'handler': function() {google.identitytoolkit.signOut();}
+                },
+                /*{
+                    'label': 'Check Configuration',
+                    'url': '/config'
+                },*/
+                //{
+                   // 'label': 'Manage Account',
+                   // 'handler': function() {google.identitytoolkit.manageAccount();}
+                //},]
+
             // Optional - Begin the sign-in flow in a popup window
             //popupMode: true,
 

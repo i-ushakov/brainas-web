@@ -24,6 +24,7 @@ SPAAsset::register($this);
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
     <?require_once(Yii::$app->basePath . '/views/layouts/_google_identity_head.php');?>
+    <?require_once(Yii::$app->basePath . '/web/js/SPAParams.php');?>
 </head>
 <body>
 <?php $this->beginBody() ?>
@@ -42,21 +43,12 @@ SPAAsset::register($this);
         ['label' => 'About', 'url' => ['/site/about']],
         ['label' => 'Contact', 'url' => ['/site/contact']],
     ];
-    if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Signup',];
-        $menuItems[] = ['label' => '', 'url' => ['/site/login'], 'options'=> ['id'=>'navbar', 'class' => 'google-sign-btn'],];
-    } else {
-        $menuItems[] = [
-            'label' => 'Logout (' . Yii::$app->user->identity->username . ')',
-            'url' => ['/site/logout'],
-            'linkOptions' => ['data-method' => 'post']
-        ];
-    }
+    $menuItems[] = ['label' => '', 'url' => ['/site/login'], 'options'=> ['id'=>'navbar', 'class' => 'google-sign-btn'],];
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => $menuItems,
     ]);
-    echo "<div id='navbar'>111</div>";
+    echo "<div id='navbar'></div>";
 
     NavBar::end();
     ?>

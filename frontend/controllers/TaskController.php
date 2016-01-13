@@ -25,18 +25,27 @@ class TaskController extends Controller {
      */
     public function actionGet() {
 
-        $tasks = Task::find()
-            //->where(['status' => Customer::STATUS_ACTIVE])
-            ->orderBy('id')
-            ->all();
+        if (!Yii::$app->user->isGuest) {
+           $userId =  Yii::$app->user->id;
+            $tasks = Task::find()
+                ->where(['user' => $userId])
+                ->orderBy('id')
+                ->all();
+        } else {
+            $result = array();
+            $result['status'] = "FAILED";
+            $result['type'] = "must_be_signed_in";
+            \Yii::$app->response->format = 'json';
+            return $result;
+        }
 
-        $items = array();
+        $tasksArray = array();
         foreach ($tasks as $task) {
-            $items[] = $this->prepareTsakForSending($task);
+            $tasksArray[] = $this->prepareTsakForSending($task);
         }
 
         \Yii::$app->response->format = 'json';
-        return $items;
+        return $tasksArray;
     }
 
 

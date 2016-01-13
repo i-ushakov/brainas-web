@@ -7,6 +7,10 @@ var app = app || {};
 var TaskPanelView = Backbone.View.extend({
     taskTileViews: [],
 
+    events: {
+        'click #sing-in-btn': 'signInBtnHandler',
+    },
+
     template: _.template($('#task-panel-template').html()),
 
     initialize: function() {
@@ -26,7 +30,11 @@ var TaskPanelView = Backbone.View.extend({
 
     render: function() {
         this.$el.html(this.template());
-        this.addNewTaskButton();
+        if (app.singedIn == true) {
+            this.addNewTaskButton();
+        } else {
+            this.$el.find('#user-not-logged-block').show();
+        }
     },
 
     addTask: function(task) {
@@ -51,5 +59,11 @@ var TaskPanelView = Backbone.View.extend({
         if (taskTileView != undefined && taskTileView != null) {
             taskTileView.refresh();
         }
+    },
+
+    signInBtnHandler: function(event) {
+        $(event.toElement).prop('disabled', true)
+        $(".gitkit-id-submit").trigger('click');
     }
+
 });

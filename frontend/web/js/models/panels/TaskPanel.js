@@ -14,6 +14,12 @@ var TaskPanel = Backbone.Model.extend({
 
     loadTasks: function() {
         var self = this;
-        this.tasks.fetch({success: function(){}});
+        // If user is signed in, get tasks
+        if (app.singedIn == true) {
+            this.tasks.fetch({
+                success: function () {
+                }
+            });
+        }
     }
 });
