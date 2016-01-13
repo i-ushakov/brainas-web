@@ -24,6 +24,11 @@ if (is_null($gitkitUser)) {
         $user->email = $userEmail;
         $user->save();
     }
+    // Logging user entering
+    $singInLog = new SingInLog();
+    $singInLog->user_id = $user->id;
+    $singInLog->datetime = date("Y-m-d H:i:s");
+    $singInLog->save();
 }
 ?>
 
