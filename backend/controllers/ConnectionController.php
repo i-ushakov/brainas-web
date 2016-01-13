@@ -146,10 +146,16 @@ return $response->send();
     }
 
     private function getChangedTasks() {
+        $userId = $this->getUserId();
         $changedTasks = ChangedTask::find()
-            ->where(['user_id' => 1])
+            ->where(['user_id' => $userId])
             ->orderBy('datetime')
             ->all();
         return $changedTasks;
+    }
+
+    private function getUserId() {
+        $userId = 1;
+        return $userId;
     }
 }
