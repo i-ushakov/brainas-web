@@ -8,9 +8,9 @@
 
 namespace common\infrastructure;
 
+use yii\db\ActiveRecord;
 
-class SingInLog
-{
+class SingInLog extends ActiveRecord {
     public static function tableName() {
         return 'singin_log';
     }
