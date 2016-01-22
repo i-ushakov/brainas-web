@@ -58,6 +58,9 @@ return $response->send();
 
         $xmlWithTasks = "";
         $xmlWithTasks .= '<?xml version="1.0" encoding="UTF-8"?>';
+        // Fox TEST
+        $xmlWithTasks .= '<accessToken>' . $_POST['accessToken'] . '</accessToken>>';
+        // For TEST (END)
         $xmlWithTasks .= '<tasks>';
 
         // New (created) Tasks
