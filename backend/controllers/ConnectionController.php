@@ -152,7 +152,7 @@ class ConnectionController extends Controller {
 
     private function getTokenFronmPost() {
         $post = Yii::$app->request->post();
-        $post['accessToken'] = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjFmYmU4OTA5M2JkZTk1NTc1YTMwMDY1OTlmMWExOWQyMzViMzgzYjcifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhdWQiOiI4MjE4NjUwNjc3NDMtM2pyYTE5ZXEzMDh1cDU0YzQzNmUxZzZmcG12ZWYxZzEuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTc0MzAxNDA5ODYwNTg4NjgzOTgiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXpwIjoiODIxODY1MDY3NzQzLWo4bDJwZjJyaXBycGFwNzVsY2RxYmZ1bTJiYTY4cXR1LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiZW1haWwiOiJraXR1c2hha29mZkBnbWFpbC5jb20iLCJpYXQiOjE0NTM2Mjg1MDMsImV4cCI6MTQ1MzYzMjEwMywicGljdHVyZSI6Imh0dHBzOi8vbGg0Lmdvb2dsZXVzZXJjb250ZW50LmNvbS8tZzNHWDRXLVFxSkkvQUFBQUFBQUFBQUkvQUFBQUFBQUFBQkEvQ25rcnhOMVMydzAvczk2LWMvcGhvdG8uanBnIiwibG9jYWxlIjoiZW4iLCJuYW1lIjoiS2l0IFVzaGFrb3YiLCJnaXZlbl9uYW1lIjoiS2l0IiwiZmFtaWx5X25hbWUiOiJVc2hha292In0.ZKg_V1TE8gYgp1o-qig743kJFwRWKaKZnLvCos-4VlSlmvVK8ORFP2MVp_KtkDJ_Q946thLEnrknEQUGjUlwPd6vq6lHUPm-a5KufbUy6hfAXArZ2XdrpnorpWAAG7kRoVhTbFCPl-qRHaKO6y-5BUxfYVMjZ2dYQYRO0VmxfujNs9YYe1apLFKIZU3ulS9ZQ3Gi6ZxrPvnSvu5Kj0bneY1hQg-pgkt0FqBk67TUbtsaiCiZtC4TW1Qs6xtjb0X6zV1W6owB8mwGhJ04W8wr6foM7YGTk8G5UKehb_q2hsfoQUb6JIFYXSBGnV8tz-vLDCgAyi_I4RJVIsuhYTG4aQ";
+        //$post['accessToken'] = "";
         if(isset($post['accessToken'])) {
             $accessToken = $post['accessToken'];
         } else {
