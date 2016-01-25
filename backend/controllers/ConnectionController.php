@@ -201,8 +201,11 @@ class ConnectionController extends Controller {
         if (!empty($user)) {
             return $user->id;
         } else {
-            // TODO create new user
-            return null;
+            $user = new User();
+            $user->username = $userEmail;
+            $user->email = $userEmail;
+            $user->save();
+            return $user->id;
         }
     }
 
