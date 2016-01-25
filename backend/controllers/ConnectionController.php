@@ -156,7 +156,7 @@ class ConnectionController extends Controller {
         if(isset($post['accessToken'])) {
             $accessToken = $post['accessToken'];
         } else {
-            throw new HttpException(401 ,'Token wasn\'t sent');
+            throw new HttpException(470 ,'Token wasn\'t sent');
         }
         return $accessToken;
     }
@@ -186,12 +186,12 @@ class ConnectionController extends Controller {
             try {
                 $userInfo = $client->verifyIdToken($accessToken);
             } catch (\Firebase\JWT\ExpiredException  $e) {
-                throw new HttpException(401 ,'Expired token');
+                throw new HttpException(471 ,'Expired token');
             }
             if (isset($userInfo) && !is_null($userInfo) && isset($userInfo['email'])) {
                 return $userInfo['email'];
             } else {
-                throw new HttpException(401 ,'Token is not valid');
+                throw new HttpException(472 ,'Token is not valid');
             }
         }
     }
