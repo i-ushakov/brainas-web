@@ -20,9 +20,8 @@ use yii\helpers\Json;
 class TaskController extends Controller {
     private $userId;
 
-    public function beforeAction($event)
+    /*public function beforeAction($event)
     {
-        echo "111"; exit();
         if (Yii::$app->user->isGuest) {
             $result = array();
             $result['status'] = "FAILED";
@@ -33,7 +32,7 @@ class TaskController extends Controller {
             $this->userId = Yii::$app->user->id;
             return parent::beforeAction($event);
         }
-    }
+    }*/
 
     /**
      * Return tasks
@@ -41,7 +40,7 @@ class TaskController extends Controller {
      * @return mixed
      */
     public function actionGet() {
-
+echo "Test1"; exit();
         if (!Yii::$app->user->isGuest) {
            $userId =  Yii::$app->user->id;
             $tasks = Task::find()
