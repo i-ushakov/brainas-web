@@ -18,6 +18,21 @@ use common\models\EventType;
 use yii\helpers\Json;
 
 class TaskController extends Controller {
+    private $userId;
+
+    public function beforeAction($event)
+    {
+        if (Yii::$app->user->isGuest) {
+            $result = array();
+            $result['status'] = "FAILED";
+            $result['type'] = "must_be_signed_in";
+            \Yii::$app->response->format = 'json';
+            return $result;
+        } else {
+            $this->userId = Yii::$app->user->id;
+        }
+    }
+
     /**
      * Return tasks
      *
@@ -51,14 +66,6 @@ class TaskController extends Controller {
 
     public function actionSave() {
         $result = array();
-echo "teste"; exit();
-        if (Yii::$app->user->isGuest) {
-            $errors[] = "User must be signed in";
-            $result['status'] = "FAILED";
-            $result['errors'] = $errors;
-            \Yii::$app->response->format = 'json';
-            return $result;
-        }
 
         $post = Yii::$app->request->post();
         $taskForSave = Json::decode($post['task']);
