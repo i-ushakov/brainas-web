@@ -30,6 +30,7 @@ class TaskController extends Controller {
             \Yii::$app->response->format = 'json';
             echo "Test3";
             \Yii::$app->response->send();
+            echo "Test34"; exit();
         } else {
             $this->userId = Yii::$app->user->id;
             return;
