@@ -51,7 +51,7 @@ class TaskController extends Controller {
 
     public function actionSave() {
         $result = array();
-
+echo "teste"; exit();
         if (Yii::$app->user->isGuest) {
             $errors[] = "User must be signed in";
             $result['status'] = "FAILED";
