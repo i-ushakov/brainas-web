@@ -22,6 +22,7 @@ class TaskController extends Controller {
 
     public function beforeAction($event)
     {
+        echo "111"; exit();
         if (Yii::$app->user->isGuest) {
             $result = array();
             $result['status'] = "FAILED";
@@ -30,6 +31,7 @@ class TaskController extends Controller {
             return $result;
         } else {
             $this->userId = Yii::$app->user->id;
+            return parent::beforeAction($event);
         }
     }
 
