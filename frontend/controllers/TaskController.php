@@ -21,13 +21,16 @@ class TaskController extends Controller {
     private $userId;
 
     private function checkThatUserIsNotAGuest() {
+        echo "Test0";
         if (Yii::$app->user->isGuest) {
+            echo "Test1";exit();
             $result = array();
             $result['status'] = "FAILED";
             $result['type'] = "must_be_signed_in";
             \Yii::$app->response->format = 'json';
             \Yii::$app->response->send();
         } else {
+            echo "Test2";exit();
             $this->userId = Yii::$app->user->id;
             return;
         }
