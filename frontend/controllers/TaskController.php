@@ -19,21 +19,16 @@ use yii\helpers\Json;
 
 class TaskController extends Controller {
     private $userId;
+    private $result = array();
 
     private function checkThatUserIsNotAGuest() {
-        echo "Test0";
         if (Yii::$app->user->isGuest) {
-            echo "Test1";;
-            $result = array();
-            $result['status'] = "FAILED";
-            $result['type'] = "must_be_signed_in";
-            \Yii::$app->response->format = 'json';
-            echo "Test3";
-            \Yii::$app->response->send();
-            echo "Test34"; exit();
+            $this->result['status'] = "FAILED";
+            $this->result['type'] = "must_be_signed_in";
+           return false;
         } else {
             $this->userId = Yii::$app->user->id;
-            return;
+            return true;
         }
     }
 
@@ -69,94 +64,95 @@ class TaskController extends Controller {
 
 
     public function actionSave() {
-        $this->checkThatUserIsNotAGuest();
+        if ($this->checkThatUserIsNotAGuest()) {
 
-        $post = Yii::$app->request->post();
-        $taskForSave = Json::decode($post['task']);
-        $taskId = $taskForSave['id'];
+            $post = Yii::$app->request->post();
+            $taskForSave = Json::decode($post['task']);
+            $taskId = $taskForSave['id'];
 
-        if (is_null($taskId)) {
-            $task = new Task();
-            $task->user = $this->userId;
-            $task->message = "New task";
-            $task->save();
-        } else {
-            $task = Task::find($taskId)
-                ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
-                ->one();
-            if(empty($task)) {
-                $result = array();
-                $result['status'] = "FAILED";
-                $result['errors'][] = "No task with id = " . $taskId . "that is owned of user  " . $task->user->name;
-                \Yii::$app->response->format = 'json';
-                return $result;
+            if (is_null($taskId)) {
+                $task = new Task();
+                $task->user = $this->userId;
+                $task->message = "New task";
+                $task->save();
+            } else {
+                $task = Task::find($taskId)
+                    ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
+                    ->one();
+                if (empty($task)) {
+                    $result = array();
+                    $result['status'] = "FAILED";
+                    $result['errors'][] = "No task with id = " . $taskId . "that is owned of user  " . $task->user->name;
+                    \Yii::$app->response->format = 'json';
+                    return $result;
+                }
             }
-        }
 
-        if (isset($taskForSave['message'])) {
-            $task->message = $taskForSave['message'];
-        }
+            if (isset($taskForSave['message'])) {
+                $task->message = $taskForSave['message'];
+            }
 
-        if (isset($taskForSave['description'])) {
-            $task->description = $taskForSave['description'];
-        }
+            if (isset($taskForSave['description'])) {
+                $task->description = $taskForSave['description'];
+            }
 
-        if (isset($taskForSave['conditions']) && count($taskForSave['conditions']) > 0) {
-            $conditionsAr = Json::decode($post['conditions']);
-            foreach($conditionsAr as $conditionAr) {
-                if (empty($conditionAr)) {
-                    continue;
-                }
-                $condition = null;
-                if (isset($conditionAr['conditionId'])) {
-                    $conditionId = $conditionAr['conditionId'];
-                    $condition = Condition::find($conditionId)
-                        ->where(['id' => $conditionId])
-                        ->one();
-                } else {
-                    $condition = new Condition();
-                    $condition->task_id = $task->id;
-                    $condition->save();
-                }
-                foreach($conditionAr['events'] as $eventType => $eventAr) {
-                    if (empty($eventAr)) {
+            if (isset($taskForSave['conditions']) && count($taskForSave['conditions']) > 0) {
+                $conditionsAr = Json::decode($post['conditions']);
+                foreach ($conditionsAr as $conditionAr) {
+                    if (empty($conditionAr)) {
                         continue;
                     }
-                    if (isset($eventAr['eventId'])) {
-                        $eventId = $eventAr['eventId'];
-                        $event = Event::find($eventId)
-                            ->where(['id' => $eventId])
+                    $condition = null;
+                    if (isset($conditionAr['conditionId'])) {
+                        $conditionId = $conditionAr['conditionId'];
+                        $condition = Condition::find($conditionId)
+                            ->where(['id' => $conditionId])
                             ->one();
-
-                        if (isset($eventAr['deleted'])) {
-                            $event->delete();
-                        }
-                        $event->params = Json::encode($eventAr['params']);
-                        $event->save();
                     } else {
-                        $event = new Event();
-                        $event->condition_id = $condition->id;
-                        $event->type = EventType::getTypeIdByName($eventAr['type']);
-                        $event->params = Json::encode($eventAr['params']);
-                        $event->save();
+                        $condition = new Condition();
+                        $condition->task_id = $task->id;
+                        $condition->save();
                     }
+                    foreach ($conditionAr['events'] as $eventType => $eventAr) {
+                        if (empty($eventAr)) {
+                            continue;
+                        }
+                        if (isset($eventAr['eventId'])) {
+                            $eventId = $eventAr['eventId'];
+                            $event = Event::find($eventId)
+                                ->where(['id' => $eventId])
+                                ->one();
+
+                            if (isset($eventAr['deleted'])) {
+                                $event->delete();
+                            }
+                            $event->params = Json::encode($eventAr['params']);
+                            $event->save();
+                        } else {
+                            $event = new Event();
+                            $event->condition_id = $condition->id;
+                            $event->type = EventType::getTypeIdByName($eventAr['type']);
+                            $event->params = Json::encode($eventAr['params']);
+                            $event->save();
+                        }
 
 
-                ///if(isset($conditionAr['GPS'])) {
-                    //$event = new Event();
-                //}
+                        ///if(isset($conditionAr['GPS'])) {
+                        //$event = new Event();
+                        //}
+                    }
                 }
             }
-        }
 
-        if ($task->validate()) {
-            $task->save();
-            $result['status'] = "OK";
-            $result['task'] = $this->prepareTsakForSending($task);
-        } else {
-            $errors = $task->errors;
-            $result['status'] = "FAILED";
-            $result['errors'] = $errors;
+            if ($task->validate()) {
+                $task->save();
+                $result['status'] = "OK";
+                $result['task'] = $this->prepareTsakForSending($task);
+            } else {
+                $errors = $task->errors;
+                $result['status'] = "FAILED";
+                $result['errors'] = $errors;
+            }
         }
 
         \Yii::$app->response->format = 'json';
