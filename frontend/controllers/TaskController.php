@@ -20,19 +20,19 @@ use yii\helpers\Json;
 class TaskController extends Controller {
     private $userId;
 
-    /*public function beforeAction($event)
-    {
+    private function checkThatUserIsNotAGuest() {
         if (Yii::$app->user->isGuest) {
             $result = array();
             $result['status'] = "FAILED";
             $result['type'] = "must_be_signed_in";
             \Yii::$app->response->format = 'json';
-            return $result;
+            \Yii::$app->response->send();
+            exit();
         } else {
             $this->userId = Yii::$app->user->id;
-            return parent::beforeAction($event);
+            return;
         }
-    }*/
+    }
 
     /**
      * Return tasks
@@ -66,7 +66,8 @@ class TaskController extends Controller {
 
 
     public function actionSave() {
-        echo "Test1"; exit();
+        $this->checkThatUserIsNotAGuest();
+
         $result = array();
 
         $post = Yii::$app->request->post();
@@ -75,7 +76,7 @@ class TaskController extends Controller {
 
         if (is_null($taskId)) {
             $task = new Task();
-            $task->user = Yii::$app->user->id;
+            $task->user = $this->userId;
             $task->message = "New task";
             $task->save();
         } else {
