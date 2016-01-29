@@ -23,14 +23,14 @@ class TaskController extends Controller {
     private function checkThatUserIsNotAGuest() {
         echo "Test0";
         if (Yii::$app->user->isGuest) {
-            echo "Test1";exit();
+            echo "Test1";;
             $result = array();
             $result['status'] = "FAILED";
             $result['type'] = "must_be_signed_in";
             \Yii::$app->response->format = 'json';
+            echo "Test3";exit();
             \Yii::$app->response->send();
         } else {
-            echo "Test2";exit();
             $this->userId = Yii::$app->user->id;
             return;
         }
@@ -68,7 +68,6 @@ class TaskController extends Controller {
 
 
     public function actionSave() {
-        echo "Test21312310";exit();
         $this->checkThatUserIsNotAGuest();
 
         $post = Yii::$app->request->post();
