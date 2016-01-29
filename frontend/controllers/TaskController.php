@@ -28,7 +28,7 @@ class TaskController extends Controller {
             $result['status'] = "FAILED";
             $result['type'] = "must_be_signed_in";
             \Yii::$app->response->format = 'json';
-            echo "Test3";exit();
+            echo "Test3";
             \Yii::$app->response->send();
         } else {
             $this->userId = Yii::$app->user->id;
