@@ -27,7 +27,6 @@ class TaskController extends Controller {
             $result['type'] = "must_be_signed_in";
             \Yii::$app->response->format = 'json';
             \Yii::$app->response->send();
-            exit();
         } else {
             $this->userId = Yii::$app->user->id;
             return;
@@ -68,8 +67,6 @@ class TaskController extends Controller {
     public function actionSave() {
         $this->checkThatUserIsNotAGuest();
 
-        $result = array();
-
         $post = Yii::$app->request->post();
         $taskForSave = Json::decode($post['task']);
         $taskId = $taskForSave['id'];
@@ -84,6 +81,7 @@ class TaskController extends Controller {
                 ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
                 ->one();
             if(empty($task)) {
+                $result = array();
                 $result['status'] = "FAILED";
                 $result['errors'][] = "No task with id = " . $taskId . "that is owned of user  " . $task->user->name;
                 \Yii::$app->response->format = 'json';
