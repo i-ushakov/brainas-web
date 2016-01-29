@@ -40,7 +40,7 @@ class TaskController extends Controller {
      * @return mixed
      */
     public function actionGet() {
-echo "Test1"; exit();
+
         if (!Yii::$app->user->isGuest) {
            $userId =  Yii::$app->user->id;
             $tasks = Task::find()
@@ -66,6 +66,7 @@ echo "Test1"; exit();
 
 
     public function actionSave() {
+        echo "Test1"; exit();
         $result = array();
 
         $post = Yii::$app->request->post();
