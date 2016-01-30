@@ -73,7 +73,7 @@ class TaskController extends Controller {
             $taskForSave = Json::decode($post['task']);
             $taskId = $taskForSave['id'];
             echo "checkThatUserIsNotAGuest0";
-
+            exit();
             if (is_null($taskId)) {
                 $task = new Task();
                 $task->user = $this->userId;
@@ -81,7 +81,7 @@ class TaskController extends Controller {
                 $task->save();
             } else {
                 echo "checkThatUserIsNotAGuest1";
-                exit();
+
                 $task = Task::find($taskId)
                     ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
                     ->one();
