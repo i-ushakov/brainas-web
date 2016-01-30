@@ -80,10 +80,11 @@ class TaskController extends Controller {
                 $task->save();
             } else {
                 echo "checkThatUserIsNotAGuest1";
-                exit();
                 $task = Task::find($taskId)
                     ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
                     ->one();
+                echo "checkThatUserIsNotAGuest2";
+                exit();
                 if (empty($task)) {
                     $result = array();
                     $result['status'] = "FAILED";
