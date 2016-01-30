@@ -68,6 +68,7 @@ class TaskController extends Controller {
         echo "actionSave";
         if ($this->checkThatUserIsNotAGuest()) {
             echo "checkThatUserIsNotAGuest";
+            exit();
 
             $post = Yii::$app->request->post();
             $taskForSave = Json::decode($post['task']);
@@ -87,7 +88,6 @@ class TaskController extends Controller {
 
                 if (empty($task)) {
                     echo "checkThatUserIsNotAGuest3";
-                    exit();
                     $result = array();
                     $result['status'] = "FAILED";
                     $result['errors'][] = "No task with id = " . $taskId . "that is owned of user  " . $task->user->name;
