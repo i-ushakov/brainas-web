@@ -65,10 +65,10 @@ class TaskController extends Controller {
 
 
     public function actionSave() {
-        echo "actionSave";
+        echo "actionSave";           exit();
         if ($this->checkThatUserIsNotAGuest()) {
             echo "checkThatUserIsNotAGuest";
-            exit();
+
             $post = Yii::$app->request->post();
             $taskForSave = Json::decode($post['task']);
             $taskId = $taskForSave['id'];
