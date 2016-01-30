@@ -18,6 +18,7 @@ use common\models\EventType;
 use yii\helpers\Json;
 
 class TaskController extends Controller {
+
     private $userId;
     private $result = array();
 
@@ -67,6 +68,7 @@ class TaskController extends Controller {
         echo "actionSave";
         if ($this->checkThatUserIsNotAGuest()) {
             echo "checkThatUserIsNotAGuest";
+            exit();
 
             $post = Yii::$app->request->post();
             $taskForSave = Json::decode($post['task']);
@@ -78,6 +80,8 @@ class TaskController extends Controller {
                 $task->message = "New task";
                 $task->save();
             } else {
+                echo "checkThatUserIsNotAGuest1";
+                exit();
                 $task = Task::find($taskId)
                     ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
                     ->one();
@@ -89,8 +93,7 @@ class TaskController extends Controller {
                     return $result;
                 }
             }
-            echo "checkThatUserIsNotAGuest1";
-            exit();
+
 
             if (isset($taskForSave['message'])) {
                 $task->message = $taskForSave['message'];
