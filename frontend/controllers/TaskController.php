@@ -199,10 +199,10 @@ class TaskController extends Controller {
     }
 
     private function checkThatUserIsNotAGuest() {
-        echo "222"; exit();
         if (Yii::$app->user->isGuest) {
             $this->result['status'] = "FAILED";
             $this->result['type'] = "must_be_signed_in";
+            echo "3333"; exit();
             return false;
         } else {
             $this->userId = Yii::$app->user->id;
