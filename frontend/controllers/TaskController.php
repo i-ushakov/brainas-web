@@ -199,6 +199,9 @@ class TaskController extends Controller {
         return $item;
     }
 
+    /*
+     *
+     */
     private function checkThatUserIsNotAGuest() {
         if (Yii::$app->user->isGuest) {
             $this->result['status'] = "FAILED";

@@ -45,7 +45,7 @@ var Task = Backbone.Model.extend({
                 if (result.status == "OK") {
                     self.trigger("save", result);
                     return true;
-                } else if (result.status == "FAILED" && result.type == 'must_be_signed_in'){
+                } else if (result.status == "FAILED" && result.type == 'must_be_signed_in'){ // if was logged out on Yii2 side
                     alert("The operation has not been successful! Please repeat your actions after page reloading");
                     location.reload();
                 }
@@ -68,7 +68,7 @@ var Task = Backbone.Model.extend({
                 if (result.status == "OK") {
                     app.MainPanel.taskPanel.tasks.remove(self.id);
                     return true;
-                } else if (result.status == "FAILED" && result.type == 'must_be_signed_in'){
+                } else if (result.status == "FAILED" && result.type == 'must_be_signed_in'){ // if was logged out on Yii2 side
                     alert("The operation has not been successful! Please repeat your actions after page reloading");
                     location.reload();
                 }
