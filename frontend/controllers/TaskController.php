@@ -129,11 +129,6 @@ class TaskController extends Controller {
                             $event->params = Json::encode($eventAr['params']);
                             $event->save();
                         }
-
-
-                        ///if(isset($conditionAr['GPS'])) {
-                        //$event = new Event();
-                        //}
                     }
                 }
             }
@@ -155,28 +150,33 @@ class TaskController extends Controller {
     }
 
     public function actionRemove() {
-        $result = array();
-        $result['status'] = "FAILED";
+        if ($this->checkThatUserIsNotAGuest()) {
 
-        $post = Yii::$app->request->post();
-        $taskForRemove = Json::decode($post['task']);
-        $taskId = $taskForRemove['id'];
+            $post = Yii::$app->request->post();
+            $taskForRemove = Json::decode($post['task']);
+            $taskId = $taskForRemove['id'];
 
-        $task = Task::find($taskId)
-            ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
-            ->one();
+            $task = Task::find($taskId)
+                ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
+                ->one();
 
-        if (!empty($task)) {
-            if($task->delete()) {
-                $result['status'] = "OK";
+            if (!empty($task)) {
+                if ($task->delete()) {
+                    $this->result['status'] = "OK";
+                }
+            } else {
+                $this->result['status'] = "FAILED";
+                $this->result['type'] = "remove_error";
+                $this->result['message'] = "No task with id = " . $taskId . "that is owned of user  " . $task->user->name;;
             }
+
+
+            \Yii::$app->response->format = 'json';
+            return $this->result;
         } else {
-            $result['message'] = "No task with id = " . $taskId . "that is owned of user  " . $task->user->name;;
+            \Yii::$app->response->format = 'json';
+            return $this->result;
         }
-
-
-        \Yii::$app->response->format = 'json';
-        return $result;
     }
 
     private function prepareTsakForSending($task){
