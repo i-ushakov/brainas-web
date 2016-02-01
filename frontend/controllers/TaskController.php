@@ -149,7 +149,7 @@ class TaskController extends Controller {
                 $this->result['errors'] = $errors;
             }
         }
-        echo "44444"; exit();
+
         \Yii::$app->response->format = 'json';
         return $this->result;
     }
