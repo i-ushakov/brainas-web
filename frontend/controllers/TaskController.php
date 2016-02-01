@@ -23,6 +23,8 @@ class TaskController extends Controller {
     private $result = array();
 
     private function checkThatUserIsNotAGuest() {
+        echo "checkThatUserIsNotAGuest!!";
+        exit();
         if (Yii::$app->user->isGuest) {
             $this->result['status'] = "FAILED";
             $this->result['type'] = "must_be_signed_in";
@@ -65,7 +67,7 @@ class TaskController extends Controller {
 
 
     public function actionSave() {
-        echo "actionSave";           exit();
+        echo "actionSave";
         if ($this->checkThatUserIsNotAGuest()) {
             echo "checkThatUserIsNotAGuest";
 
