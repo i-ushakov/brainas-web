@@ -23,11 +23,9 @@ class TaskController extends Controller {
     private $result = array();
 
     private function checkThatUserIsNotAGuest() {
-        echo "checkThatUserIsNotAGuest!!";
         if (Yii::$app->user->isGuest) {
             $this->result['status'] = "FAILED";
             $this->result['type'] = "must_be_signed_in";
-            echo "checkThatUserIsNotAGuest!!!!!";
            return false;
         } else {
             $this->userId = Yii::$app->user->id;
@@ -166,9 +164,8 @@ class TaskController extends Controller {
                 $result['errors'] = $errors;
             }
         }
-        echo "Вот оно";
         \Yii::$app->response->format = 'json';
-        return $result;
+        return $this->result;
     }
 
     public function actionRemove() {
