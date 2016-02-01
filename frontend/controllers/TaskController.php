@@ -149,6 +149,7 @@ class TaskController extends Controller {
                 $this->result['errors'] = $errors;
             }
         }
+        echo "44444"; exit();
         \Yii::$app->response->format = 'json';
         return $this->result;
     }
@@ -202,7 +203,6 @@ class TaskController extends Controller {
         if (Yii::$app->user->isGuest) {
             $this->result['status'] = "FAILED";
             $this->result['type'] = "must_be_signed_in";
-            echo "3333"; exit();
             return false;
         } else {
             $this->userId = Yii::$app->user->id;
