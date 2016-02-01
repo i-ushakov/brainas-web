@@ -68,6 +68,9 @@ var Task = Backbone.Model.extend({
                 if (result.status == "OK") {
                     app.MainPanel.taskPanel.tasks.remove(self.id);
                     return true;
+                } else if (result.status == "FAILED" && result.type == 'must_be_signed_in'){
+                    alert("The operation has not been successful! Please repeat your actions after page reloading");
+                    location.reload();
                 }
             },
             dataType: 'json'
