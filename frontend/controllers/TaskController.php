@@ -167,7 +167,6 @@ class TaskController extends Controller {
             }
         }
         echo "Вот оно";
-        exit();
         \Yii::$app->response->format = 'json';
         return $result;
     }
