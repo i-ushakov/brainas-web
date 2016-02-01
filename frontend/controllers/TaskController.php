@@ -22,16 +22,6 @@ class TaskController extends Controller {
     private $userId;
     private $result = array();
 
-    private function checkThatUserIsNotAGuest() {
-        if (Yii::$app->user->isGuest) {
-            $this->result['status'] = "FAILED";
-            $this->result['type'] = "must_be_signed_in";
-           return false;
-        } else {
-            $this->userId = Yii::$app->user->id;
-            return true;
-        }
-    }
 
     /**
      * Return tasks
@@ -65,14 +55,10 @@ class TaskController extends Controller {
 
 
     public function actionSave() {
-        echo "actionSave";
         if ($this->checkThatUserIsNotAGuest()) {
-            echo "checkThatUserIsNotAGuest";
-
             $post = Yii::$app->request->post();
             $taskForSave = Json::decode($post['task']);
             $taskId = $taskForSave['id'];
-            echo "checkThatUserIsNotAGuest0";
 
             if (is_null($taskId)) {
                 $task = new Task();
@@ -80,18 +66,16 @@ class TaskController extends Controller {
                 $task->message = "New task";
                 $task->save();
             } else {
-                echo "checkThatUserIsNotAGuest1";
 
                 $task = Task::find($taskId)
                     ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
                     ->one();
-                echo "checkThatUserIsNotAGuest2";
 
                 if (empty($task)) {
-                    echo "checkThatUserIsNotAGuest3";
                     $result = array();
-                    $result['status'] = "FAILED";
-                    $result['errors'][] = "No task with id = " . $taskId . "that is owned of user  " . $task->user->name;
+                    $this->result['status'] = "FAILED";
+                    $result['type'] = "save_error";
+                    $this->result['errors'][] = "No task with id = " . $taskId . "that is owned of user  " . $task->user->name;
                     \Yii::$app->response->format = 'json';
                     return $result;
                 }
@@ -156,12 +140,13 @@ class TaskController extends Controller {
 
             if ($task->validate()) {
                 $task->save();
-                $result['status'] = "OK";
-                $result['task'] = $this->prepareTsakForSending($task);
+                $this->result['status'] = "OK";
+                $this->result['task'] = $this->prepareTsakForSending($task);
             } else {
                 $errors = $task->errors;
-                $result['status'] = "FAILED";
-                $result['errors'] = $errors;
+                $this->result['status'] = "FAILED";
+                $this->result['type'] = "save_erorr";
+                $this->result['errors'] = $errors;
             }
         }
         \Yii::$app->response->format = 'json';
@@ -211,5 +196,16 @@ class TaskController extends Controller {
         }
 
         return $item;
+    }
+
+    private function checkThatUserIsNotAGuest() {
+        if (Yii::$app->user->isGuest) {
+            $this->result['status'] = "FAILED";
+            $this->result['type'] = "must_be_signed_in";
+            return false;
+        } else {
+            $this->userId = Yii::$app->user->id;
+            return true;
+        }
     }
 }
