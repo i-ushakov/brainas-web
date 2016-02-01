@@ -55,6 +55,7 @@ class TaskController extends Controller {
 
 
     public function actionSave() {
+        echo "1111"; exit();
         if ($this->checkThatUserIsNotAGuest()) {
             $post = Yii::$app->request->post();
             $taskForSave = Json::decode($post['task']);
@@ -199,7 +200,6 @@ class TaskController extends Controller {
     }
 
     private function checkThatUserIsNotAGuest() {
-        echo "1111"; exit();
         if (Yii::$app->user->isGuest) {
             $this->result['status'] = "FAILED";
             $this->result['type'] = "must_be_signed_in";
