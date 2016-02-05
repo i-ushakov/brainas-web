@@ -31,6 +31,9 @@ class ConnectionController extends Controller {
     }
 
     public function actionGetTasks() {
+        if (isset($_POST['firstSync'])) {
+            echo "??";
+        }
         $accessToken = $this->getTokenFronmPost();
         $client = $this->prepareGoogleClient($accessToken);
         $userEmail = $this->verifyIdToken($client, $accessToken);
