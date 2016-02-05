@@ -33,6 +33,7 @@ class ConnectionController extends Controller {
     public function actionGetTasks() {
         if (isset($_POST['firstSync'])) {
             echo "??";
+            exit();
         }
         $accessToken = $this->getTokenFronmPost();
         $client = $this->prepareGoogleClient($accessToken);
