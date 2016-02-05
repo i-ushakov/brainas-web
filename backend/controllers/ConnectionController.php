@@ -32,7 +32,7 @@ class ConnectionController extends Controller {
 
     public function actionGetTasks() {
         if (isset($_POST['firstSync'])) {
-            echo "??";
+            echo "OK";
             exit();
         }
         $accessToken = $this->getTokenFronmPost();
