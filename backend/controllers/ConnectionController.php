@@ -33,6 +33,8 @@ class ConnectionController extends Controller {
     public function actionGetTasks() {
         if (isset($_POST['firstSync'])) {
             echo "OK";
+            var_dump($_FILES);
+            //$this->getTllChangesFromDevice()
             exit();
         }
         $accessToken = $this->getTokenFronmPost();
@@ -212,5 +214,4 @@ class ConnectionController extends Controller {
             return $user->id;
         }
     }
-
 }
