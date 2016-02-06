@@ -33,7 +33,9 @@ class ConnectionController extends Controller {
     public function actionGetTasks() {
         if (isset($_POST['firstSync'])) {
             echo "OK";
-            var_dump($_FILES);
+
+            $t = file_get_contents($_FILES['all_changes_json']['tmp_name']);
+            var_dump($t);
             //$this->getTllChangesFromDevice()
             exit();
         }
