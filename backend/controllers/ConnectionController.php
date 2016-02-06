@@ -217,6 +217,6 @@ class ConnectionController extends Controller {
         $allChangesInJSON = file_get_contents($_FILES['all_changes_json']['tmp_name']);
         $allChangesInArray = Json::decode($allChangesInJSON, true);
         //$taskChanges = $allChangesInArray['tasks'];
-        var_dump($allChangesInJSON);
+        var_dump($allChangesInArray);
     }
 }
