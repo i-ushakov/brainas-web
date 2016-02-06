@@ -32,11 +32,7 @@ class ConnectionController extends Controller {
 
     public function actionGetTasks() {
         if (isset($_POST['firstSync'])) {
-            echo "OK";
-
-            $t = file_get_contents($_FILES['all_changes_json']['tmp_name']);
-            var_dump($t);
-            //$this->getTllChangesFromDevice()
+            $this->processAllChangesFromDevice();
             exit();
         }
         $accessToken = $this->getTokenFronmPost();
@@ -215,5 +211,11 @@ class ConnectionController extends Controller {
             $user->save();
             return $user->id;
         }
+    }
+
+    private function processAllChangesFromDevice() {
+        $allChangesInJSON = file_get_contents($_FILES['all_changes_json']['tmp_name']);
+        $allChangesInArray = Json::decode($allChangesInJSON, true);
+        var_dump($allChangesInArray);
     }
 }
