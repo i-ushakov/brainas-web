@@ -216,7 +216,7 @@ class ConnectionController extends Controller {
     private function processAllChangesFromDevice() {
         $allChangesInJSON = file_get_contents($_FILES['all_changes_json']['tmp_name']);
         $allChangesInArray = Json::decode($allChangesInJSON, true);
-        $taskChanges = $allChangesInArray['tasks'];
-        var_dump($taskChanges);
+        //$taskChanges = $allChangesInArray['tasks'];
+        var_dump($allChangesInArray);
     }
 }
