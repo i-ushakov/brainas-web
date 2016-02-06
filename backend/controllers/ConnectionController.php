@@ -214,9 +214,19 @@ class ConnectionController extends Controller {
     }
 
     private function processAllChangesFromDevice() {
+        $requestedObjects = array();
+        $requestedTasks = array();
         $allChangesInJSON = file_get_contents($_FILES['all_changes_json']['tmp_name']);
         $allChangesInArray = Json::decode($allChangesInJSON, true);
-        $taskChanges = $allChangesInArray['tasks'];
-        var_dump($taskChanges);
+        $tasksChanges = $allChangesInArray['tasks'];
+        foreach($tasksChanges as $taskChange) {
+            if($taskChange['globalId'] == 0) {
+                $requestedTasks[$taskChange['taskId']] = $taskChange['taskId'];
+            }
+        }
+
+        $requestedObjects['requestedTasks'] = $requestedTasks;
+        var_dump($requestedObjects);
+        return $requestedObjects;
     }
 }
