@@ -31,10 +31,6 @@ class ConnectionController extends Controller {
     }
 
     public function actionGetTasks() {
-        if (isset($_POST['firstSync'])) {
-            $this->processAllChangesFromDevice();
-            exit();
-        }
         $accessToken = $this->getTokenFronmPost();
         $client = $this->prepareGoogleClient($accessToken);
         $userEmail = $this->verifyIdToken($client, $accessToken);
@@ -94,6 +90,23 @@ class ConnectionController extends Controller {
 
         $xmlWithTasks .= '</deleted>';
         $xmlWithTasks .= '</tasks>';
+
+        // This new or updated objects that we want to get from device
+
+        if (isset($_POST['firstSync'])) {
+            $requestedObjectsFromDevice = $this->processAllChangesFromDevice();
+            if (!empty($requestedObjectsFromDevice)) {
+                $xmlWithTasks .= '<requestedObjects>';
+                $requestedTasks = $requestedObjectsFromDevice['tasks'];
+                if (!empty($requestedTasks)) {
+                    $xmlWithTasks .= '<requestedTasks>';
+                    $xmlWithTasks .= implode(",", $requestedTasks);
+                    $xmlWithTasks .= '</requestedTasks>';
+                }
+                $xmlWithTasks .= '</requestedObjects>';
+            }
+        }
+
         echo $xmlWithTasks;
     }
 
@@ -225,7 +238,7 @@ class ConnectionController extends Controller {
             }
         }
 
-        $requestedObjects['requestedTasks'] = $requestedTasks;
+        $requestedObjects['tasks'] = $requestedTasks;
         var_dump($requestedObjects);
         return $requestedObjects;
     }
