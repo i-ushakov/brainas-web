@@ -23,6 +23,9 @@ class ConnectionController extends Controller {
     public static $jsonGoogleClientConfig = "/var/www/brainas.net/backend/config/client_secret_821865067743-3jra19eq308up54c436e1g6fpmvef1g1.apps.googleusercontent.com.json";
 
     private $userId;
+    private $created = array();
+    private $updated = array();
+    private $deleted = array();
 
     public function beforeAction($action) {
         $this->enableCsrfValidation = false;
@@ -35,38 +38,30 @@ class ConnectionController extends Controller {
         $client = $this->prepareGoogleClient($accessToken);
         $userEmail = $this->verifyIdToken($client, $accessToken);
         $this->userId = $this->getUserIdByEmail($userEmail);
+
+        // Getting changed tasks on website
         $changedTasks = $this->getChangedTasks();
 
         // This new or updated objects that we want to get from device
         if (isset($_POST['firstSync'])) {
-            $requestedObjectsFromDevice = $this->processAllChangesFromDevice();
-            if (!empty($requestedObjectsFromDevice)) {
-                $xmlWithTasks .= '<requestedObjects>';
-                $requestedTasks = $requestedObjectsFromDevice['tasks'];
-                if (!empty($requestedTasks)) {
-                    $xmlWithTasks .= '<requestedTasks>';
-                    $xmlWithTasks .= implode(",", $requestedTasks);
-                    $xmlWithTasks .= '</requestedTasks>';
-                }
-                $xmlWithTasks .= '</requestedObjects>';
+            // TODO server time
+        }
+
+        foreach ($changedTasks as $changedTask) {
+            if ($changedTask->action == "Created") {
+                $this->created[$changedTask->task_id]['action'] = $changedTask->action;
+                $this->created[$changedTask->task_id]['datetime'] = $changedTask->datetime;
+            } else if ($changedTask->action == "Changed") {
+                $this->updated[$changedTask->task_id]['action'] = $changedTask->action;
+                $this->updated[$changedTask->task_id]['datetime'] = $changedTask->datetime;
+            } else if ($changedTask->action == "Deleted") {
+                $this->deleted[$changedTask->task_id]['action'] = $changedTask->action;
+                $this->deleted[$changedTask->task_id]['datetime'] = $changedTask->datetime;
             }
         }
 
-        $created = array();
-        $updated = array();
-        $deleted = array();
-        foreach ($changedTasks as $changedTask) {
-            if ($changedTask->action == "Created") {
-                $created[$changedTask->task_id]['action'] = $changedTask->action;
-                $created[$changedTask->task_id]['datetime'] = $changedTask->datetime;
-            } else if ($changedTask->action == "Changed") {
-                $updated[$changedTask->task_id]['action'] = $changedTask->action;
-                $updated[$changedTask->task_id]['datetime'] = $changedTask->datetime;
-            } else if ($changedTask->action == "Deleted") {
-                $deleted[$changedTask->task_id]['action'] = $changedTask->action;
-                $deleted[$changedTask->task_id]['datetime'] = $changedTask->datetime;
-            }
-        }
+        $synchronizedObjectsFromDevice = $this->processAllChangesFromDevice();
+
 
         $xmlWithTasks = "";
         $xmlWithTasks .= '<?xml version="1.0" encoding="UTF-8"?>';
@@ -75,28 +70,28 @@ class ConnectionController extends Controller {
         // New (created) Tasks
         $xmlWithTasks .= '<created>';
         $createdTasks = Task::find()
-            ->where(array('in', 'id', array_keys($created)))
+            ->where(array('in', 'id', array_keys($this->created)))
             ->orderBy('id')
             ->all();
         foreach ($createdTasks as $createdTask) {
-            $xmlWithTasks .= $this->buildTaskXml($createdTask,  $created[$createdTask->id]['datetime']);
+            $xmlWithTasks .= $this->buildTaskXml($createdTask,  $this->created[$createdTask->id]['datetime']);
         }
         $xmlWithTasks .= '</created>';
 
         // Old (updated) Tasks
         $xmlWithTasks .= '<updated>';
         $updatedTasks = Task::find()
-            ->where(array('in', 'id', array_keys($updated)))
+            ->where(array('in', 'id', array_keys($this->updated)))
             ->orderBy('id')
             ->all();
         foreach ($updatedTasks as $updatedTask) {
-            $xmlWithTasks .= $this->buildTaskXml($updatedTask, $updated[$updatedTask->id]['datetime']);
+            $xmlWithTasks .= $this->buildTaskXml($updatedTask, $this->updated[$updatedTask->id]['datetime']);
         }
         $xmlWithTasks .= '</updated>';
 
         // Removed (deleted) Tasks
         $xmlWithTasks .= '<deleted>';
-        foreach ($deleted as $id => $d) {
+        foreach ($this->deleted as $id => $d) {
             $xmlWithTasks .= '<deletedTask ' .
                     'global-id="' . $id . '" ' .
                     'time-changes="' . $d['datetime'] . '"' .
@@ -105,6 +100,17 @@ class ConnectionController extends Controller {
 
         $xmlWithTasks .= '</deleted>';
         $xmlWithTasks .= '</tasks>';
+
+        if (!empty($synchronizedObjectsFromDevice)) {
+            $xmlWithTasks .= '<requestedObjects>';
+            $requestedTasks = $synchronizedObjectsFromDevice['tasks'];
+            if (!empty($requestedTasks)) {
+                $xmlWithTasks .= '<requestedTasks>';
+                $xmlWithTasks .= implode(",", $requestedTasks);
+                $xmlWithTasks .= '</requestedTasks>';
+            }
+            $xmlWithTasks .= '</requestedObjects>';
+        }
 
         echo $xmlWithTasks;
     }
@@ -228,7 +234,8 @@ class ConnectionController extends Controller {
     private function processAllChangesFromDevice() {
         $updatedObjects = array();
         $updatedTasks = array();
-        //$allChangesInXML = simplexml_load_file($_FILES['all_changes_json']['tmp_name']);
+        $allChangesInXML = simplexml_load_file($_FILES['all_changes_json']['tmp_name']);
+        var_dump($updatedObjects);
         //$changedTasks = $allChangesInXML->changedTasks;
         /*foreach($changedTasks as $changedTask) {
             if($changedTask['globalId'] == 0) {
@@ -238,7 +245,7 @@ class ConnectionController extends Controller {
         }*/
 
         $updatedObjects['tasks'] = $updatedTasks;
-        var_dump($updatedObjects);
+        //var_dump($updatedObjects);
         return $updatedObjects;
     }
 }
