@@ -243,7 +243,7 @@ class ConnectionController extends Controller {
             var_dump($changedTask['globalId']);
             if($changedTask['globalId'] == 0) {
                 //addTaskFromDevice();
-                //$updatedTasks[$changedTask['id']] = $changedTask['id'];
+                $updatedTasks[$changedTask['id']] = $changedTask['id'];
             }
         }
 
