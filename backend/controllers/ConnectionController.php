@@ -250,9 +250,9 @@ class ConnectionController extends Controller {
                 $changedTask['globalId'] = 111; //TODO
                 //addTaskFromDevice();
                 $attr = $changedTask->attributes();
-                $localId = (string)$attr['id'][0];
+                $localId = (string)$attr['id'];
                 //$synchronizedTasks[$localId] = $changedTask['globalId'];
-                echo "8888";
+                echo "1111111";
                 var_dump($localId);
             }
         }
