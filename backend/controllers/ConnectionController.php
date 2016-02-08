@@ -240,7 +240,7 @@ class ConnectionController extends Controller {
 
         foreach($changedTasks->changedTask as $changedTask) {
             echo "7777";
-            var_dump($changedTask['id']);
+            var_dump($changedTask);
             if($changedTask['globalId'] == 0) {
                 //addTaskFromDevice();
                 //$updatedTasks[$changedTask['id']] = $changedTask['id'];
