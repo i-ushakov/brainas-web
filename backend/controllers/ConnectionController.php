@@ -254,7 +254,7 @@ class ConnectionController extends Controller {
                 var_dump($changedTask['id']);
                 var_dump($changedTask['globalId']);
                 //$synchronizedTasks[$changedTask['id']] = $changedTask['globalId'];
-                $synchronizedTasks['1'] = $changedTask['globalId'];
+                $synchronizedTasks[$changedTask['id']] = $changedTask['globalId'];
                 var_dump($synchronizedTasks);
             }
         }
