@@ -251,7 +251,9 @@ class ConnectionController extends Controller {
             if($changedTask['globalId'] == 0) {
                 $changedTask['globalId'] = 111; //TODO
                 //addTaskFromDevice();
-                $synchronizedTasks[$changedTask['id']] = $changedTask['globalId'];
+                var_dump($changedTask['id']);
+                var_dump($changedTask['globalId']);
+                //$synchronizedTasks[$changedTask['id']] = $changedTask['globalId'];
             }
         }
 
