@@ -233,7 +233,7 @@ class ConnectionController extends Controller {
         $changedTasks = $allChangesInXML->changedTasks;
         //$tasksChanges = $allChangesInArray['tasks'];
         foreach($changedTasks as $changedTask) {
-            if($changedTask->globalId == 0) {
+            if($changedTask['globalId'] == 0) {
                 $requestedTasks[$changedTask['id']] = $changedTask['id'];
             }
         }
