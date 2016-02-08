@@ -21,7 +21,6 @@ class Task extends ActiveRecord {
     public function rules()
     {
         return [
-            // the name, email, subject and body attributes are required
             [['message'], 'required'],
             [['message'], 'string','max'=>100],
             [['description'], 'string','max'=>5000]

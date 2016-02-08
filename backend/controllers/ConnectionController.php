@@ -245,7 +245,7 @@ class ConnectionController extends Controller {
         $changedTasks = $allChangesInXML->changedTasks;
 
         foreach($changedTasks->changedTask as $changedTask) {
-            if($changedTask['globalId'] == 0) {
+                if($changedTask['globalId'] == 0) {
                 $changedTask['globalId'] = 111; //TODO
                 $this->addTaskFromDevice($changedTask);
                 $localId = (string)$changedTask['id'];
