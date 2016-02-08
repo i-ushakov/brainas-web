@@ -247,7 +247,7 @@ class ConnectionController extends Controller {
         foreach($changedTasks->changedTask as $changedTask) {
             if($changedTask['globalId'] == 0) {
                 $changedTask['globalId'] = 111; //TODO
-                //$this->addTaskFromDevice($changedTask);
+                $this->addTaskFromDevice($changedTask);
                 $localId = (string)$changedTask['id'];
                 $globalId = (string)$changedTask['globalId'];
                 $synchronizedTasks[$localId] = $globalId;
@@ -261,8 +261,8 @@ class ConnectionController extends Controller {
     private function addTaskFromDevice ($newTaskFromDevice) {
         $task = new Task();
         //$task->message = $newTaskFromDevice['message'];
-        $task->message = 'message';
+        //$task->message = 'message';
         $task->save();
-        return $task->id;
+        //return $task->id;
     }
 }
