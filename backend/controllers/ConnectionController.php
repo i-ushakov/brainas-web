@@ -226,20 +226,19 @@ class ConnectionController extends Controller {
     }
 
     private function processAllChangesFromDevice() {
-        $requestedObjects = array();
-        $requestedTasks = array();
-        //$allChangesInXML = file_get_contents($_FILES['all_changes_json']['tmp_name']);
-        $allChangesInXML = simplexml_load_file($_FILES['all_changes_json']['tmp_name']);
-        $changedTasks = $allChangesInXML->changedTasks;
-        //$tasksChanges = $allChangesInArray['tasks'];
-        foreach($changedTasks as $changedTask) {
+        $updatedObjects = array();
+        $updatedTasks = array();
+        //$allChangesInXML = simplexml_load_file($_FILES['all_changes_json']['tmp_name']);
+        //$changedTasks = $allChangesInXML->changedTasks;
+        /*foreach($changedTasks as $changedTask) {
             if($changedTask['globalId'] == 0) {
-                $requestedTasks[$changedTask['id']] = $changedTask['id'];
+                //addTaskFromDevice();
+                $updatedTasks[$changedTask['id']] = $changedTask['id'];
             }
-        }
+        }*/
 
-        $requestedObjects['tasks'] = $requestedTasks;
-        var_dump($requestedObjects);
-        return $requestedObjects;
+        $updatedObjects['tasks'] = $updatedTasks;
+        var_dump($updatedObjects);
+        return $updatedObjects;
     }
 }
