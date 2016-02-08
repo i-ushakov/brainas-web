@@ -102,14 +102,20 @@ class ConnectionController extends Controller {
         $xmlWithTasks .= '</tasks>';
 
         if (!empty($synchronizedObjectsFromDevice)) {
-            $xmlWithTasks .= '<requestedObjects>';
-            $requestedTasks = $synchronizedObjectsFromDevice['tasks'];
+            $xmlWithTasks .= '<synchronizedObjects>';
+            $synchronizedTasks = $synchronizedObjectsFromDevice['tasks'];
             if (!empty($requestedTasks)) {
-                $xmlWithTasks .= '<requestedTasks>';
-                $xmlWithTasks .= implode(",", $requestedTasks);
-                $xmlWithTasks .= '</requestedTasks>';
+                $xmlWithTasks .= '<synchronizedTasks>';
+                foreach($synchronizedTasks as $localId => $globalId) {
+                    $xmlWithTasks .= "<synchronizedTask>" .
+                            "<localId>" . $localId . "</localId>" .
+                            "<globalId>" . $globalId . "</globalId>" .
+                        "</synchronizedTask>";
+                }
+
+                $xmlWithTasks .= '</synchronizedTasks>';
             }
-            $xmlWithTasks .= '</requestedObjects>';
+            $xmlWithTasks .= '</synchronizedObjects>';
         }
 
         echo $xmlWithTasks;
@@ -232,8 +238,8 @@ class ConnectionController extends Controller {
     }
 
     private function processAllChangesFromDevice() {
-        $updatedObjects = array();
-        $updatedTasks = array();
+        $synchronizedObjects = array();
+        $synchronizedTasks = array();
         $allChangesInXML = simplexml_load_file($_FILES['all_changes_json']['tmp_name']);
 
         $changedTasks = $allChangesInXML->changedTasks;
@@ -242,12 +248,13 @@ class ConnectionController extends Controller {
             echo "7777";
             var_dump($changedTask["id"]);
             if($changedTask['globalId'] == 0) {
+                $changedTask['globalId'] = 111; //TODO
                 //addTaskFromDevice();
-                //$updatedTasks[$changedTask['id']] = $changedTask['id'];
+                $synchronizedTasks[$changedTask['id']] = $changedTask['globalId'];
             }
         }
 
-        $updatedObjects['tasks'] = $updatedTasks;
-        return $updatedObjects;
+        $synchronizedObjects['tasks'] = $synchronizedTasks;
+        return $synchronizedObjects;
     }
 }
