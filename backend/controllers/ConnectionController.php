@@ -235,7 +235,8 @@ class ConnectionController extends Controller {
         $updatedObjects = array();
         $updatedTasks = array();
         $allChangesInXML = simplexml_load_file($_FILES['all_changes_json']['tmp_name']);
-        $changedTasks = $allChangesInXML->changedTasks;
+        var_dump($allChangesInXML);
+        /*$changedTasks = $allChangesInXML->changedTasks;
         foreach($changedTasks->children() as $changedTask) {
             echo "55555";
             var_dump($changedTask->attributes()->id);
@@ -245,7 +246,7 @@ class ConnectionController extends Controller {
             }
         }
 
-        $updatedObjects['tasks'] = $updatedTasks;
+        $updatedObjects['tasks'] = $updatedTasks;*/
         return $updatedObjects;
     }
 }
