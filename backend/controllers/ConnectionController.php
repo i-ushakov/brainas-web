@@ -37,6 +37,21 @@ class ConnectionController extends Controller {
         $this->userId = $this->getUserIdByEmail($userEmail);
         $changedTasks = $this->getChangedTasks();
 
+        // This new or updated objects that we want to get from device
+        if (isset($_POST['firstSync'])) {
+            $requestedObjectsFromDevice = $this->processAllChangesFromDevice();
+            if (!empty($requestedObjectsFromDevice)) {
+                $xmlWithTasks .= '<requestedObjects>';
+                $requestedTasks = $requestedObjectsFromDevice['tasks'];
+                if (!empty($requestedTasks)) {
+                    $xmlWithTasks .= '<requestedTasks>';
+                    $xmlWithTasks .= implode(",", $requestedTasks);
+                    $xmlWithTasks .= '</requestedTasks>';
+                }
+                $xmlWithTasks .= '</requestedObjects>';
+            }
+        }
+
         $created = array();
         $updated = array();
         $deleted = array();
@@ -90,22 +105,6 @@ class ConnectionController extends Controller {
 
         $xmlWithTasks .= '</deleted>';
         $xmlWithTasks .= '</tasks>';
-
-        // This new or updated objects that we want to get from device
-
-        if (isset($_POST['firstSync'])) {
-            $requestedObjectsFromDevice = $this->processAllChangesFromDevice();
-            if (!empty($requestedObjectsFromDevice)) {
-                $xmlWithTasks .= '<requestedObjects>';
-                $requestedTasks = $requestedObjectsFromDevice['tasks'];
-                if (!empty($requestedTasks)) {
-                    $xmlWithTasks .= '<requestedTasks>';
-                    $xmlWithTasks .= implode(",", $requestedTasks);
-                    $xmlWithTasks .= '</requestedTasks>';
-                }
-                $xmlWithTasks .= '</requestedObjects>';
-            }
-        }
 
         echo $xmlWithTasks;
     }
@@ -229,12 +228,13 @@ class ConnectionController extends Controller {
     private function processAllChangesFromDevice() {
         $requestedObjects = array();
         $requestedTasks = array();
-        $allChangesInJSON = file_get_contents($_FILES['all_changes_json']['tmp_name']);
-        $allChangesInArray = Json::decode($allChangesInJSON, true);
-        $tasksChanges = $allChangesInArray['tasks'];
-        foreach($tasksChanges as $taskChange) {
-            if($taskChange['globalId'] == 0) {
-                $requestedTasks[$taskChange['taskId']] = $taskChange['taskId'];
+        //$allChangesInXML = file_get_contents($_FILES['all_changes_json']['tmp_name']);
+        $allChangesInXML = simplexml_load_file($_FILES['all_changes_json']['tmp_name']);
+        $changedTasks = $allChangesInXML->changedTasks;
+        //$tasksChanges = $allChangesInArray['tasks'];
+        foreach($changedTasks as $changedTask) {
+            if($changedTask->globalId == 0) {
+                $requestedTasks[$changedTask['id']] = $changedTask['id'];
             }
         }
 
