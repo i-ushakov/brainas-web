@@ -237,12 +237,13 @@ class ConnectionController extends Controller {
         $allChangesInXML = simplexml_load_file($_FILES['all_changes_json']['tmp_name']);
         $changedTasks = $allChangesInXML->changedTasks;
         var_dump($changedTasks);
-        /*foreach($changedTasks as $changedTask) {
+        foreach($changedTasks as $changedTask) {
             if($changedTask['globalId'] == 0) {
+                var_dump($changedTask['globalId']);
                 //addTaskFromDevice();
                 $updatedTasks[$changedTask['id']] = $changedTask['id'];
             }
-        }*/
+        }
 
         $updatedObjects['tasks'] = $updatedTasks;
         //var_dump($updatedObjects);
