@@ -261,7 +261,7 @@ class ConnectionController extends Controller {
     private function addTaskFromDevice ($newTaskFromDevice) {
         $task = new Task();
         //$task->message = $newTaskFromDevice['message'];
-        $task->message = 'message';
+        $task->message = "message";
         $task->save();
         //return $task->id;
     }
