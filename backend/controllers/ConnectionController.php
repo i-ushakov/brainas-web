@@ -237,6 +237,7 @@ class ConnectionController extends Controller {
         $allChangesInXML = simplexml_load_file($_FILES['all_changes_json']['tmp_name']);
         $changedTasks = $allChangesInXML->changedTasks;
         foreach($changedTasks as $changedTask) {
+            echo "11111";
             if($changedTask['globalId'] == 0) {
                 echo "11111";
                 var_dump($changedTask['globalId']);
