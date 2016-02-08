@@ -238,7 +238,7 @@ class ConnectionController extends Controller {
 
         $changedTasks = $allChangesInXML->changedTasks;
 
-        foreach($changedTasks->children() as $changedTask) {
+        foreach($changedTasks->changedTask as $changedTask) {
             echo "666";
             var_dump($changedTask);
             if($changedTask['globalId'] == 0) {
