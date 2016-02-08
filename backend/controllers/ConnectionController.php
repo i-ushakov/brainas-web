@@ -104,7 +104,7 @@ class ConnectionController extends Controller {
         if (!empty($synchronizedObjectsFromDevice)) {
             $xmlWithTasks .= '<synchronizedObjects>';
             $synchronizedTasks = $synchronizedObjectsFromDevice['tasks'];
-            if (!empty($requestedTasks)) {
+            if (!empty($synchronizedTasks)) {
                 $xmlWithTasks .= '<synchronizedTasks>';
                 foreach($synchronizedTasks as $localId => $globalId) {
                     $xmlWithTasks .= "<synchronizedTask>" .
