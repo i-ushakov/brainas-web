@@ -101,6 +101,7 @@ class ConnectionController extends Controller {
         $xmlWithTasks .= '</deleted>';
         $xmlWithTasks .= '</tasks>';
 
+        /*
         if (!empty($synchronizedObjectsFromDevice)) {
             $xmlWithTasks .= '<synchronizedObjects>';
             $synchronizedTasks = $synchronizedObjectsFromDevice['tasks'];
@@ -117,7 +118,7 @@ class ConnectionController extends Controller {
             }
             $xmlWithTasks .= '</synchronizedObjects>';
         }
-
+*/
         echo $xmlWithTasks;
     }
 
