@@ -101,7 +101,6 @@ class ConnectionController extends Controller {
         $xmlWithTasks .= '</deleted>';
         $xmlWithTasks .= '</tasks>';
 
-        /*
         if (!empty($synchronizedObjectsFromDevice)) {
             $xmlWithTasks .= '<synchronizedObjects>';
             $synchronizedTasks = $synchronizedObjectsFromDevice['tasks'];
@@ -118,7 +117,7 @@ class ConnectionController extends Controller {
             }
             $xmlWithTasks .= '</synchronizedObjects>';
         }
-*/
+
         echo $xmlWithTasks;
     }
 
@@ -252,8 +251,6 @@ class ConnectionController extends Controller {
                 $localId = (string)$changedTask['id'];
                 $globalId = (string)$changedTask['globalId'];
                 $synchronizedTasks[$localId] = $globalId;
-                echo "2222";
-                var_dump($synchronizedTasks);
             }
         }
 
