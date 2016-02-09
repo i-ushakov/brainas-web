@@ -262,6 +262,7 @@ class ConnectionController extends Controller {
         $task = new Task();
         //$task->message = $newTaskFromDevice['message'];
         $task->message = "message";
+        $task->user = $this->userId;
         $task->save();
         //return $task->id;
     }

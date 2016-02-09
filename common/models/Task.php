@@ -21,7 +21,7 @@ class Task extends ActiveRecord {
     public function rules()
     {
         return [
-            [['message'], 'required'],
+            [['message', 'user'], 'required'],
             [['message'], 'string','max'=>100],
             [['description'], 'string','max'=>5000]
 
