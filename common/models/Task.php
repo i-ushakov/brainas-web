@@ -60,8 +60,10 @@ class Task extends ActiveRecord {
             $changedTask->user_id = $this->user;
         }
 
-        $datetime = new \DateTime();
-        $datetime->setTimezone(new \DateTimeZone("Europe/London"));
+        if ($datetime == null) {
+            $datetime = new \DateTime();
+            $datetime->setTimezone(new \DateTimeZone("Europe/London"));
+        }
         $changedTask->action = $action;
         $changedTask->datetime = $datetime->format('Y-m-d H:i:s');
         $changedTask->save();
