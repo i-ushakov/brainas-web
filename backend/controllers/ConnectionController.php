@@ -240,13 +240,10 @@ class ConnectionController extends Controller {
     private function processAllChangesFromDevice() {
         $synchronizedObjects = array();
         $synchronizedTasks = array();
-        var_dump($_FILES);
         $allChangesInXML = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
 
         $changedTasks = $allChangesInXML->changedTasks;
-        echo "2222";
         foreach($changedTasks->changedTask as $changedTask) {
-            echo "3";
                 if($changedTask['globalId'] == 0) {
                 $changedTask['globalId'] = 111; //TODO
                 $this->addTaskFromDevice($changedTask);
@@ -261,12 +258,9 @@ class ConnectionController extends Controller {
     }
 
     private function addTaskFromDevice ($newTaskFromDevice) {
-        var_dump("User_id === "); var_dump($this->userId);
         $task = new Task();
-        //$task->message = $newTaskFromDevice['message'];
-        $task->message = "message";
+        $task->message = (String)$newTaskFromDevice['message'];
         $task->user = $this->userId;
-        var_dump("User_id = "); var_dump($task->user);
         $task->save();
         //return $task->id;
     }
