@@ -65,6 +65,7 @@ class ConnectionController extends Controller {
 
         $xmlWithTasks = "";
         $xmlWithTasks .= '<?xml version="1.0" encoding="UTF-8"?>';
+        $xmlWithTasks .= '<syncResponse>';
         $xmlWithTasks .= '<tasks>';
 
         // New (created) Tasks
@@ -117,6 +118,8 @@ class ConnectionController extends Controller {
             }
             $xmlWithTasks .= '</synchronizedObjects>';
         }
+
+        $xmlWithTasks .= '</syncResponse>';
 
         echo $xmlWithTasks;
     }
