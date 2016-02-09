@@ -259,6 +259,7 @@ class ConnectionController extends Controller {
     }
 
     private function addTaskFromDevice ($newTaskFromDevice) {
+        var_dump("User_id === "); var_dump($this->user);
         $task = new Task();
         //$task->message = $newTaskFromDevice['message'];
         $task->message = "message";
