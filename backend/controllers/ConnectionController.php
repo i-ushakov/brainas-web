@@ -60,6 +60,7 @@ class ConnectionController extends Controller {
             }
         }
 
+        echo "111111";
         $synchronizedObjectsFromDevice = $this->processAllChangesFromDevice();
 
 
