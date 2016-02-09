@@ -240,7 +240,7 @@ class ConnectionController extends Controller {
     private function processAllChangesFromDevice() {
         $synchronizedObjects = array();
         $synchronizedTasks = array();
-        $allChangesInXML = simplexml_load_file($_FILES['all_changes_json']['tmp_name']);
+        $allChangesInXML = simplexml_load_file($_FILES['all_changes.json']['tmp_name']);
 
         $changedTasks = $allChangesInXML->changedTasks;
         echo "2222";
