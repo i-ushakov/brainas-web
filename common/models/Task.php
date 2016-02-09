@@ -41,15 +41,15 @@ class Task extends ActiveRecord {
         } else {
             $action = "Changed";
         }
-        $this->loggingChangfesForSync($action);
+        $this->loggingChangesForSync($action);
     }
 
     public function afterDelete() {
         parent::afterDelete();
-        $this->loggingChangfesForSync("Deleted");
+        $this->loggingChangesForSync("Deleted");
     }
 
-    private function loggingChangfesForSync($action) {
+    public function loggingChangesForSync($action, $datetime = null) {
         $changedTask = ChangedTask::find()
             ->where(['user_id' => $this->user, 'task_id' => $this->id])
             ->orderBy('id')

@@ -43,7 +43,7 @@ class ConnectionController extends Controller {
         $changedTasks = $this->getChangedTasks();
 
         // This new or updated objects that we want to get from device
-        if (isset($_POST['firstSync'])) {
+        if (isset($_POST['initSync'])) {
             // TODO server time
         }
 
@@ -247,11 +247,9 @@ class ConnectionController extends Controller {
 
         $changedTasks = $allChangesInXML->changedTasks;
         foreach($changedTasks->changedTask as $changedTask) {
-                if($changedTask['globalId'] == 0) {
-                $changedTask['globalId'] = 111; //TODO
-                $this->addTaskFromDevice($changedTask);
+            if((string)$changedTask['globalId'] == 0) {
+                $globalId = $this->addTaskFromDevice($changedTask);
                 $localId = (string)$changedTask['id'];
-                $globalId = (string)$changedTask['globalId'];
                 $synchronizedTasks[$localId] = $globalId;
             }
         }
@@ -265,6 +263,7 @@ class ConnectionController extends Controller {
         $task->message = (String)$newTaskFromDevice->message;
         $task->user = $this->userId;
         $task->save();
-        //return $task->id;
+        $task->loggingChangesForSync("CREATED", (String)$newTaskFromDevice->changeDatetime)
+        return $task->id;
     }
 }
