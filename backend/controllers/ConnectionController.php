@@ -263,8 +263,8 @@ class ConnectionController extends Controller {
         $task->message = (String)$newTaskFromDevice->message;
         $task->user = $this->userId;
         $task->save();
-        echo "!!!!!";var_dump((String)$newTaskFromDevice->change[0]->changeDatetime);
-        //$task->loggingChangesForSync("CREATED", (String)$newTaskFromDevice->change[0]->changeDatetime);
+        $changeDatetime = (String)$newTaskFromDevice->change[0]->changeDatetime;
+        $task->loggingChangesForSync("CREATED", $changeDatetime);
         return $task->id;
     }
 }
