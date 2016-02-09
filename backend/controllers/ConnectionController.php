@@ -60,7 +60,6 @@ class ConnectionController extends Controller {
             }
         }
 
-        echo "111111";
         $synchronizedObjectsFromDevice = $this->processAllChangesFromDevice();
 
 
@@ -244,8 +243,9 @@ class ConnectionController extends Controller {
         $allChangesInXML = simplexml_load_file($_FILES['all_changes_json']['tmp_name']);
 
         $changedTasks = $allChangesInXML->changedTasks;
-
+        echo "2222";
         foreach($changedTasks->changedTask as $changedTask) {
+            echo "3";
                 if($changedTask['globalId'] == 0) {
                 $changedTask['globalId'] = 111; //TODO
                 $this->addTaskFromDevice($changedTask);
