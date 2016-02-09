@@ -49,7 +49,7 @@ class Task extends ActiveRecord {
         $this->loggingChangesForSync("Deleted");
     }
 
-    public function loggingChangesForSync($action, $datetime = null) {
+    public function loggingChangesForSync($action, $changeDatetime = null) {
         $changedTask = ChangedTask::find()
             ->where(['user_id' => $this->user, 'task_id' => $this->id])
             ->orderBy('id')
@@ -60,12 +60,14 @@ class Task extends ActiveRecord {
             $changedTask->user_id = $this->user;
         }
 
-        if ($datetime == null) {
-            $datetime = new \DateTime();
-            $datetime->setTimezone(new \DateTimeZone("Europe/London"));
+        if ($changeDatetime == null) {
+            $currentDatetime = new \DateTime();
+            $currentDatetime->setTimezone(new \DateTimeZone("Europe/London"));
+            $changedTask->datetime = $currentDatetime->format('Y-m-d H:i:s');
+        } else {
+            $changedTask->datetime = $changeDatetime;
         }
         $changedTask->action = $action;
-        $changedTask->datetime = $datetime->format('Y-m-d H:i:s');
         $changedTask->save();
     }
 }
