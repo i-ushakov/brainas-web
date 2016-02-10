@@ -26,6 +26,7 @@ class ConnectionController extends Controller {
     private $created = array();
     private $updated = array();
     private $deleted = array();
+    private $initSyncTime = null;
 
     public function beforeAction($action) {
         $this->enableCsrfValidation = false;
@@ -39,13 +40,15 @@ class ConnectionController extends Controller {
         $userEmail = $this->verifyIdToken($client, $accessToken);
         $this->userId = $this->getUserIdByEmail($userEmail);
 
-        // Getting changed tasks on website
-        $changedTasks = $this->getChangedTasks();
-
-        // This new or updated objects that we want to get from device
-        if (isset($_POST['initSync'])) {
-            // TODO server time
+        if (!isset($_POST['initSyncTime'])) {
+            // Getting changed tasks from website
+            $changedTasks = $this->getChangedTasks(null);
+            $this->initSyncTime = date('Y-m-d H:i:s');
+        } else {
+            $this->initSyncTime = $_POST['initSyntTime'];
+            $changedTasks = $this->getChangedTasks($this->initSyncTime);
         }
+
 
         foreach ($changedTasks as $changedTask) {
             if ($changedTask->action == "Created") {
@@ -60,6 +63,7 @@ class ConnectionController extends Controller {
             }
         }
 
+        // This new or updated objects that we want to get from device
         $synchronizedObjectsFromDevice = $this->processAllChangesFromDevice();
 
 
@@ -113,11 +117,12 @@ class ConnectionController extends Controller {
                             "<globalId>" . $globalId . "</globalId>" .
                         "</synchronizedTask>";
                 }
-
                 $xmlWithTasks .= '</synchronizedTasks>';
             }
             $xmlWithTasks .= '</synchronizedObjects>';
         }
+
+        $xmlWithTasks .= '<initSyncTime>' . $this->initSyncTime . '</initSyncTime>';
 
         $xmlWithTasks .= '</syncResponse>';
 
@@ -173,11 +178,22 @@ class ConnectionController extends Controller {
         return $xml;
     }
 
-    private function getChangedTasks() {
-        $changedTasks = ChangedTask::find()
-            ->where(['user_id' => $this->userId])
-            ->orderBy('datetime')
-            ->all();
+    private function getChangedTasks($initSyncTime) {
+        if ($initSyncTime != null) {
+            $changedTasks = ChangedTask::find()
+                ->where([
+                    'and',
+                    ['=', 'user_id', $this->userId],
+                    ['>', 'datetime', $initSyncTime]
+                ])
+                ->orderBy('datetime')
+                ->all();
+        } else {
+            $changedTasks = ChangedTask::find()
+                ->where(['user_id' => $this->userId])
+                ->orderBy('datetime')
+                ->all();
+        }
         return $changedTasks;
     }
 
