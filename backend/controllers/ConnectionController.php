@@ -45,7 +45,7 @@ class ConnectionController extends Controller {
             $changedTasks = $this->getChangedTasks(null);
             $this->initSyncTime = date('Y-m-d H:i:s');
         } else {
-            $this->initSyncTime = $_POST['initSyntTime'];
+            $this->initSyncTime = $_POST['initSyncTime'];
             $changedTasks = $this->getChangedTasks($this->initSyncTime);
         }
 
