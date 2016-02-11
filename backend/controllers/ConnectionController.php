@@ -278,6 +278,7 @@ class ConnectionController extends Controller {
                 $clientChangesTime = (String)$changedTask->change[0]->changeDatetime;
                 if (strtotime($serverChangesTime)<strtotime($clientChangesTime)) {
                     $this->updateTaskFromDevice($changedTask);
+                    $synchronizedTasks[$localId] = $globalId;
                 }
             }
         }
