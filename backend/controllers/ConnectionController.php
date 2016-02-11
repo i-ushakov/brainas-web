@@ -274,7 +274,7 @@ class ConnectionController extends Controller {
                 $synchronizedTasks[$localId] = $globalId;
             } else {
                 $globalId = (string)$changedTask['globalId'];
-                $serverChangesTime = $this->getServerCHangesTimeById($globalId);
+                $serverChangesTime = $this->getServerChangesTimeById($globalId);
                 $clientChangesTime = (String)$changedTask->change[0]->changeDatetime;
                 if (strtotime($serverChangesTime)<strtotime($clientChangesTime)) {
                     $this->updateTaskFromDevice($changedTask);
@@ -305,5 +305,13 @@ class ConnectionController extends Controller {
         $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
         $task->loggingChangesForSync("UPDATED", $changeDatetime);
         return $task->id;
+    }
+
+    private function getServerChangesTimeById($taskid) {
+        $changedTask = ChangedTask::find()
+            ->where(['user_id' => $this->userId, 'task_id' => $this->id])
+            ->orderBy('id')
+            ->one();
+        return $changedTask->datetime;
     }
 }
