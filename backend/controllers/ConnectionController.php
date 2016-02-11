@@ -43,11 +43,15 @@ class ConnectionController extends Controller {
         if (!isset($_POST['initSyncTime'])) {
             // Getting changed tasks from website
             $changedTasks = $this->getChangedTasks(null);
-            $this->initSyncTime = date('Y-m-d H:i:s');
+            $currentDatetime = new \DateTime();
+            $currentDatetime->setTimezone(new \DateTimeZone("Europe/London"));
+            $this->initSyncTime = $currentDatetime->format('Y-m-d H:i:s');
         } else {
             $this->initSyncTime = $_POST['initSyncTime'];
             $changedTasks = $this->getChangedTasks($this->initSyncTime);
-            $this->initSyncTime = date('Y-m-d H:i:s');
+            $currentDatetime = new \DateTime();
+            $currentDatetime->setTimezone(new \DateTimeZone("Europe/London"));
+            $this->initSyncTime = $currentDatetime->format('Y-m-d H:i:s');
         }
 
 
