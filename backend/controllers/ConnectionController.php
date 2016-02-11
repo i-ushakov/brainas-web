@@ -307,11 +307,16 @@ class ConnectionController extends Controller {
         return $task->id;
     }
 
-    private function getServerChangesTimeById($taskid) {
+    private function getServerChangesTimeById($taskid)
+    {
         $changedTask = ChangedTask::find()
-            ->where(['user_id' => $this->userId, 'task_id' => $this->id])
+            ->where(['user_id' => $this->userId, 'task_id' => $taskid])
             ->orderBy('id')
             ->one();
-        return $changedTask->datetime;
+        if (!is_null($changedTask)) {
+            return $changedTask->datetime;
+        } else {
+            return null;
+        }
     }
 }
