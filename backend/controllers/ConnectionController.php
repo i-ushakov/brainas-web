@@ -292,7 +292,7 @@ class ConnectionController extends Controller {
         $task->user = $this->userId;
         $task->save();
         $changeDatetime = (String)$newTaskFromDevice->change[0]->changeDatetime;
-        $task->loggingChangesForSync("CREATED", $changeDatetime);
+        $task->loggingChangesForSync("Created", $changeDatetime);
         return $task->id;
     }
 
@@ -303,7 +303,7 @@ class ConnectionController extends Controller {
         $task->message = $message;
         $task->save();
         $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
-        $task->loggingChangesForSync("UPDATED", $changeDatetime);
+        $task->loggingChangesForSync("Changed", $changeDatetime);
         return $task->id;
     }
 
