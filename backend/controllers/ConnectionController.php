@@ -272,6 +272,13 @@ class ConnectionController extends Controller {
                 $globalId = $this->addTaskFromDevice($changedTask);
                 $localId = (string)$changedTask['id'];
                 $synchronizedTasks[$localId] = $globalId;
+            } else {
+                $globalId = (string)$changedTask['globalId'];
+                $serverChangesTime = $this->getServerCHangesTimeById($globalId);
+                $clientChangesTime = (String)$changedTask->change[0]->changeDatetime;
+                if (strtotime($serverChangesTime)<strtotime($clientChangesTime)) {
+                    $this->updateTaskFromDevice($changedTask);
+                }
             }
         }
 
@@ -286,6 +293,17 @@ class ConnectionController extends Controller {
         $task->save();
         $changeDatetime = (String)$newTaskFromDevice->change[0]->changeDatetime;
         $task->loggingChangesForSync("CREATED", $changeDatetime);
+        return $task->id;
+    }
+
+    private function updateTaskFromDevice ($changedTask) {
+        $id = (string)$changedTask['globalId'];
+        $message = (string)$changedTask->message;
+        $task = Task::findOne($id);
+        $task->message = $message;
+        $task->save();
+        $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
+        $task->loggingChangesForSync("UPDATED", $changeDatetime);
         return $task->id;
     }
 }
