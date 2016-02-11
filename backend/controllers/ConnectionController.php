@@ -275,8 +275,13 @@ class ConnectionController extends Controller {
             } else {
                 $globalId = (string)$changedTask['globalId'];
                 $serverChangesTime = $this->getServerChangesTimeById($globalId);
+                echo "serverChangesTime";
+                var_dump($serverChangesTime);
                 $clientChangesTime = (String)$changedTask->change[0]->changeDatetime;
+                echo "clientChangesTime";
+                var_dump($clientChangesTime);
                 if (strtotime($serverChangesTime)<strtotime($clientChangesTime)) {
+                    echo "!!!";
                     $this->updateTaskFromDevice($changedTask);
                 }
             }
