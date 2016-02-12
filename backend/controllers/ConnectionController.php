@@ -283,10 +283,12 @@ class ConnectionController extends Controller {
                         $status = (String)$changedTask->change[0]->status;
                         if ($status == "DELETED") {
                             $this->deleteTaskFromDevice($changedTask);
+                            $localId = 0;
                         } elseif ($status == "UPDATED") {
                             $this->updateTaskFromDevice($changedTask);
+                            $localId = (string)$changedTask['id'];
                         }
-                        $localId = (string)$changedTask['id'];
+
                         $synchronizedTasks[$localId] = $globalId;
                         unset($this->updated[$globalId]);
                     }
