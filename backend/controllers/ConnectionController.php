@@ -290,7 +290,11 @@ class ConnectionController extends Controller {
                         unset($this->updated[$globalId]);
                     }
                 } else {
-                    $this->deleted[$globalId];
+                    $this->deleted[$globalId]['action'] = "Deleted";
+                    $currentDatetime = new \DateTime();
+                    $currentDatetime->setTimezone(new \DateTimeZone("Europe/London"));
+                    $this->deleted[$globalId]['datetime'] = $currentDatetime->format('Y-m-d H:i:s');
+                    $this->deleted[$globalId]['datetime'] = $changedTask->datetime;
                 }
             }
         }
