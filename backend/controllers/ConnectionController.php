@@ -14,6 +14,7 @@ use common\models\User;
 use Yii;
 use common\infrastructure\ChangedTask;
 use common\models\Task;
+use yii\db\ActiveRecord;
 use yii\helpers\Json;
 use yii\web\Controller;
 use yii\web\HttpException;
@@ -141,14 +142,14 @@ class ConnectionController extends Controller {
         $acceptedChangesJSON = file_get_contents("php://input");
         $acceptedChanges = Json::decode($acceptedChangesJSON);
         //$acceptedChanges = Json::decode($acceptedChangesJSON);
-        $records = ChangedTask::find()
+        /*$records = ChangedTask::find()
             ->where(array('in', 'task_id', array_keys($acceptedChanges['tasks'])))
             ->andWhere(['user_id' => 1])
             ->orderBy('id')
             ->all();
         foreach($records as $record) {
             $record->delete();
-        }
+        }*/
     }
 
     private function buildTaskXml($task, $datetime) {
@@ -268,17 +269,28 @@ class ConnectionController extends Controller {
 
         $changedTasks = $allChangesInXML->changedTasks;
         foreach($changedTasks->changedTask as $changedTask) {
-            if((string)$changedTask['globalId'] == 0) {
+            $statusOfChanges = (String)$changedTask->change[0]->status;
+            if ((string)$changedTask['globalId'] == 0 && $statusOfChanges != "DELETED") {
                 $globalId = $this->addTaskFromDevice($changedTask);
                 $localId = (string)$changedTask['id'];
                 $synchronizedTasks[$localId] = $globalId;
             } else {
                 $globalId = (string)$changedTask['globalId'];
-                $serverChangesTime = $this->getServerChangesTimeById($globalId);
-                $clientChangesTime = (String)$changedTask->change[0]->changeDatetime;
-                if (strtotime($serverChangesTime)<strtotime($clientChangesTime)) {
-                    $this->updateTaskFromDevice($changedTask);
-                    $synchronizedTasks[$localId] = $globalId;
+                if (Task::findOne($globalId) != null) {
+                    $serverChangesTime = $this->getServerChangesTimeById($globalId);
+                    $clientChangesTime = (String)$changedTask->change[0]->changeDatetime;
+                    if (strtotime($serverChangesTime) < strtotime($clientChangesTime)) {
+                        $status = (String)$changedTask->change[0]->status;
+                        if ($status == "DELETED") {
+                            $this->deleteTaskFromDevice($changedTask);
+                        } elseif ($status == "UPDATED") {
+                            $localId = $this->updateTaskFromDevice($changedTask);
+                        }
+                        $synchronizedTasks[$localId] = $globalId;
+                        unset($this->updated[$globalId]);
+                    }
+                } else {
+                    $this->deleted[$globalId];
                 }
             }
         }
@@ -306,6 +318,15 @@ class ConnectionController extends Controller {
         $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
         $task->loggingChangesForSync("Changed", $changeDatetime);
         return $task->id;
+    }
+
+    private function deleteTaskFromDevice ($changedTask) {
+        $id = (string)$changedTask['globalId'];
+        $task = Task::findOne($id);
+        $task->delete();
+        //$changeDatetime = (String)$changedTask->change[0]->changeDatetime;
+        //$task->loggingChangesForSync("Changed", $changeDatetime);
+        //return $task->id;
     }
 
     private function getServerChangesTimeById($taskid)
