@@ -284,7 +284,7 @@ class ConnectionController extends Controller {
                         if ($status == "DELETED") {
                             $this->deleteTaskFromDevice($changedTask);
                             $localId = 0;
-                        } elseif ($status == "UPDATED") {
+                        } elseif ($status == "UPDATED" || $status == "CREATED") {
                             $this->updateTaskFromDevice($changedTask);
                             $localId = (string)$changedTask['id'];
                         }
