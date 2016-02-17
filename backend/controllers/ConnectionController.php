@@ -236,7 +236,7 @@ class ConnectionController extends Controller {
     private function getGoogleClient() {
         $client = new \Google_Client();
         $client->setAuthConfigFile(self::$jsonGoogleClientConfig);
-        $client->setAccessType('online'); // default: offline
+        $client->setAccessType('offline'); // default: offline
         $client->setApplicationName('Brain Assistent');
         //$client->setClientId(Yii::$app->params['OAuth2ClientIdFroWebApp']);
         //$client->setClientSecret(Yii::$app->params['OAuth2ClientSecretFroWebApp']);
