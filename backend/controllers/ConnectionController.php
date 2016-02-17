@@ -40,7 +40,7 @@ class ConnectionController extends Controller {
         $client = $this->getGoogleClient();
         $client->authenticate($accessToken);
         $accessToken = $client->getAccessToken();
-        $client->setAccessToken($accessToken);var_dump($accessToken); exit();
+        $client->setAccessToken($accessToken);var_dump("FUCK"); exit();
         if ($client->isAccessTokenExpired())
         {
             echo "111111";
