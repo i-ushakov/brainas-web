@@ -43,7 +43,7 @@ class ConnectionController extends Controller {
         $accessToken = $client->getAccessToken();
         $accessTokenInXML = "<accessToken>" . $accessToken . "</accessToken>";
         //$token = $client->fetchAccessTokenWithAuthCode($accessToken);
-        var_dump($client);exit();
+        var_dump($accessToken);exit();
         //$client->authenticate($accessToken);
         //$accessToken = $client->getAccessToken();
         //var_dump($accessToken); exit();
