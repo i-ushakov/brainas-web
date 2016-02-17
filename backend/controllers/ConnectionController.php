@@ -38,7 +38,7 @@ class ConnectionController extends Controller {
     public function actionGetTasks() {
         $accessToken = $this->getTokenFronmPost();
         $client = $this->getGoogleClient();
-        $client->authenticate($accessToken);
+        $client->authenticate($accessToken);var_dump($client->authenticate($accessToken);); exit();
         $accessToken = $client->getAccessToken(); var_dump($accessToken); exit();
         $client->setAccessToken($accessToken);
         if ($client->isAccessTokenExpired())
