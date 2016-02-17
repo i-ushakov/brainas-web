@@ -41,6 +41,7 @@ class ConnectionController extends Controller {
         $client->authenticate($accessToken);
         //$accessToken = $client->getAccessToken();
         $client->setAccessToken($accessToken);
+        var_dump($client->isAccessTokenExpired()); exit();
         if ($client->isAccessTokenExpired())
         {
             echo "111111";
