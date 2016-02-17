@@ -36,10 +36,12 @@ class ConnectionController extends Controller {
     }
 
     public function actionGetTasks() {
-        $accessToken = $this->getTokenFronmPost();
+        $code = $this->getTokenFronmPost();
 
         $client = $this->getGoogleClient();
-        $client->authenticate($accessToken);
+        $client->authenticate($code);
+        $accessToken = $client->getAccessToken();
+        $accessTokenInXML = "<accessToken>" . $accessToken . "</accessToken>";
         //$token = $client->fetchAccessTokenWithAuthCode($accessToken);
         var_dump($client);exit();
         //$client->authenticate($accessToken);
@@ -148,7 +150,7 @@ class ConnectionController extends Controller {
         }
 
         $xmlWithTasks .= '<initSyncTime>' . $this->initSyncTime . '</initSyncTime>';
-        //$xmlWithTasks .= $tokenInXML;
+        $xmlWithTasks .= $accessTokenInXML;
 
         $xmlWithTasks .= '</syncResponse>';
 
