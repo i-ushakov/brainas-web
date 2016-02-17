@@ -37,8 +37,18 @@ class ConnectionController extends Controller {
 
     public function actionGetTasks() {
         $accessToken = $this->getTokenFronmPost();
-        $client = $this->prepareGoogleClient($accessToken);
-        $userEmail = $this->verifyIdToken($client, $accessToken);
+        $client = $this->getGoogleClient();
+        $client->setAccessToken($accessToken);
+        if ( $client->isAccessTokenExpired() )
+        {
+            $decoded_token = json_decode($client->getAccessToken());
+            $refresh_token = $decoded_token->refresh_token;
+            $client->refreshToken($refresh_token);
+            $tokenInXML = "<accessToken>" . $refresh_token . "</accessToken>";
+        } else {
+            $tokenInXML = "<accessToken>" . $accessToken . "</accessToken>";
+        }
+        $userEmail = $this->verifyIdToken($client, $refresh_token);
         $this->userId = $this->getUserIdByEmail($userEmail);
 
         if (!isset($_POST['initSyncTime'])) {
@@ -129,6 +139,7 @@ class ConnectionController extends Controller {
         }
 
         $xmlWithTasks .= '<initSyncTime>' . $this->initSyncTime . '</initSyncTime>';
+        $xmlWithTasks .= $tokenInXML;
 
         $xmlWithTasks .= '</syncResponse>';
 
@@ -214,7 +225,7 @@ class ConnectionController extends Controller {
         return $accessToken;
     }
 
-    private function prepareGoogleClient() {
+    private function getGoogleClient() {
         $client = new \Google_Client();
         $client->setAuthConfigFile(self::$jsonGoogleClientConfig);
         $client->setAccessType('online'); // default: offline
@@ -234,10 +245,10 @@ class ConnectionController extends Controller {
         return $client;
     }
 
-    private function verifyIdToken($client, $accessToken) {
-        if ($accessToken) {
+    private function verifyIdToken($client, $token) {
+        if ($token) {
             try {
-                $userInfo = $client->verifyIdToken($accessToken);
+                $userInfo = $client->verifyIdToken($token);
             } catch (\Firebase\JWT\ExpiredException  $e) {
                 throw new HttpException(471 ,'Expired token');
             }
