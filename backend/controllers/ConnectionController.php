@@ -40,7 +40,7 @@ class ConnectionController extends Controller {
 
         $client = $this->getGoogleClient();
         $client->authenticate($code);
-        $accessToken = $client->getAccessToken();
+        $accessToken = $client->getRefreshToken();
         $accessTokenInXML = "<accessToken>" . $accessToken . "</accessToken>";
         //$token = $client->fetchAccessTokenWithAuthCode($accessToken);
         var_dump($accessToken);exit();
