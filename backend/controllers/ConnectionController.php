@@ -38,19 +38,18 @@ class ConnectionController extends Controller {
     public function actionGetTasks() {
         $accessToken = $this->getTokenFronmPost();
         $client = $this->getGoogleClient();
-        var_dump($client);
         $client->authenticate($accessToken);
-        var_dump("11");
-        var_dump($client);
-        $accessToken = $client->getAccessToken(); var_dump($accessToken); exit();
+        //$accessToken = $client->getAccessToken();
         $client->setAccessToken($accessToken);
         if ($client->isAccessTokenExpired())
         {
+            echo "111111";
             $decoded_token = json_decode($client->getAccessToken());
             $refresh_token = $decoded_token->refresh_token;
             $client->refreshToken($refresh_token);
             $tokenInXML = "<accessToken>" . $refresh_token . "</accessToken>";
         } else {
+            echo "22222";
             $tokenInXML = "<accessToken>" . $accessToken . "</accessToken>";
         }
         $userEmail = $this->verifyIdToken($client, $refresh_token);
