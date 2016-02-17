@@ -240,8 +240,8 @@ class ConnectionController extends Controller {
         $client = new \Google_Client();
         $client->setAuthConfigFile(self::$jsonGoogleClientConfig);
         //$client->setAccessType('offline'); // default: offline
-        $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback.php');
-        var_dump('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback.php');
+       // $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback.php');
+       // var_dump('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback.php');
         //$client->addScope(Google_Service_Drive::DRIVE_METADATA_READONLY);
         //$client->setApplicationName('Brain Assistent');
         //$client->setClientId(Yii::$app->params['OAuth2ClientIdFroWebApp']);
