@@ -241,7 +241,7 @@ class ConnectionController extends Controller {
         $client->setAuthConfigFile(self::$jsonGoogleClientConfig);
         $client->setAccessType('offline'); // default: offline
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback.php');
-        $client->addScope(Google_Service_Drive::DRIVE_METADATA_READONLY);
+        //$client->addScope(Google_Service_Drive::DRIVE_METADATA_READONLY);
         //$client->setApplicationName('Brain Assistent');
         //$client->setClientId(Yii::$app->params['OAuth2ClientIdFroWebApp']);
         //$client->setClientSecret(Yii::$app->params['OAuth2ClientSecretFroWebApp']);
