@@ -40,7 +40,7 @@ class ConnectionController extends Controller {
 
         $client = $this->getGoogleClient();
         $client->authenticate($code);
-        $accessToken = $client->getRefreshToken();
+        $accessToken = $client->getAccessToken();
         $accessTokenInXML = "<accessToken>" . $accessToken . "</accessToken>";
         //$token = $client->fetchAccessTokenWithAuthCode($accessToken);
         var_dump($accessToken);exit();
@@ -243,8 +243,8 @@ class ConnectionController extends Controller {
         //$client->setApplicationName('Brain Assistent');
         //$client->setClientId(Yii::$app->params['OAuth2ClientIdFroWebApp']);
         //$client->setClientSecret(Yii::$app->params['OAuth2ClientSecretFroWebApp']);
-        //$scriptUri = "http://".$_SERVER["HTTP_HOST"].$_SERVER['PHP_SELF'];
-        //$client->setRedirectUri($scriptUri);
+        $scriptUri = "http://".$_SERVER["HTTP_HOST"].$_SERVER['PHP_SELF'];
+        $client->setRedirectUri($scriptUri);
         //$client->setDeveloperKey(Yii::$app->params['androidAPIKey']); // API key
 
         /*
