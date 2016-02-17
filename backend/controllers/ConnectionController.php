@@ -43,7 +43,7 @@ class ConnectionController extends Controller {
         $accessToken = $client->getAccessToken();
         $accessTokenInXML = "<accessToken>" . $accessToken . "</accessToken>";
         //$token = $client->fetchAccessTokenWithAuthCode($accessToken);
-        var_dump($code);exit();
+        var_dump($accessToken);exit();
         //$client->authenticate($accessToken);
         //$accessToken = $client->getAccessToken();
         //var_dump($accessToken); exit();
@@ -240,11 +240,13 @@ class ConnectionController extends Controller {
         $client = new \Google_Client();
         $client->setAuthConfigFile(self::$jsonGoogleClientConfig);
         $client->setAccessType('offline'); // default: offline
+        $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback.php');
+        $client->addScope(Google_Service_Drive::DRIVE_METADATA_READONLY);
         //$client->setApplicationName('Brain Assistent');
         //$client->setClientId(Yii::$app->params['OAuth2ClientIdFroWebApp']);
         //$client->setClientSecret(Yii::$app->params['OAuth2ClientSecretFroWebApp']);
-        $scriptUri = "http://".$_SERVER["HTTP_HOST"].$_SERVER['PHP_SELF'];
-        $client->setRedirectUri($scriptUri);
+        //$scriptUri = "http://".$_SERVER["HTTP_HOST"].$_SERVER['PHP_SELF'];
+        //$client->setRedirectUri($scriptUri);
         //$client->setDeveloperKey(Yii::$app->params['androidAPIKey']); // API key
 
         /*
