@@ -39,7 +39,7 @@ class ConnectionController extends Controller {
         $accessToken = $this->getTokenFronmPost();
 
         $client = $this->getGoogleClient();
-        $client->authenticate($_GET['code']);
+        $client->authenticate($accessToken);
         //$token = $client->fetchAccessTokenWithAuthCode($accessToken);
         var_dump($client);exit();
         //$client->authenticate($accessToken);
