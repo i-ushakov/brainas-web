@@ -7,8 +7,9 @@
  */
 
 
-
 namespace backend\controllers;
+
+require_once ("_googleClient.php");
 
 use common\models\User;
 use Yii;
@@ -38,7 +39,8 @@ class ConnectionController extends Controller {
     public function actionGetTasks() {
         $code = $this->getTokenFronmPost();
 
-        $client = $this->getGoogleClient();
+        $client = \GoogleClient::getGoogleClient();
+        //$client = $this->getGoogleClient();
         $client->authenticate($code);
         $accessToken = $client->getAccessToken();
         $accessTokenInXML = "<accessToken>" . $accessToken . "</accessToken>";
@@ -236,28 +238,7 @@ class ConnectionController extends Controller {
         return $accessToken;
     }
 
-    private function getGoogleClient() {
-        $client = new \Google_Client();
-        $client->setAuthConfigFile(self::$jsonGoogleClientConfig);
-        //$client->setAccessType('offline'); // default: offline
-       // $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback.php');
-       // var_dump('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback.php');
-        //$client->addScope(Google_Service_Drive::DRIVE_METADATA_READONLY);
-        //$client->setApplicationName('Brain Assistent');
-        //$client->setClientId(Yii::$app->params['OAuth2ClientIdFroWebApp']);
-        //$client->setClientSecret(Yii::$app->params['OAuth2ClientSecretFroWebApp']);
-        //$scriptUri = "http://".$_SERVER["HTTP_HOST"].$_SERVER['PHP_SELF'];
-        //$client->setRedirectUri($scriptUri);
-        //$client->setDeveloperKey(Yii::$app->params['androidAPIKey']); // API key
 
-        /*
-        https://developers.google.com/api-client-library/php/auth/web-app (Using OAuth 2.0 for Web Server Applications)
-        http://www.sanwebe.com/2012/11/login-with-google-api-php
-        http://enarion.net/programming/php/google-client-api/google-client-api-php/
-        */
-
-        return $client;
-    }
 
     private function verifyIdToken($client, $token) {
         if ($token) {
