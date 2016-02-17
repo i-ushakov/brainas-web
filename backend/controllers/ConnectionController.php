@@ -36,11 +36,12 @@ class ConnectionController extends Controller {
     }
 
     public function actionGetTasks() {
+        var_dump("FUCK"); exit();
         $accessToken = $this->getTokenFronmPost();
         $client = $this->getGoogleClient();
         $client->authenticate($accessToken);
         $accessToken = $client->getAccessToken();
-        $client->setAccessToken($accessToken);var_dump("FUCK"); exit();
+        $client->setAccessToken($accessToken);
         if ($client->isAccessTokenExpired())
         {
             echo "111111";
