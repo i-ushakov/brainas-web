@@ -41,11 +41,11 @@ class ConnectionController extends Controller {
         $client = $this->getGoogleClient();
         $token = $client->fetchAccessTokenWithAuthCode($accessToken);
         var_dump($token);exit();
-        $client->authenticate($accessToken);
-        $accessToken = $client->getAccessToken();
-        var_dump($accessToken); exit();
-        $client->setAccessToken($accessToken);
-        if ($client->isAccessTokenExpired())
+        //$client->authenticate($accessToken);
+        //$accessToken = $client->getAccessToken();
+        //var_dump($accessToken); exit();
+        //$client->setAccessToken($accessToken);
+        /*if ($client->isAccessTokenExpired())
         {
             echo "111111";
             $decoded_token = json_decode($client->getAccessToken());
@@ -55,8 +55,8 @@ class ConnectionController extends Controller {
         } else {
             echo "22222";
             $tokenInXML = "<accessToken>" . $accessToken . "</accessToken>";
-        }
-        $userEmail = $this->verifyIdToken($client, $refresh_token);
+        }*/
+        $userEmail = $this->verifyIdToken($client, $accessToken);
         $this->userId = $this->getUserIdByEmail($userEmail);
 
         if (!isset($_POST['initSyncTime'])) {
@@ -147,7 +147,7 @@ class ConnectionController extends Controller {
         }
 
         $xmlWithTasks .= '<initSyncTime>' . $this->initSyncTime . '</initSyncTime>';
-        $xmlWithTasks .= $tokenInXML;
+        //$xmlWithTasks .= $tokenInXML;
 
         $xmlWithTasks .= '</syncResponse>';
 
