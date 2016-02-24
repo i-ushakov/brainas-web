@@ -9,14 +9,12 @@
 
 namespace backend\controllers;
 
-require_once ("_googleClient.php");
 
-use common\models\User;
+use Google_Client;
 use Yii;
+use common\models\User;
 use common\infrastructure\ChangedTask;
 use common\models\Task;
-use yii\db\ActiveRecord;
-use yii\helpers\Json;
 use yii\web\Controller;
 use yii\web\HttpException;
 
@@ -25,9 +23,7 @@ class ConnectionController extends Controller {
     public static $jsonGoogleClientConfig = "/var/www/brainas.net/backend/config/client_secret_821865067743-3jra19eq308up54c436e1g6fpmvef1g1.apps.googleusercontent.com.json";
 
     private $userId;
-    private $created = array();
-    private $updated = array();
-    private $deleted = array();
+    private $token;
     private $initSyncTime = null;
 
     public function beforeAction($action) {
@@ -37,33 +33,77 @@ class ConnectionController extends Controller {
     }
 
     public function actionGetTasks() {
-        $code = $this->getTokenFronmPost();
+        // get user id and access token
+        $this->verifyUserAccess();
 
-        $client = \GoogleClient::getGoogleClient();
-        //$client = $this->getGoogleClient();
-        $client->authenticate($code);
-        $accessToken = $client->getAccessToken();
-        $accessTokenInXML = "<accessToken>" . $accessToken . "</accessToken>";
-        //$token = $client->fetchAccessTokenWithAuthCode($accessToken);
-        var_dump($accessToken);exit();
-        //$client->authenticate($accessToken);
-        //$accessToken = $client->getAccessToken();
-        //var_dump($accessToken); exit();
-        //$client->setAccessToken($accessToken);
-        /*if ($client->isAccessTokenExpired())
-        {
-            echo "111111";
-            $decoded_token = json_decode($client->getAccessToken());
-            $refresh_token = $decoded_token->refresh_token;
-            $client->refreshToken($refresh_token);
-            $tokenInXML = "<accessToken>" . $refresh_token . "</accessToken>";
-        } else {
-            echo "22222";
-            $tokenInXML = "<accessToken>" . $accessToken . "</accessToken>";
-        }*/
-        $userEmail = $this->verifyIdToken($client, $accessToken);
+        // Get chnaged and deletet task
+        // from time of last sync for this user
+        $changes = $this->getChanges();
+
+        // The objects that was updated from device
+        $synchronizedObjectsFromDevice = $this->processAllChangesFromDevice($changes);
+
+        // Build xml-document with server-changes
+        // and data about changes from device that were accepted
+        $xmlResponse = $this->buildXMLResponse($changes, $synchronizedObjectsFromDevice, $this->token);
+
+        echo $xmlResponse;
+    }
+
+    private function verifyUserAccess() {
+        // Create Google client and get accessToken
+        $client = $this->getGoogleClient();
+        $token = $this->getAccessToken($client);
+
+
+        if ($client->isAccessTokenExpired()) {
+            $client->refreshToken($client->getRefreshToken());
+            $token = $client->getAccessToken();
+        }
+
+        // Get user's date (email) and user id in our system
+        $data = $client->verifyIdToken();
+        $userEmail = $data['email'];
         $this->userId = $this->getUserIdByEmail($userEmail);
 
+        // save refresh token if exist or retrieve from database and send to client
+        if (isset($token['refresh_token'])) {
+            $this->saveRefreshToken($token['refresh_token']);
+        } else {
+            $refreshToken = $this->getRefreshToken();
+            if ($refreshToken != null) {
+                $token['refresh_token'] = $refreshToken;
+            }
+        }
+
+        $this->token = $token;
+    }
+
+    private static function getGoogleClient() {
+        $client = new Google_Client();
+        $client->setAuthConfigFile(self::$jsonGoogleClientConfig);
+        $client->setRedirectUri("http://brainas.net/backend/web/connection/");
+        $client->setScopes("https://www.googleapis.com/auth/plus.login");
+        $client->setAccessType('online'); //offline
+        $client->setApprovalPrompt('force');
+
+        return $client;
+    }
+
+    private function getAccessToken($client) {
+        $code = $this->getCodeFromPost();
+        if ($code != null) {
+            $client->authenticate($code);
+            $token = $client->getAccessToken();
+        } else {
+            $token = json_decode($this->getTokenFromPost(), true);
+            $client->setAccessToken($token);
+        }
+        return $token;
+    }
+
+    private function getChanges() {
+        $changes = array();
         if (!isset($_POST['initSyncTime'])) {
             // Getting changed tasks from website
             $changedTasks = $this->getChangedTasks(null);
@@ -78,102 +118,86 @@ class ConnectionController extends Controller {
             $this->initSyncTime = $currentDatetime->format('Y-m-d H:i:s');
         }
 
-
+        $changes['tasks']['created'] = array();
+        $changes['tasks']['updated'] = array();
+        $changes['tasks']['deleted'] = array();
         foreach ($changedTasks as $changedTask) {
             if ($changedTask->action == "Created") {
-                $this->created[$changedTask->task_id]['action'] = $changedTask->action;
-                $this->created[$changedTask->task_id]['datetime'] = $changedTask->datetime;
+                $changes['tasks']['created'][$changedTask->task_id]['action'] = $changedTask->action;
+                $changes['tasks']['created'][$changedTask->task_id]['datetime'] = $changedTask->datetime;
             } else if ($changedTask->action == "Changed") {
-                $this->updated[$changedTask->task_id]['action'] = $changedTask->action;
-                $this->updated[$changedTask->task_id]['datetime'] = $changedTask->datetime;
+                $changes['tasks']['updated'][$changedTask->task_id]['action'] = $changedTask->action;
+                $changes['tasks']['updated'][$changedTask->task_id]['datetime'] = $changedTask->datetime;
             } else if ($changedTask->action == "Deleted") {
-                $this->deleted[$changedTask->task_id]['action'] = $changedTask->action;
-                $this->deleted[$changedTask->task_id]['datetime'] = $changedTask->datetime;
+                $changes['tasks']['deleted'][$changedTask->task_id]['action'] = $changedTask->action;
+                $changes['tasks']['deleted'][$changedTask->task_id]['datetime'] = $changedTask->datetime;
             }
         }
+        return $changes;
+    }
 
-        // This new or updated objects that we want to get from device
-        $synchronizedObjectsFromDevice = $this->processAllChangesFromDevice();
+    private function buildXMLResponse($changes, $synchronizedObjectsFromDevice, $token) {
+        $xmlResponse = "";
+        $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
+        $xmlResponse .= '<syncResponse>';
+        $xmlResponse .= '<tasks>';
 
-
-        $xmlWithTasks = "";
-        $xmlWithTasks .= '<?xml version="1.0" encoding="UTF-8"?>';
-        $xmlWithTasks .= '<syncResponse>';
-        $xmlWithTasks .= '<tasks>';
-
-        // New (created) Tasks
-        $xmlWithTasks .= '<created>';
+        // Created tasks
+        $xmlResponse .= '<created>';
         $createdTasks = Task::find()
-            ->where(array('in', 'id', array_keys($this->created)))
+            ->where(array('in', 'id', array_keys($changes['tasks']['created'])))
             ->orderBy('id')
             ->all();
         foreach ($createdTasks as $createdTask) {
-            $xmlWithTasks .= $this->buildTaskXml($createdTask,  $this->created[$createdTask->id]['datetime']);
+            $xmlResponse .= $this->buildTaskXml($createdTask,  $changes['tasks']['created'][$createdTask->id]['datetime']);
         }
-        $xmlWithTasks .= '</created>';
+        $xmlResponse .= '</created>';
 
-        // Old (updated) Tasks
-        $xmlWithTasks .= '<updated>';
+        // Updated tasks
+        $xmlResponse .= '<updated>';
         $updatedTasks = Task::find()
-            ->where(array('in', 'id', array_keys($this->updated)))
+            ->where(array('in', 'id', array_keys($changes['tasks']['updated'])))
             ->orderBy('id')
             ->all();
         foreach ($updatedTasks as $updatedTask) {
-            $xmlWithTasks .= $this->buildTaskXml($updatedTask, $this->updated[$updatedTask->id]['datetime']);
+            $xmlResponse .= $this->buildTaskXml($updatedTask, $changes['tasks']['updated'][$updatedTask->id]['datetime']);
         }
-        $xmlWithTasks .= '</updated>';
+        $xmlResponse .= '</updated>';
 
-        // Removed (deleted) Tasks
-        $xmlWithTasks .= '<deleted>';
-        foreach ($this->deleted as $id => $d) {
-            $xmlWithTasks .= '<deletedTask ' .
-                    'global-id="' . $id . '" ' .
-                    'time-changes="' . $d['datetime'] . '"' .
+        // Deleted Tasks
+        $xmlResponse .= '<deleted>';
+        foreach ($changes['tasks']['deleted'] as $id => $d) {
+            $xmlResponse .= '<deletedTask ' .
+                'global-id="' . $id . '" ' .
+                'time-changes="' . $d['datetime'] . '"' .
                 '></deletedTask>';
         }
 
-        $xmlWithTasks .= '</deleted>';
-        $xmlWithTasks .= '</tasks>';
+        $xmlResponse .= '</deleted>';
+        $xmlResponse .= '</tasks>';
 
         if (!empty($synchronizedObjectsFromDevice)) {
-            $xmlWithTasks .= '<synchronizedObjects>';
+            $xmlResponse .= '<synchronizedObjects>';
             $synchronizedTasks = $synchronizedObjectsFromDevice['tasks'];
             if (!empty($synchronizedTasks)) {
-                $xmlWithTasks .= '<synchronizedTasks>';
+                $xmlResponse .= '<synchronizedTasks>';
                 foreach($synchronizedTasks as $localId => $globalId) {
-                    $xmlWithTasks .= "<synchronizedTask>" .
-                            "<localId>" . $localId . "</localId>" .
-                            "<globalId>" . $globalId . "</globalId>" .
+                    $xmlResponse .= "<synchronizedTask>" .
+                        "<localId>" . $localId . "</localId>" .
+                        "<globalId>" . $globalId . "</globalId>" .
                         "</synchronizedTask>";
                 }
-                $xmlWithTasks .= '</synchronizedTasks>';
+                $xmlResponse .= '</synchronizedTasks>';
             }
-            $xmlWithTasks .= '</synchronizedObjects>';
+            $xmlResponse .= '</synchronizedObjects>';
         }
 
-        $xmlWithTasks .= '<initSyncTime>' . $this->initSyncTime . '</initSyncTime>';
-        $xmlWithTasks .= $accessTokenInXML;
+        $xmlResponse .= '<initSyncTime>' . $this->initSyncTime . '</initSyncTime>';
+        $xmlResponse .=  "<accessToken>" . json_encode($token) . "</accessToken>";;
 
-        $xmlWithTasks .= '</syncResponse>';
+        $xmlResponse .= '</syncResponse>';
 
-        echo $xmlWithTasks;
-    }
-
-    public function actionAcceptedChanges() {
-        $this->enableCsrfValidation = false;
-        Yii::$app->controller->enableCsrfValidation = false;
-        $post = Yii::$app->request->post();
-        $acceptedChangesJSON = file_get_contents("php://input");
-        $acceptedChanges = Json::decode($acceptedChangesJSON);
-        //$acceptedChanges = Json::decode($acceptedChangesJSON);
-        /*$records = ChangedTask::find()
-            ->where(array('in', 'task_id', array_keys($acceptedChanges['tasks'])))
-            ->andWhere(['user_id' => 1])
-            ->orderBy('id')
-            ->all();
-        foreach($records as $record) {
-            $record->delete();
-        }*/
+        return $xmlResponse;
     }
 
     private function buildTaskXml($task, $datetime) {
@@ -227,7 +251,7 @@ class ConnectionController extends Controller {
         return $changedTasks;
     }
 
-    private function getTokenFronmPost() {
+    private function getTokenFromPost() {
         $post = Yii::$app->request->post();
         //$post['accessToken'] = "";
         if(isset($post['accessToken'])) {
@@ -238,21 +262,14 @@ class ConnectionController extends Controller {
         return $accessToken;
     }
 
-
-
-    private function verifyIdToken($client, $token) {
-        if ($token) {
-            try {
-                $userInfo = $client->verifyIdToken($token);
-            } catch (\Firebase\JWT\ExpiredException  $e) {
-                throw new HttpException(471 ,'Expired token');
-            }
-            if (isset($userInfo) && !is_null($userInfo) && isset($userInfo['email'])) {
-                return $userInfo['email'];
-            } else {
-                throw new HttpException(472 ,'Token is not valid');
-            }
+    private function getCodeFromPost() {
+        $post = Yii::$app->request->post();
+        //$post['accessToken'] = "";
+        if(isset($post['accessCode'])) {
+            $accessToken = $post['accessCode'];
+            return $accessToken;
         }
+        return null;
     }
 
     private function getUserIdByEmail($userEmail) {
@@ -268,7 +285,7 @@ class ConnectionController extends Controller {
         }
     }
 
-    private function processAllChangesFromDevice() {
+    private function processAllChangesFromDevice($changes) {
         $synchronizedObjects = array();
         $synchronizedTasks = array();
         $allChangesInXML = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
@@ -283,7 +300,7 @@ class ConnectionController extends Controller {
             } else {
                 $globalId = (string)$changedTask['globalId'];
                 if (Task::findOne($globalId) != null) {
-                    $serverChangesTime = $this->getServerChangesTimeById($globalId);
+                    $serverChangesTime = $this->getTimeOfTaskChanges($globalId);
                     $clientChangesTime = (String)$changedTask->change[0]->changeDatetime;
                     if (strtotime($serverChangesTime) < strtotime($clientChangesTime)) {
                         $status = (String)$changedTask->change[0]->status;
@@ -296,14 +313,14 @@ class ConnectionController extends Controller {
                         }
 
                         $synchronizedTasks[$localId] = $globalId;
-                        unset($this->updated[$globalId]);
+                        unset($changes['tasks']['updated'][$globalId]);
                     }
                 } else {
-                    $this->deleted[$globalId]['action'] = "Deleted";
+                    $changes['tasks']['deleted'][$globalId]['action'] = "Deleted";
                     $currentDatetime = new \DateTime();
                     $currentDatetime->setTimezone(new \DateTimeZone("Europe/London"));
-                    $this->deleted[$globalId]['datetime'] = $currentDatetime->format('Y-m-d H:i:s');
-                    $this->deleted[$globalId]['datetime'] = $changedTask->datetime;
+                    $changes['tasks']['deleted'][$globalId]['datetime'] = $currentDatetime->format('Y-m-d H:i:s');
+                    $changes['tasks']['deleted'][$globalId]['datetime'] = $changedTask->datetime;
                 }
             }
         }
@@ -337,13 +354,9 @@ class ConnectionController extends Controller {
         $id = (string)$changedTask['globalId'];
         $task = Task::findOne($id);
         $task->delete();
-        //$changeDatetime = (String)$changedTask->change[0]->changeDatetime;
-        //$task->loggingChangesForSync("Changed", $changeDatetime);
-        //return $task->id;
     }
 
-    private function getServerChangesTimeById($taskid)
-    {
+    private function getTimeOfTaskChanges($taskid) {
         $changedTask = ChangedTask::find()
             ->where(['user_id' => $this->userId, 'task_id' => $taskid])
             ->orderBy('id')
@@ -353,5 +366,34 @@ class ConnectionController extends Controller {
         } else {
             return null;
         }
+    }
+
+    private function getRefreshToken() {
+        $refreshToken = null;
+        $params = [':user_id' => $this->userId];
+
+        $r = Yii::$app->db->createCommand('SELECT * FROM refresh_tokens WHERE user_id=:user_id')
+            ->bindValues($params)
+            ->queryOne();
+        if (isset($r['refresh_token'])) {
+            $refreshToken = $r['refresh_token'];
+        }
+        return $refreshToken;
+    }
+
+    private function saveRefreshToken($refreshToken) {
+        $params = [
+            ':user_id' => $this->userId,
+            ':refresh_token' => $refreshToken,
+        ];
+
+        Yii::$app->db->createCommand('
+                INSERT INTO refresh_tokens (user_id, refresh_token)
+                VALUES(:user_id, :refresh_token) ON DUPLICATE KEY UPDATE
+                user_id=:user_id, refresh_token=:refresh_token
+            ')
+            ->bindValues($params)
+            ->execute();
+        return;
     }
 }
