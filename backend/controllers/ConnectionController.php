@@ -15,16 +15,22 @@ use Yii;
 use common\models\User;
 use common\infrastructure\ChangedTask;
 use common\models\Task;
+use common\models\Condition;
+use common\models\Event;
+use common\models\EventType;
+
+
 use yii\web\Controller;
 use yii\web\HttpException;
 
 class ConnectionController extends Controller {
 
-    public static $jsonGoogleClientConfig = "/var/www/brainas.net/backend/config/client_secret_821865067743-3jra19eq308up54c436e1g6fpmvef1g1.apps.googleusercontent.com.json";
+    public static $jsonGoogleClientConfig = "/var/www/brainas.net/backend/config/client_secret_925705811320-cenbqg1fe5jb804116oefl78sbishnga.apps.googleusercontent.com.json";
 
     private $userId;
     private $token;
     private $initSyncTime = null;
+    private $synchronizedObjects;
 
     public function beforeAction($action) {
         $this->enableCsrfValidation = false;
@@ -41,11 +47,11 @@ class ConnectionController extends Controller {
         $changes = $this->getChanges();
 
         // The objects that was updated from device
-        $synchronizedObjectsFromDevice = $this->processAllChangesFromDevice($changes);
+        $this->synchronizedObjects = $this->processAllChangesFromDevice($changes);
 
         // Build xml-document with server-changes
         // and data about changes from device that were accepted
-        $xmlResponse = $this->buildXMLResponse($changes, $synchronizedObjectsFromDevice, $this->token);
+        $xmlResponse = $this->buildXMLResponse($changes, $this->token);
 
         echo $xmlResponse;
     }
@@ -55,9 +61,8 @@ class ConnectionController extends Controller {
         $client = $this->getGoogleClient();
         $token = $this->getAccessToken($client);
 
-
         if ($client->isAccessTokenExpired()) {
-            $client->refreshToken($client->getRefreshToken());
+            $client->refreshToken($this->getRefreshToken());
             $token = $client->getAccessToken();
         }
 
@@ -82,7 +87,8 @@ class ConnectionController extends Controller {
     private static function getGoogleClient() {
         $client = new Google_Client();
         $client->setAuthConfigFile(self::$jsonGoogleClientConfig);
-        $client->setRedirectUri("http://brainas.net/backend/web/connection/");
+        //$client->setRedirectUri("http://brainas.net/backend/web/connection/");
+        $client->setRedirectUri("http://brainas.net/site/login");
         $client->setScopes("https://www.googleapis.com/auth/plus.login");
         $client->setAccessType('online'); //offline
         $client->setApprovalPrompt('force');
@@ -93,7 +99,8 @@ class ConnectionController extends Controller {
     private function getAccessToken($client) {
         $code = $this->getCodeFromPost();
         if ($code != null) {
-            $client->authenticate($code);
+            Yii::warning("&&&&");
+            Yii::warning($client->authenticate($code));
             $token = $client->getAccessToken();
         } else {
             $token = json_decode($this->getTokenFromPost(), true);
@@ -136,7 +143,7 @@ class ConnectionController extends Controller {
         return $changes;
     }
 
-    private function buildXMLResponse($changes, $synchronizedObjectsFromDevice, $token) {
+    private function buildXMLResponse($changes, $token) {
         $xmlResponse = "";
         $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
         $xmlResponse .= '<syncResponse>';
@@ -176,9 +183,10 @@ class ConnectionController extends Controller {
         $xmlResponse .= '</deleted>';
         $xmlResponse .= '</tasks>';
 
-        if (!empty($synchronizedObjectsFromDevice)) {
+        if (!empty($this->synchronizedObjects)) {
             $xmlResponse .= '<synchronizedObjects>';
-            $synchronizedTasks = $synchronizedObjectsFromDevice['tasks'];
+            // Tasks
+            $synchronizedTasks = $this->synchronizedObjects['tasks'];
             if (!empty($synchronizedTasks)) {
                 $xmlResponse .= '<synchronizedTasks>';
                 foreach($synchronizedTasks as $localId => $globalId) {
@@ -189,8 +197,34 @@ class ConnectionController extends Controller {
                 }
                 $xmlResponse .= '</synchronizedTasks>';
             }
+            // Conditions
+            if (!empty($this->synchronizedObjects['conditions'])) {
+                $synchronizedConditions = $this->synchronizedObjects['conditions'];
+                $xmlResponse .= '<synchronizedConditions>';
+                foreach($synchronizedConditions as $localId => $globalId) {
+                    $xmlResponse .= "<synchronizedCondition>" .
+                        "<localId>" . $localId . "</localId>" .
+                        "<globalId>" . $globalId . "</globalId>" .
+                        "</synchronizedCondition>";
+                }
+                $xmlResponse .= '</synchronizedConditions>';
+            }
+
+            // Events
+            if (!empty($this->synchronizedObjects['events'])) {
+                $synchronizedEvents = $this->synchronizedObjects['events'];
+                $xmlResponse .= '<synchronizedEvents>';
+                foreach($synchronizedEvents as $localId => $globalId) {
+                    $xmlResponse .= "<synchronizedEvent>" .
+                        "<localId>" . $localId . "</localId>" .
+                        "<globalId>" . $globalId . "</globalId>" .
+                        "</synchronizedEvent>";
+                }
+                $xmlResponse .= '</synchronizedEvents>';
+            }
             $xmlResponse .= '</synchronizedObjects>';
         }
+
 
         $xmlResponse .= '<initSyncTime>' . $this->initSyncTime . '</initSyncTime>';
         $xmlResponse .=  "<accessToken>" . json_encode($token) . "</accessToken>";;
@@ -286,7 +320,6 @@ class ConnectionController extends Controller {
     }
 
     private function processAllChangesFromDevice($changes) {
-        $synchronizedObjects = array();
         $synchronizedTasks = array();
         $allChangesInXML = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
 
@@ -299,6 +332,7 @@ class ConnectionController extends Controller {
                 $synchronizedTasks[$localId] = $globalId;
             } else {
                 $globalId = (string)$changedTask['globalId'];
+                $localId = (string)$changedTask['id'];
                 if (Task::findOne($globalId) != null) {
                     $serverChangesTime = $this->getTimeOfTaskChanges($globalId);
                     $clientChangesTime = (String)$changedTask->change[0]->changeDatetime;
@@ -309,51 +343,138 @@ class ConnectionController extends Controller {
                             $localId = 0;
                         } elseif ($status == "UPDATED" || $status == "CREATED") {
                             $this->updateTaskFromDevice($changedTask);
-                            $localId = (string)$changedTask['id'];
                         }
-
-                        $synchronizedTasks[$localId] = $globalId;
                         unset($changes['tasks']['updated'][$globalId]);
                     }
+                    $synchronizedTasks[$localId] = $globalId;
                 } else {
                     $changes['tasks']['deleted'][$globalId]['action'] = "Deleted";
                     $currentDatetime = new \DateTime();
                     $currentDatetime->setTimezone(new \DateTimeZone("Europe/London"));
                     $changes['tasks']['deleted'][$globalId]['datetime'] = $currentDatetime->format('Y-m-d H:i:s');
-                    $changes['tasks']['deleted'][$globalId]['datetime'] = $changedTask->datetime;
+                    $synchronizedTasks[$localId] = $globalId;
                 }
             }
         }
 
-        $synchronizedObjects['tasks'] = $synchronizedTasks;
-        return $synchronizedObjects;
+        $this->synchronizedObjects['tasks'] = $synchronizedTasks;
+        return $this->synchronizedObjects;
     }
 
     private function addTaskFromDevice ($newTaskFromDevice) {
         $task = new Task();
         $task->message = (String)$newTaskFromDevice->message;
         $task->user = $this->userId;
-        $task->save();
-        $changeDatetime = (String)$newTaskFromDevice->change[0]->changeDatetime;
-        $task->loggingChangesForSync("Created", $changeDatetime);
-        return $task->id;
+        if ($task->save()) {
+            $changeDatetime = (String)$newTaskFromDevice->change[0]->changeDatetime;
+            $task->loggingChangesForSync("Created", $changeDatetime);
+            return $task->id;
+        }
+        return 0;
     }
 
     private function updateTaskFromDevice ($changedTask) {
         $id = (string)$changedTask['globalId'];
         $message = (string)$changedTask->message;
+        $description = (string)$changedTask->description;
         $task = Task::findOne($id);
         $task->message = $message;
+        $task->description = $description;
+        Yii::warning("=====conditions======");
+        Yii::warning($changedTask->conditions);
         $task->save();
+        $this->cleanDeletedConditions($changedTask->conditions->condition, $task->id);
+        foreach ($changedTask->conditions->condition as $c) {
+            $this->addConditionFromXML($c, $task->id);
+        }
         $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
         $task->loggingChangesForSync("Changed", $changeDatetime);
         return $task->id;
     }
 
+    private function addConditionFromXML(\SimpleXMLElement $conditionXML, $taskId) {
+        if (isset($conditionXML['globalId']) && $conditionXML['globalId'] != 0) {
+            $conditionId = $conditionXML['globalId'];
+            $condition = Condition::find($conditionId)
+                ->where(['id' => $conditionId])
+                ->one();
+        } else {
+            $condition = new Condition();
+            $condition->task_id = $taskId;
+            $condition->save();
+        }
+        Yii::warning("!!!!@@@");
+        Yii::warning($conditionXML);
+        Yii::warning($conditionXML->events);
+        Yii::warning($conditionXML->events->event);
+        $this->cleanDeletedEvents($conditionXML->events->event, $conditionXML->id);
+        foreach($conditionXML->events->event as $e) {
+            $this->addEventFromXML($e, $condition->id);
+        }
+        $this->synchronizedObjects['conditions'][(string)$conditionXML['localId']] = $condition->id;
+    }
+
+    private function addEventFromXML(\SimpleXMLElement $eventXML, $conditionId) {
+        if (isset($eventXML['globalId']) && $eventXML['globalId'] != 0) {
+            $eventId = $eventXML['globalId'];
+            $event = Event::find($eventId)
+                ->where(['id' => $eventId])
+                ->one();
+        } else {
+            $event = new Event();
+            $event->condition_id = $conditionId;
+        }
+        Yii::warning("Fucking value");
+        Yii::warning($eventXML);
+        Yii::warning($eventXML->type);
+        Yii::warning((string)$eventXML->type);
+        $event->type = EventType::getTypeIdByName((string)$eventXML->type);
+        $event->params = (string)$eventXML->params;
+        $event->save();
+        $this->synchronizedObjects['events'][(string)$eventXML['localId']] = (string)$eventXML['globalId'];
+    }
+
+    private function cleanDeletedConditions(\SimpleXMLElement $conditionsXML, $taskId) {
+        $conditionsIds = array();
+        foreach ($conditionsXML as $conditionXML) {
+            if (isset($conditionXML['globalId']) && $conditionXML['globalId'] != 0) {
+                $conditionsIds[] = $conditionXML['globalId'];
+            }
+        }
+        $conditionsFromDB = Condition::find()
+            ->where(['task_id' => $taskId])
+            ->all();
+        foreach($conditionsFromDB as $conditionFromDB) {
+            if(!in_array ($conditionFromDB->id, $conditionsIds)) {
+                $conditionFromDB->delete();
+            }
+        }
+    }
+
+
+    private function cleanDeletedEvents(\SimpleXMLElement $eventsXML, $conditionId) {
+        $eventsIds = array();
+        foreach ($eventsXML as $eventXML) {
+            if (isset($eventXML['globalId']) && $eventXML['globalId'] != 0) {
+                $eventsIds[] = $eventXML['globalId'];
+            }
+        }
+        $eventsFromDB = Event::find()
+            ->where(['condition_id' => $conditionId])
+            ->all();
+        foreach($eventsFromDB as $eventFromDB) {
+            if(!in_array ($eventFromDB->id, $eventsIds)) {
+                $eventFromDB->delete();
+            }
+        }
+    }
+
     private function deleteTaskFromDevice ($changedTask) {
         $id = (string)$changedTask['globalId'];
         $task = Task::findOne($id);
-        $task->delete();
+        if (isset($task)) {
+            $task->delete();
+        }
     }
 
     private function getTimeOfTaskChanges($taskid) {
@@ -371,13 +492,17 @@ class ConnectionController extends Controller {
     private function getRefreshToken() {
         $refreshToken = null;
         $params = [':user_id' => $this->userId];
-
+Yii::warning("=====getRefreshToken======");
+        Yii::warning($this->userId);
         $r = Yii::$app->db->createCommand('SELECT * FROM refresh_tokens WHERE user_id=:user_id')
             ->bindValues($params)
             ->queryOne();
+        Yii::warning('SELECT * FROM refresh_tokens WHERE user_id=:user_id');
         if (isset($r['refresh_token'])) {
             $refreshToken = $r['refresh_token'];
         }
+        Yii::warning("===========");
+        Yii::warning($refreshToken);
         return $refreshToken;
     }
 

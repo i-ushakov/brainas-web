@@ -8,6 +8,7 @@
 
 namespace common\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 use common\infrastructure\ChangedTask;
 
@@ -69,5 +70,21 @@ class Task extends ActiveRecord {
         }
         $changedTask->action = $action;
         $changedTask->save();
+    }
+
+    public function addConditionFromXML(\SimpleXMLElement $conditionXML) {
+        if (isset($conditionXML['globalId'])) {
+            $conditionId = $conditionXML['globalId'];
+            $condition = Condition::find($conditionId)
+                ->where(['id' => $conditionId])
+                ->one();
+        } else {
+            $condition = new Condition();
+            $condition->task_id = $this->id;
+            $condition->save();
+        }
+        foreach($conditionXML->events->event as $event) {
+            $condition->addEventFromXML($event);
+        }
     }
 }
