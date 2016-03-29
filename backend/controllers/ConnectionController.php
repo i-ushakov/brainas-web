@@ -60,9 +60,8 @@ class ConnectionController extends Controller {
         // Create Google client and get accessToken
         $client = $this->getGoogleClient();
         $token = $this->getAccessToken($client);
-
         if ($client->isAccessTokenExpired()) {
-            $client->refreshToken($this->getRefreshToken());
+            $client->refreshToken($token['refresh_token']);
             $token = $client->getAccessToken();
         }
 
@@ -80,7 +79,6 @@ class ConnectionController extends Controller {
                 $token['refresh_token'] = $refreshToken;
             }
         }
-
         $this->token = $token;
     }
 
@@ -99,8 +97,7 @@ class ConnectionController extends Controller {
     private function getAccessToken($client) {
         $code = $this->getCodeFromPost();
         if ($code != null) {
-            Yii::warning("&&&&");
-            Yii::warning($client->authenticate($code));
+            $client->authenticate($code);
             $token = $client->getAccessToken();
         } else {
             $token = json_decode($this->getTokenFromPost(), true);
@@ -300,8 +297,8 @@ class ConnectionController extends Controller {
         $post = Yii::$app->request->post();
         //$post['accessToken'] = "";
         if(isset($post['accessCode'])) {
-            $accessToken = $post['accessCode'];
-            return $accessToken;
+            $accessCode = $post['accessCode'];
+            return $accessCode;
         }
         return null;
     }

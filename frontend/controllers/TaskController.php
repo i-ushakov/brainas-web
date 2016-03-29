@@ -182,7 +182,7 @@ class TaskController extends Controller {
     private function prepareTsakForSending($task){
         $item['id'] = $task->id;
         $item['message'] = $task->message;
-        $item['description'] = $task->description;
+        $item['description'] =  nl2br($task->description);
         $conditions = $task->conditions;
         foreach($conditions as $condition){
             $c = array();
