@@ -63,7 +63,7 @@ class Task extends ActiveRecord {
 
         if ($changeDatetime == null) {
             $currentDatetime = new \DateTime();
-            $currentDatetime->setTimezone(new \DateTimeZone("Europe/London"));
+            $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
             $changedTask->datetime = $currentDatetime->format('Y-m-d H:i:s');
         } else {
             $changedTask->datetime = $changeDatetime;

@@ -112,13 +112,13 @@ class ConnectionController extends Controller {
             // Getting changed tasks from website
             $changedTasks = $this->getChangedTasks(null);
             $currentDatetime = new \DateTime();
-            $currentDatetime->setTimezone(new \DateTimeZone("Europe/London"));
+            $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
             $this->initSyncTime = $currentDatetime->format('Y-m-d H:i:s');
         } else {
             $this->initSyncTime = $_POST['initSyncTime'];
             $changedTasks = $this->getChangedTasks($this->initSyncTime);
             $currentDatetime = new \DateTime();
-            $currentDatetime->setTimezone(new \DateTimeZone("Europe/London"));
+            $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
             $this->initSyncTime = $currentDatetime->format('Y-m-d H:i:s');
         }
 
@@ -347,7 +347,7 @@ class ConnectionController extends Controller {
                 } else {
                     $changes['tasks']['deleted'][$globalId]['action'] = "Deleted";
                     $currentDatetime = new \DateTime();
-                    $currentDatetime->setTimezone(new \DateTimeZone("Europe/London"));
+                    $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
                     $changes['tasks']['deleted'][$globalId]['datetime'] = $currentDatetime->format('Y-m-d H:i:s');
                     $synchronizedTasks[$localId] = $globalId;
                 }
