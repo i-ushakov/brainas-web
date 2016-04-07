@@ -353,5 +353,52 @@ a.desc:after {
     cursor: pointer;
 }
 
+.task-card #addConditionBtnCont {
+    text-align: center;
+    margin-top: 20px;
+}
 
+.task-card #addConditionBtn span.addConditionBtnLable {
+    margin-left: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.condition-type-selector.panel {
+    padding: 10px;
+    text-align: center;
+}
+
+.add-gps-event {
+    font-weight: bold;
+    padding-left: 20px;
+    background-color: lightyellow;
+    background-image: url("../images/gps-icon.png");
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-position: left;
+}
+
+.condition-type-selector-cont {
+    margin-top: 10px;
+
+}
+
+.condition-type-selector {
+    background-color: #EAEAEA;
+}
+
+.condition-type-selector .cancel-add-condition-cont {
+    text-align: right;
+    height: 8px;
+}
+
+.cancel-add-condition-cont .cancel-condition-icon {
+    position: relative;
+    top: -10px;
+    margin-right: -6px;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
 

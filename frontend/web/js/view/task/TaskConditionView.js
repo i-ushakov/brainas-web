@@ -16,7 +16,7 @@ var TaskConditionView = Backbone.View.extend({
     template: _.template($('#task-condition-template').html()),
 
     events: {
-        'click .condition-row': 'collapseConditionArea'
+        'click .condition-row': 'toggleConditionArea'
     },
 
     tEvents : {},
@@ -39,10 +39,15 @@ var TaskConditionView = Backbone.View.extend({
         var self = this;
         var mapCanvas = this.$el.find('.google-map')[0];
         var myLatLng = new google.maps.LatLng(this.tEvents['GPS'].get("params").lat, this.tEvents['GPS'].get("params").lng);
+        if (this.tEvents['GPS'].get("params").lat == 0 && this.tEvents['GPS'].get("params").lng == 0) {
+            var zoom = 1;
+        } else {
+            var zoom = 15;
+        }
 
         var mapOptions = {
             center: myLatLng,
-            zoom: 15,
+            zoom: zoom,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         }
 
@@ -58,10 +63,19 @@ var TaskConditionView = Backbone.View.extend({
         });
     },
 
-    collapseConditionArea: function() {
+    toggleConditionArea: function() {
         this.$el.find('.condition-collapse').toggle();
         this.map = this.map || this.initializeMap();
     },
+
+    collapseConditionArea: function() {
+        if (this.$el.find('.condition-collapse').is(":visible")) {
+            this.$el.find('.condition-collapse').toggle();
+        }
+        this.map = this.map || this.initializeMap();
+    },
+
+
 
     placeMarkerAndPanTo: function (latLng, map) {
         this.marker.setMap(null);

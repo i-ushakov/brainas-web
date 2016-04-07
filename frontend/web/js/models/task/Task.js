@@ -12,11 +12,11 @@ var Task = Backbone.Model.extend({
     id : null,
     message : null,
     description : null,
-    conditions: [],
+    conditions: new Conditions(),
 
     initialize : function(task) {
         this.id = task.id;
-        var conditions = [];
+        var conditions = new Conditions();
         _.each(task.conditions, function(condition) {
             var condition = new Condition(condition);
             conditions.push(condition);
@@ -81,7 +81,7 @@ var Task = Backbone.Model.extend({
         this.set("id", task.id);
         this.set("message", task.message);
         this.set("description", task.description);
-        var conditions = [];
+        var conditions = new Conditions();
         _.each(task.conditions, function(condition) {
             var condition = new Condition(condition);
             conditions.push(condition);

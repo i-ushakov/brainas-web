@@ -4,12 +4,12 @@ var ConditionTypeSelectorView = Backbone.View.extend({
     template: _.template($('#condition-type-selector-template').html()),
 
     events: {
-        'click .add-gps-event': 'addGPSEvent',
-        'click .gps-event-ready': 'GPSEventIsDone'
+        'click .add-gps-event': 'addLocationEvent',
+        'click .cancel-condition-icon': 'cancelAddingCondition'
     },
 
     initialize: function (condition) {
-        _.bindAll(this, 'addGPSEvent');
+        _.bindAll(this, 'addLocationEvent');
         this.model = condition;
         this.render();
     },
@@ -18,30 +18,37 @@ var ConditionTypeSelectorView = Backbone.View.extend({
         this.$el.html(this.template());
     },
 
-    addGPSEvent: function(e) {
-        this.$el.find(".add-gps-event-cont").show();
-        this.$el.find("button.add-gps-event").hide();
-    },
-
-    GPSEventIsDone: function() {
+    addLocationEvent: function(e) {
         this.model.set('id',null);
-        this.model.set('conditionId', null);
-        event = {};
-        event.id = null;
-        event.type = "GPS";
-        var locationSource = $('[name=location]').val();
-        if (locationSource == "current") {
-            var location = app.getCurrentUserLocation();
-            var params = {lat: location.lat, lng:location.lng, radius: 100};
-            event.params = params;
+        eventJSON = {};
+        eventJSON.id = null;
+        eventJSON.type = "GPS";
+
+        if (navigator.geolocation) {
+            console.log('Geolocation is supported!');
+        }
+        else {
+            console.log('Geolocation is not supported for this Browser/OS version yet.');
+        }
+
+        var location = app.getCurrentUserLocation();
+        if (location != null) {
+            eventJSON.params = {lat: location.latitude, lng: location.longitude, radius: 100};
         } else {
-            event.set("params", "{1,2,3}");
+            eventJSON.params = {lat: 0, lng: 0, radius: 100};
         }
+
         var events = {
-            GPS: new Event(event) || null
+            GPS: new Event(eventJSON) || null
         }
+
         this.model.set('events', events);
         this.model.trigger("eventWasAdded", this);
+        this.remove();
+    },
+
+    cancelAddingCondition: function() {
+        this.model.trigger("conditionWasCancled", this.model);
         this.remove();
     }
 });

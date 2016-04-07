@@ -26,7 +26,7 @@ var TaskCardView = Backbone.View.extend({
         'click .task-message-edit .cancel-edit-icon': 'cancelEditMessage',
         'click .task-description-edit .cancel-edit-icon': 'cancelEditDescription',
         'click #save-changes-btn': 'save',
-        'click .add-condition-btn': 'addConditionHandler',
+        'click #addConditionBtn': 'addConditionHandler',
 
         'keyup .task-message-edit textarea': 'changeMessageHandler',
         'keyup .task-description-edit textarea': 'changeDescriptionHandler',
@@ -35,7 +35,7 @@ var TaskCardView = Backbone.View.extend({
     template: _.template( $('#task-card-modal-template').html()),
 
     initialize: function (options) {
-        _.bindAll(this, 'onSaveHandler', 'onConditionReadyHandler');
+        _.bindAll(this, 'onSaveHandler', 'onEventTypeSelectedHandler', 'onConditionCancledHandler');
         this.render();
         this.messageTextArea = this.$el.find('.task-message-edit textarea');
         this.messageView = this.$el.find('.task-message-cont');
@@ -67,27 +67,27 @@ var TaskCardView = Backbone.View.extend({
         $(modal.on('hidden.bs.modal', function () {
             self.close();
         }));
-        this.addConditions();
+        this.renderConditions();
     },
 
     refreshCard: function() {
-        this.addConditions();
+        this.renderConditions();
     },
 
-    addConditions: function() {
+    renderConditions: function() {
         var self = this;
         self.conditionViews = [];
 
         self.$el.find('.task-conditions-cont').html('');
 
-        if (self.model.get("conditions").length == 0) {
+        /*if (self.model.get("conditions").length == 0) {
             self.$el.find('.task-conditions-cont').append("<div class='task-condition empty-condition add-condition-btn'>" +
                 "<div class='plus-condition'>+</div><div class='add-condition'>Add condition</div>" +
                 "<div class='clear'></div>" +
                 "</div>");
-        }
+        }*/
 
-        _.each(self.model.get("conditions"), function(condition) {
+        self.model.get("conditions").each(function(condition) {
             var conditionView = new TaskConditionView({
                     model: condition,
                     parent:self}
@@ -95,7 +95,7 @@ var TaskCardView = Backbone.View.extend({
             self.$el.find('.task-conditions-cont').append(
                 conditionView.render());
             self.conditionViews.push(conditionView);
-        })
+        });
     },
 
     editMessage: function() {
@@ -185,19 +185,39 @@ var TaskCardView = Backbone.View.extend({
     },
 
     addConditionHandler: function(event) {
+        this.closeAllConditions();
+        this.$el.find('#addConditionBtn').addClass('disabled');
+        $(this.el).off('click', '#addConditionBtn');
         var conditions = this.model.get("conditions");
         var condition = new Condition(null);
-        condition.on('eventWasAdded', this.onConditionReadyHandler);
+        condition.on('eventWasAdded', this.onEventTypeSelectedHandler);
+        condition.on('conditionWasCancled', this.onConditionCancledHandler);
         conditions.push(condition);
         var conditionSelectorView = new ConditionTypeSelectorView(condition);
-        $(this.el).off('click', '.add-condition-btn');
-        $(".add-condition-btn").html(conditionSelectorView.$el);
+        this.$el.find('.condition-type-selector-cont').html(conditionSelectorView.$el);
     },
 
-    onConditionReadyHandler: function (obj) {
-        this.addConditions();
-        var addedConditionView = this.conditionViews[this.conditionViews.length - 1];
+    onEventTypeSelectedHandler: function (obj) {
+        var self = this;
+        self.renderConditions();
+        var addedConditionView = self.conditionViews[self.conditionViews.length - 1];
         addedConditionView.$el.find('.condition-row').trigger("click");
+        $('#addConditionBtn').removeClass('disabled');
+        $(this.el).on('click', '#addConditionBtn', function() {self.addConditionHandler();});
         $('#save-changes-btn').show();
+    },
+
+    onConditionCancledHandler: function(condition) {
+        var self = this;
+        self.model.get("conditions").remove(condition)
+        $('#addConditionBtn').removeClass('disabled');
+        $(self.el).on('click', '#addConditionBtn', function() {self.addConditionHandler();});
+    },
+
+    closeAllConditions: function () {
+        var self = this;
+        _.each(self.conditionViews, function (condition) {
+            condition.collapseConditionArea()
+        });
     }
 });

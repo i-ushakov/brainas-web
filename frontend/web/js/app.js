@@ -4,13 +4,17 @@
 
 var app = app || {};
 
-app.url = '/',
+app.url = '/';
+
+app.location = null;
 
 app.getCurrentUserLocation = function() {
-    var location = {};
-    location.lat = 55.595865;
-    location.lng = 38.113754;
-    return location;
+    return app.location.coords;
+}
+
+app.setCurrentUserLocation = function(position) {
+    debugger;
+    app.location = position
 }
 
 app.isAuthorized = function() {
@@ -26,4 +30,12 @@ $(function () {
     app.MainPanel = new MainPanel();
     app.MainPanelView = new MainPanelView({model: app.MainPanel});
     app.MainPanel.toggleToTaskPanel();
+
+    // check for Geolocation support
+    if (navigator.geolocation) {
+        console.log('Geolocation is supported!');
+        navigator.geolocation.getCurrentPosition(function(position) {debugger; app.location = position;} );
+    } else {
+        console.log('Geolocation is not supported for this Browser/OS version yet.');
+    }
 });
