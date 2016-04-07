@@ -35,7 +35,7 @@ var TaskCardView = Backbone.View.extend({
     template: _.template( $('#task-card-modal-template').html()),
 
     initialize: function (options) {
-        _.bindAll(this, 'onSaveHandler', 'onEventTypeSelectedHandler', 'onConditionCancledHandler');
+        _.bindAll(this, 'onSaveHandler', 'onEventTypeSelectedHandler', 'onConditionCancledHandler', 'onDeleteConditionHandler');
         this.render();
         this.messageTextArea = this.$el.find('.task-message-edit textarea');
         this.messageView = this.$el.find('.task-message-cont');
@@ -95,6 +95,8 @@ var TaskCardView = Backbone.View.extend({
             self.$el.find('.task-conditions-cont').append(
                 conditionView.render());
             self.conditionViews.push(conditionView);
+            debugger;
+            condition.on('conditionWasRemoved', self.onDeleteConditionHandler);
         });
     },
 
@@ -185,7 +187,7 @@ var TaskCardView = Backbone.View.extend({
     },
 
     addConditionHandler: function(event) {
-        this.closeAllConditions();
+        this.collapseAllConditions();
         this.$el.find('#addConditionBtn').addClass('disabled');
         $(this.el).off('click', '#addConditionBtn');
         var conditions = this.model.get("conditions");
@@ -214,10 +216,16 @@ var TaskCardView = Backbone.View.extend({
         $(self.el).on('click', '#addConditionBtn', function() {self.addConditionHandler();});
     },
 
-    closeAllConditions: function () {
+    collapseAllConditions: function () {
         var self = this;
         _.each(self.conditionViews, function (condition) {
             condition.collapseConditionArea()
         });
+    },
+
+    onDeleteConditionHandler: function(condition) {
+        debugger;
+        this.model.get("conditions").remove(condition);
+        $('#save-changes-btn').show();
     }
 });

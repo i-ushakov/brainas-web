@@ -402,3 +402,24 @@ a.desc:after {
     cursor: pointer;
 }
 
+/* Conditions rows */
+.task-condition {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.condition-event {
+    margin-bottom: 4px;
+}
+
+.delete-condition-cont {
+    text-align: right;
+    height: 5px;
+}
+
+.delete-condition-cont .delete-condition-icon {
+    width: 15px;
+    height: 15px;
+    position: relative;
+    top: -5px;
+}

@@ -16,7 +16,8 @@ var TaskConditionView = Backbone.View.extend({
     template: _.template($('#task-condition-template').html()),
 
     events: {
-        'click .condition-row': 'toggleConditionArea'
+        'click .condition-row': 'toggleConditionArea',
+        'click .delete-condition-icon': 'deleteConditionHandler'
     },
 
     tEvents : {},
@@ -94,5 +95,11 @@ var TaskConditionView = Backbone.View.extend({
             gpsParams.lat = latLng.lat();
             gpsParams.lng = latLng.lng();
         }
+    },
+
+    deleteConditionHandler: function() {
+        this.model.trigger("conditionWasRemoved", this.model);
+        this.remove();
+        return false;
     }
 });

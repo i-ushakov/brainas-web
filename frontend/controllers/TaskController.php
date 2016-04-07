@@ -90,6 +90,7 @@ class TaskController extends Controller {
                 $task->description = $taskForSave['description'];
             }
 
+            $this->cleanDeletedConditions($taskForSave['conditions'], $task->id);
             if (isset($taskForSave['conditions']) && count($taskForSave['conditions']) > 0) {
                 $conditionsAr = Json::decode($post['conditions']);
                 foreach ($conditionsAr as $conditionAr) {
@@ -211,5 +212,30 @@ class TaskController extends Controller {
             $this->userId = Yii::$app->user->id;
             return true;
         }
+    }
+
+    private function cleanDeletedConditions($conditionsForSave, $taskId) {
+        $conditionsIds = array();
+        if (!empty($conditionsForSave)) {
+            foreach ($conditionsForSave as $conditionForSave) {
+                if (isset($conditionForSave['id']) && $conditionForSave['id'] != 0) {
+                    $conditionsIds[] = $conditionForSave['id'];
+                }
+            }
+        }
+        $conditionsFromDB = Condition::find()
+            ->where(['task_id' => $taskId])
+            ->all();
+        foreach($conditionsFromDB as $conditionFromDB) {
+            if(!in_array ($conditionFromDB->id, $conditionsIds)) {
+                $conditionFromDB->delete();
+                $this->cleanDeletedEvents($conditionFromDB->id);
+            }
+        }
+    }
+
+
+    private function cleanDeletedEvents($conditionId) {
+        Event::deleteAll(['condition_id' => $conditionId]);
     }
 }

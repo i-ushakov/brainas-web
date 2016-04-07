@@ -1,6 +1,9 @@
 <script type="text/template" id="task-condition-template">
     <div class="task-condition" condition-id="1">
         <div class="condition-row">
+            <div class="delete-condition-cont">
+                <img class="delete-condition-icon" src = "<%= app.url %>images/delete_icon_100.png" />
+            </div>
             <% if (typeof(GPS) !== "undefined" && GPS != null) { %>
             <div class="condition-event gps-event">
                 <%= GPS.getEventInfo() %>
