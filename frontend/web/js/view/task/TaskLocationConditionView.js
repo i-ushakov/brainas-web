@@ -5,7 +5,7 @@
 
 var app = app || {};
 
-var TaskConditionView = Backbone.View.extend({
+var TaskLocationConditionView = Backbone.View.extend({
 
     parent: null,
 
@@ -73,10 +73,7 @@ var TaskConditionView = Backbone.View.extend({
         if (this.$el.find('.condition-collapse').is(":visible")) {
             this.$el.find('.condition-collapse').toggle();
         }
-        this.map = this.map || this.initializeMap();
     },
-
-
 
     placeMarkerAndPanTo: function (latLng, map) {
         this.marker.setMap(null);

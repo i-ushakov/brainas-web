@@ -42,7 +42,8 @@ var TaskTileView = Backbone.View.extend({
 
     openTaskCard: function(e) {
         new TaskCardView({model: this.model});
-        e.stopPropagation()
+        e.stopPropagation();
+        return false;
     },
 
     addNewTaskHandler: function() {

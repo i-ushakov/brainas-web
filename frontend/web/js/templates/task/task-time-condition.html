@@ -1,21 +1,17 @@
-<script type="text/template" id="task-condition-template">
-    <div class="task-condition location-condition" condition-id="1">
+<script type="text/template" id="task-time-condition-template">
+    <div class="task-condition time-condition" condition-id="">
         <div class="condition-row">
             <div class="delete-condition-cont">
                 <img class="delete-condition-icon" src = "<%= app.url %>images/delete_icon_100.png" />
             </div>
-            <% if (typeof(GPS) !== "undefined" && GPS != null) { %>
-            <div class="condition-event gps-event">
-                <%= GPS.getEventInfo() %>
+            <div class="condition-event time-event">
+                <%= event.getEventInfo() %>
             </div>
-            <% } %>
         </div>
         <div class="clear"></div>
         <div class="condition-collapse collapse">
             <div class="well">
-                <div class="google-map">
-                    map
-                </div>
+                <div class="datetimepicker"></div>
             </div>
         </div>
     </div>

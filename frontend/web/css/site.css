@@ -377,6 +377,18 @@ a.desc:after {
     background-size: 20px;
     background-repeat: no-repeat;
     background-position: left;
+    width: 120px;
+}
+
+.add-time-event {
+    font-weight: bold;
+    padding-left: 20px;
+    background-color: #5bc0de;
+    background-image: url("../images/ic_alarm_on_white_48dp_2x.png");
+    background-size: 24px;
+    background-position: left;
+    background-repeat: no-repeat;
+    width: 120px;
 }
 
 .condition-type-selector-cont {
@@ -422,4 +434,17 @@ a.desc:after {
     height: 15px;
     position: relative;
     top: -5px;
+}
+
+/* TIME Event */
+.task-condition.time-condition {
+    background-color: #5bc0de;
+}
+.condition-event.time-event {
+    background-image: url("../images/ic_alarm_on_white_48dp_2x.png");
+    background-repeat: no-repeat;
+    background-size: 20px;
+    padding-left: 20px;
+    font-weight: bold;
+    color: white;
 }

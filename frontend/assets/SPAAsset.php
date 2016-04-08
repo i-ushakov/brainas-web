@@ -16,12 +16,16 @@ class SPAAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
+        "css/bootstrap-datetimepicker.min.css"
     ];
     public $js = [
+        "js/libs/moment.min.js",
+        "js/libs/bootstrap-datetimepicker.min.js",
         'js/libs/underscore.js',
         'js/libs/backbone.js',
         'https://maps.googleapis.com/maps/api/js',
         'js/settings.js',
+        'js/Utils.js',
         'js/models/panels/MainPanel.js',
         'js/models/panels/TaskPanel.js',
         'js/models/task/Condition.js',
@@ -32,7 +36,8 @@ class SPAAsset extends AssetBundle
         'js/view/panels/MainPanelView.js',
         'js/view/panels/TaskPanelView.js',
         'js/view/task/TaskTileView.js',
-        'js/view/task/TaskConditionView.js',
+        'js/view/task/TaskLocationConditionView.js',
+        'js/view/task/TaskTimeConditionView.js',
         'js/view/task/TaskCardView.js',
         'js/collections/Tasks.js',
         'js/app.js'

@@ -3,7 +3,10 @@
     <div class="cancel-add-condition-cont">
         <img class="cancel-condition-icon" src = "<%= app.url %>images/cancel_edit_icon.png" />
     </div>
-    <button type="button" class="btn btn-default add-gps-event">GPS</button>
+    <button type="button" class="btn btn-default add-gps-event">Location</button>
+    <% if (timeBtn == true){ %>
+    <button type="button" class="btn btn-default add-time-event">Time</button>
+    <% } %>
 </div>
 </script>
 

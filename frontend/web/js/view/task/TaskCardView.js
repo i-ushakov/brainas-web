@@ -80,23 +80,25 @@ var TaskCardView = Backbone.View.extend({
 
         self.$el.find('.task-conditions-cont').html('');
 
-        /*if (self.model.get("conditions").length == 0) {
-            self.$el.find('.task-conditions-cont').append("<div class='task-condition empty-condition add-condition-btn'>" +
-                "<div class='plus-condition'>+</div><div class='add-condition'>Add condition</div>" +
-                "<div class='clear'></div>" +
-                "</div>");
-        }*/
-
         self.model.get("conditions").each(function(condition) {
-            var conditionView = new TaskConditionView({
-                    model: condition,
-                    parent:self}
-            );
+            if (condition.getType() == 'GPS') {
+                var conditionView = new TaskLocationConditionView({
+                        model: condition,
+                        parent: self
+                    }
+                );
+            } else if (condition.getType() == 'TIME') {
+                var conditionView = new TaskTimeConditionView({
+                        model: condition,
+                        parent: self
+                    }
+                );
+            }
             self.$el.find('.task-conditions-cont').append(
                 conditionView.render());
             self.conditionViews.push(conditionView);
-            debugger;
             condition.on('conditionWasRemoved', self.onDeleteConditionHandler);
+            condition.on('conditionWasChanged', self.taskWasChangedHandler);
         });
     },
 
@@ -191,11 +193,10 @@ var TaskCardView = Backbone.View.extend({
         this.$el.find('#addConditionBtn').addClass('disabled');
         $(this.el).off('click', '#addConditionBtn');
         var conditions = this.model.get("conditions");
-        var condition = new Condition(null);
-        condition.on('eventWasAdded', this.onEventTypeSelectedHandler);
-        condition.on('conditionWasCancled', this.onConditionCancledHandler);
-        conditions.push(condition);
-        var conditionSelectorView = new ConditionTypeSelectorView(condition);
+
+        conditions.on('eventWasAdded', this.onEventTypeSelectedHandler);
+        conditions.on('conditionWasCancled', this.onConditionCancledHandler);
+        var conditionSelectorView = new ConditionTypeSelectorView(conditions);
         this.$el.find('.condition-type-selector-cont').html(conditionSelectorView.$el);
     },
 
@@ -224,8 +225,11 @@ var TaskCardView = Backbone.View.extend({
     },
 
     onDeleteConditionHandler: function(condition) {
-        debugger;
         this.model.get("conditions").remove(condition);
+        $('#save-changes-btn').show();
+    },
+
+    taskWasChangedHandler: function() {
         $('#save-changes-btn').show();
     }
 });

@@ -13,7 +13,6 @@ app.getCurrentUserLocation = function() {
 }
 
 app.setCurrentUserLocation = function(position) {
-    debugger;
     app.location = position
 }
 
@@ -34,7 +33,7 @@ $(function () {
     // check for Geolocation support
     if (navigator.geolocation) {
         console.log('Geolocation is supported!');
-        navigator.geolocation.getCurrentPosition(function(position) {debugger; app.location = position;} );
+        navigator.geolocation.getCurrentPosition(function(position) {app.location = position;} );
     } else {
         console.log('Geolocation is not supported for this Browser/OS version yet.');
     }

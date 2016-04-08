@@ -5,21 +5,27 @@ var ConditionTypeSelectorView = Backbone.View.extend({
 
     events: {
         'click .add-gps-event': 'addLocationEvent',
+        'click .add-time-event': 'addTimeEvent',
         'click .cancel-condition-icon': 'cancelAddingCondition'
     },
 
-    initialize: function (condition) {
+    initialize: function (conditions) {
         _.bindAll(this, 'addLocationEvent');
-        this.model = condition;
+        this.conditions = conditions;
         this.render();
     },
 
     render: function() {
-        this.$el.html(this.template());
+        var params = {timeBtn: false};
+        if (!this.haveATimeCondition()) {
+            params.timeBtn = true;
+        }
+        this.$el.html(this.template(params));
     },
 
     addLocationEvent: function(e) {
-        this.model.set('id',null);
+        condition = this.createEmptyCondition();
+
         eventJSON = {};
         eventJSON.id = null;
         eventJSON.type = "GPS";
@@ -42,13 +48,48 @@ var ConditionTypeSelectorView = Backbone.View.extend({
             GPS: new Event(eventJSON) || null
         }
 
-        this.model.set('events', events);
-        this.model.trigger("eventWasAdded", this);
+        condition.set('events', events);
+        this.conditions.trigger("eventWasAdded", this);
         this.remove();
     },
 
-    cancelAddingCondition: function() {
-        this.model.trigger("conditionWasCancled", this.model);
+    addTimeEvent: function(e) {
+        condition = this.createEmptyCondition();
+
+        eventJSON = {};
+        eventJSON.id = null;
+        eventJSON.type = "TIME";
+
+        date = new Date();
+        eventJSON.params = {datetime:  moment(date).format("DD-MM-YYYY hh:mm:ss"), offset: date.getTimezoneOffset()}
+        var events = {
+            TIME: new Event(eventJSON) || null
+        }
+
+        condition.set('events', events);
+        this.conditions.trigger("eventWasAdded", this);
         this.remove();
+    },
+
+    createEmptyCondition: function() {
+        var condition = new Condition(null);
+        condition.set('id',null);
+        this.conditions.push(condition);
+        return condition;
+    },
+
+    cancelAddingCondition: function() {
+        this.conditions.trigger("conditionWasCancled", this.conditions);
+        this.remove();
+    },
+
+    haveATimeCondition: function () {
+        var result = false;
+        this.conditions.each(function(condition) {
+            if (condition.get("events").TIME != undefined) {
+                result = true;
+            }
+        });
+        return result;
     }
 });

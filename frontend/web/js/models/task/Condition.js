@@ -5,14 +5,13 @@
 
 var app = app || {};
 
-
 var Condition = Backbone.Model.extend({
+    type : null,
+
     default : {
         id : null,
         events: {},
     },
-
-
 
     initialize : function(condition) {
         if (condition != null) {
@@ -21,11 +20,19 @@ var Condition = Backbone.Model.extend({
             var events = {};
             if (condition.GPS) {
                 events.GPS = new Event(condition.GPS);
-            } else {
-                events.GPS = null;
+            } else if (condition.TIME) {
+                events.TIME = new Event(condition.TIME);
             }
 
             this.set('events', events);
+        }
+    },
+
+    getType: function() {
+        if (this.get("events")['GPS'] != undefined) {
+            return "GPS";
+        } else if (this.get("events")['TIME'] != undefined) {
+            return "TIME";
         }
     }
 });
