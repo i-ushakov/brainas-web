@@ -20,17 +20,14 @@ var TaskLocationConditionView = Backbone.View.extend({
         'click .delete-condition-icon': 'deleteConditionHandler'
     },
 
-    tEvents : {},
-
     initialize: function (options) {
         this.parent = options.parent;
-        this.tEvents['GPS'] = this.model.get("events").GPS || null;
         this.render();
     },
 
     render: function() {
         var params = {
-            GPS: this.tEvents['GPS']
+            GPS: this.model.get("events").GPS
         };
         this.$el.html(this.template(params));
         return this.$el;
@@ -39,8 +36,11 @@ var TaskLocationConditionView = Backbone.View.extend({
     initializeMap: function() {
         var self = this;
         var mapCanvas = this.$el.find('.google-map')[0];
-        var myLatLng = new google.maps.LatLng(this.tEvents['GPS'].get("params").lat, this.tEvents['GPS'].get("params").lng);
-        if (this.tEvents['GPS'].get("params").lat == 0 && this.tEvents['GPS'].get("params").lng == 0) {
+
+        var lat = this.model.get("events").GPS.get("params").lat;
+        var lng = this.model.get("events").GPS.get("params").lng;
+        var myLatLng = new google.maps.LatLng(lat, lng);
+        if (lat == 0 && lng == 0) {
             var zoom = 1;
         } else {
             var zoom = 15;
@@ -53,6 +53,7 @@ var TaskLocationConditionView = Backbone.View.extend({
         }
 
         var map = new google.maps.Map(mapCanvas, mapOptions);
+
         this.marker = new google.maps.Marker({
             position: myLatLng,
             map: map,
@@ -61,6 +62,48 @@ var TaskLocationConditionView = Backbone.View.extend({
 
         map.addListener('click', function(e) {
             self.placeMarkerAndPanTo(e.latLng, map);
+        });
+
+        // set autocomplete
+        var input = (this.$el.find('#pac-input').get(0));
+
+        self.autocomplete = new google.maps.places.Autocomplete(input);
+        self.autocomplete.bindTo('bounds', map);
+
+        self.infowindow = new google.maps.InfoWindow();
+        self.autocomplete.addListener('place_changed', function() {
+            self.infowindow.close();
+            self.marker.setVisible(false);
+            var place = self.autocomplete.getPlace();
+            if (!place.geometry) {
+                window.alert("Autocomplete's returned place contains no geometry");
+                return;
+            }
+
+            // If the place has a geometry, then present it on a map.
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.location);
+                map.setZoom(17);  // Why 17? Because it looks good.
+            }
+
+            self.marker.setPosition(place.geometry.location);
+            self.marker.setVisible(true);
+
+            self.changeGPSParams(place.geometry.location);
+
+            var address = '';
+            if (place.address_components) {
+                address = [
+                    (place.address_components[0] && place.address_components[0].short_name || ''),
+                    (place.address_components[1] && place.address_components[1].short_name || ''),
+                    (place.address_components[2] && place.address_components[2].short_name || '')
+                ].join(' ');
+            }
+
+            self.infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+            self.infowindow.open(map, self.marker);
         });
     },
 
@@ -82,7 +125,6 @@ var TaskLocationConditionView = Backbone.View.extend({
             map: map
         });
         this.changeGPSParams(latLng);
-        this.parent.changeGPSHandler();
         map.panTo(latLng);
     },
 
@@ -92,6 +134,7 @@ var TaskLocationConditionView = Backbone.View.extend({
             gpsParams.lat = latLng.lat();
             gpsParams.lng = latLng.lng();
         }
+        this.parent.changeGPSHandler();
     },
 
     deleteConditionHandler: function() {

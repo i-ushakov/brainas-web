@@ -9,10 +9,13 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use frontend\assets\SPAAsset;
+use frontend\assets\GoogleAsset;
 use common\widgets\Alert;
 
 AppAsset::register($this);
+GoogleAsset::register($this);
 SPAAsset::register($this);
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

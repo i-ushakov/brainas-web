@@ -23,7 +23,6 @@ class SPAAsset extends AssetBundle
         "js/libs/bootstrap-datetimepicker.min.js",
         'js/libs/underscore.js',
         'js/libs/backbone.js',
-        'https://maps.googleapis.com/maps/api/js',
         'js/settings.js',
         'js/Utils.js',
         'js/models/panels/MainPanel.js',
