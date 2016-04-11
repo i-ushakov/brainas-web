@@ -23,6 +23,7 @@ var TaskLocationConditionView = Backbone.View.extend({
     initialize: function (options) {
         this.parent = options.parent;
         this.render();
+        _.bindAll(this, 'changeLocationParams');
     },
 
     render: function() {
@@ -53,6 +54,7 @@ var TaskLocationConditionView = Backbone.View.extend({
         }
 
         var map = new google.maps.Map(mapCanvas, mapOptions);
+        self.geocoder = new google.maps.Geocoder();
 
         this.marker = new google.maps.Marker({
             position: myLatLng,
@@ -91,7 +93,7 @@ var TaskLocationConditionView = Backbone.View.extend({
             self.marker.setPosition(place.geometry.location);
             self.marker.setVisible(true);
 
-            self.changeGPSParams(place.geometry.location);
+            self.changeLocationParams(place.geometry.location, map);
 
             var address = '';
             if (place.address_components) {
@@ -124,16 +126,50 @@ var TaskLocationConditionView = Backbone.View.extend({
             position: latLng,
             map: map
         });
-        this.changeGPSParams(latLng);
+        this.changeLocationParams(latLng, map);
         map.panTo(latLng);
     },
 
-    changeGPSParams: function(latLng) {
+    changeLocationParams: function(latLng, map) {
+        var self = this;
         var gpsParams = this.model.get("events").GPS.get("params");
         if (gpsParams) {
             gpsParams.lat = latLng.lat();
             gpsParams.lng = latLng.lng();
         }
+
+        this.geocoder.geocode({
+            'latLng': latLng
+        }, function (results, status) {
+            if (status === google.maps.GeocoderStatus.OK) {
+                var result = results[0];
+                if (result) {
+                    var addressArray = results[0].formatted_address.split(",");
+                    gpsParams.address = addressArray[0] + ", " + addressArray[1] + ", " + addressArray[2];
+                    gpsParams.placeId = result.place_id;
+
+                       /* var request = {
+                            placeId:     result.place_id
+                        };
+
+
+                        service = new google.maps.places.PlacesService(map);
+                        service.getDetails(request, callback);
+
+                        function callback(place, status) {
+
+                            if (status == google.maps.places.PlacesServiceStatus.OK) {
+                                //createMarker(place);
+                            }
+                        }*/
+                } else {
+                    alert('No results found');
+                }
+            } else {
+                alert('Geocoder failed due to: ' + status);
+            }
+        });
+
         this.parent.changeGPSHandler();
     },
 
