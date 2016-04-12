@@ -20,6 +20,7 @@ var TaskPanelView = Backbone.View.extend({
 
         self.model.tasks.on("add", function(model) {
             model.on({"save": self.onTaskSaveHandler});
+            model.on({"change": self.onTaskSaveHandler});
             self.addTask(model);
         });
 
@@ -53,8 +54,8 @@ var TaskPanelView = Backbone.View.extend({
         this.$el.append(taskEl);
     },
 
-    onTaskSaveHandler: function (result) {
-        var task = result.task;
+    onTaskSaveHandler: function (task) {
+        //var task = result.task;
         var taskTileView = this.taskTileViews[task.id];
         if (taskTileView != undefined && taskTileView != null) {
             taskTileView.refresh();
