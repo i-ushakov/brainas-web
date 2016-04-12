@@ -31,18 +31,18 @@ var ConditionTypeSelectorView = Backbone.View.extend({
         eventJSON.type = "GPS";
 
         if (navigator.geolocation) {
-            console.log('Geolocation is supported!');
+            var location = app.getCurrentUserLocation();
+            if (location != null) {
+                eventJSON.params = {lat: location.latitude, lng: location.longitude, radius: 100};
+            } else {
+                eventJSON.params = {lat: 0, lng: 0, radius: 100};
+            }
         }
         else {
             console.log('Geolocation is not supported for this Browser/OS version yet.');
         }
 
-        var location = app.getCurrentUserLocation();
-        if (location != null) {
-            eventJSON.params = {lat: location.latitude, lng: location.longitude, radius: 100};
-        } else {
-            eventJSON.params = {lat: 0, lng: 0, radius: 100};
-        }
+
 
         var events = {
             GPS: new Event(eventJSON) || null

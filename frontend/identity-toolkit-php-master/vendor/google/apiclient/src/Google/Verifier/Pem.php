@@ -41,6 +41,7 @@ class Google_Verifier_Pem extends Google_Verifier_Abstract
     if (!function_exists('openssl_x509_read')) {
       throw new Google_Exception('Google API PHP client needs the openssl PHP extension');
     }
+
     $this->publicKey = openssl_x509_read($pem);
     if (!$this->publicKey) {
       throw new Google_Auth_Exception("Unable to parse PEM: $pem");
