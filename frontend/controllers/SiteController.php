@@ -210,4 +210,8 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
+
+    public function actionRefreshAuthorization() {
+        echo "You are logined under email: " . Yii::$app->user->identity['username'];
+    }
 }

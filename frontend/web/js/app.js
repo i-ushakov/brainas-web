@@ -20,6 +20,15 @@ app.isAuthorized = function() {
     return false;
 }
 
+app.refreshAuthorization = function() {
+    $.ajax({
+        url: "/site/refresh-authorization",
+        success: function(result){
+           // Nothing todo
+        }
+    });
+}
+
 $(function () {
     Backbone.View.prototype.close = function(){
         this.remove();
@@ -37,4 +46,6 @@ $(function () {
     } else {
         console.log('Geolocation is not supported for this Browser/OS version yet.');
     }
+
+    setInterval(app.refreshAuthorization, 1000 * 60 * 15);
 });
