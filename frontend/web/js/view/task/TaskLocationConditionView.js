@@ -51,9 +51,10 @@ var TaskLocationConditionView = Backbone.View.extend({
             center: myLatLng,
             zoom: zoom,
             mapTypeId: google.maps.MapTypeId.ROADMAP
-        }
+        };
 
         var map = new google.maps.Map(mapCanvas, mapOptions);
+        this.fitBounds(map);
         self.geocoder = new google.maps.Geocoder();
 
         this.marker = new google.maps.Marker({
@@ -66,7 +67,31 @@ var TaskLocationConditionView = Backbone.View.extend({
             self.placeMarkerAndPanTo(e.latLng, map);
         });
 
-        // set autocomplete
+        this.setAutoComplete(map);
+    },
+
+    fitBounds: function(map) {
+        var placeId = this.model.get("events").GPS.get("params").placeId;
+        if (placeId) {
+            var request = {
+                placeId: placeId
+            };
+
+            service = new google.maps.places.PlacesService(map);
+            service.getDetails(request, callback);
+
+            function callback(place, status) {
+                if (status == google.maps.places.PlacesServiceStatus.OK) {
+                    if (place.geometry.viewport) {
+                        map.fitBounds(place.geometry.viewport);
+                    }
+                }
+            }
+        }
+    },
+
+    setAutoComplete: function(map) {
+        var self = this;
         var input = (this.$el.find('#pac-input').get(0));
 
         self.autocomplete = new google.maps.places.Autocomplete(input);
@@ -145,23 +170,11 @@ var TaskLocationConditionView = Backbone.View.extend({
                 var result = results[0];
                 if (result) {
                     var addressArray = results[0].formatted_address.split(",");
-                    gpsParams.address = addressArray[0] + ", " + addressArray[1] + ", " + addressArray[2];
+                    gpsParams.address = addressArray[0] + ", " + addressArray[1];
+                    if (addressArray[2] != undefined) {
+                        gpsParams.address = gpsParams.address + ", " + addressArray[2];
+                    }
                     gpsParams.placeId = result.place_id;
-
-                       /* var request = {
-                            placeId:     result.place_id
-                        };
-
-
-                        service = new google.maps.places.PlacesService(map);
-                        service.getDetails(request, callback);
-
-                        function callback(place, status) {
-
-                            if (status == google.maps.places.PlacesServiceStatus.OK) {
-                                //createMarker(place);
-                            }
-                        }*/
                 } else {
                     alert('No results found');
                 }
