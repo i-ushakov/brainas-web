@@ -9,7 +9,6 @@ app.url = '/';
 app.location = null;
 
 app.getCurrentUserLocation = function() {
-    debugger;
     if (app.location !== null && app.location !== undefined) {
         return app.location.coords;
     } else {
