@@ -35,6 +35,9 @@ var TaskCardView = Backbone.View.extend({
     template: _.template( $('#task-card-modal-template').html()),
 
     initialize: function (options) {
+        if (this.model === undefined) {
+            return;
+        }
         _.bindAll(this, 'onSaveHandler', 'onEventTypeSelectedHandler', 'onConditionCancledHandler', 'onDeleteConditionHandler');
         this.render();
         this.messageTextArea = this.$el.find('.task-message-edit textarea');

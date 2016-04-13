@@ -16,5 +16,14 @@ var Tasks = Backbone.Collection.extend({
 
     close: function() {
         clearInterval(this.timer);
+    },
+
+    parse: function(response, options) {
+        var self = this;
+        _.each(response, function(task) {
+            self.add(new Task(task));
+        });
+
+        return this.models;
     }
 });

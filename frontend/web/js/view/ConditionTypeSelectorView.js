@@ -54,7 +54,7 @@ var ConditionTypeSelectorView = Backbone.View.extend({
     },
 
     addTimeEvent: function(e) {
-        condition = this.createEmptyCondition();
+        var condition = this.createEmptyCondition();
 
         eventJSON = {};
         eventJSON.id = null;
