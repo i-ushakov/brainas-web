@@ -19,6 +19,9 @@ var Tasks = Backbone.Collection.extend({
     },
 
     parse: function(response, options) {
+        if (response.status == "FAILED") {
+            return this.models;
+        }
         var self = this;
         _.each(response, function(task) {
             self.add(new Task(task));

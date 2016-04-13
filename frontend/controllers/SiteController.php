@@ -212,6 +212,7 @@ class SiteController extends Controller
     }
 
     public function actionRefreshAuthorization() {
+        require_once(Yii::$app->basePath . '/views/layouts/_google_identity_head.php');
         echo "You are logined under email: " . Yii::$app->user->identity['username'];
     }
 }
