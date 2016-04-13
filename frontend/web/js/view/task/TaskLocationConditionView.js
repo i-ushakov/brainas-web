@@ -22,6 +22,12 @@ var TaskLocationConditionView = Backbone.View.extend({
 
     initialize: function (options) {
         this.parent = options.parent;
+        this.params = this.model.get("events").GPS.get("params");
+        this.geocoder = new google.maps.Geocoder();
+        // For handling a situation when  browser's default location was set.
+        if (this.params.address === undefined || this.params.address === "") {
+            this.changeLocationParams(new google.maps.LatLng(this.params.lat, this.params.lng));
+        }
         this.render();
         _.bindAll(this, 'changeLocationParams');
     },
@@ -38,8 +44,8 @@ var TaskLocationConditionView = Backbone.View.extend({
         var self = this;
         var mapCanvas = this.$el.find('.google-map')[0];
 
-        var lat = this.model.get("events").GPS.get("params").lat;
-        var lng = this.model.get("events").GPS.get("params").lng;
+        var lat = this.params.lat;
+        var lng = this.params.lng;
         var myLatLng = new google.maps.LatLng(lat, lng);
         if (lat == 0 && lng == 0) {
             var zoom = 1;
@@ -55,7 +61,6 @@ var TaskLocationConditionView = Backbone.View.extend({
 
         var map = new google.maps.Map(mapCanvas, mapOptions);
         this.fitBounds(map);
-        self.geocoder = new google.maps.Geocoder();
 
         this.marker = new google.maps.Marker({
             position: myLatLng,
@@ -155,7 +160,7 @@ var TaskLocationConditionView = Backbone.View.extend({
         map.panTo(latLng);
     },
 
-    changeLocationParams: function(latLng, map) {
+    changeLocationParams: function(latLng) {
         var self = this;
         var gpsParams = this.model.get("events").GPS.get("params");
         if (gpsParams) {

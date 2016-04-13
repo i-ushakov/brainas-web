@@ -64,14 +64,6 @@ var TaskTimeConditionView = Backbone.View.extend({
         });
     },
 
-    /*changeGPSParams: function(latLng) {
-        var gpsParams = this.model.get("events").GPS.get("params");
-        if (gpsParams) {
-            gpsParams.lat = latLng.lat();
-            gpsParams.lng = latLng.lng();
-        }
-    },*/
-
     deleteConditionHandler: function() {
         this.model.trigger("conditionWasRemoved", this.model);
         this.remove();
