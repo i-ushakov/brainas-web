@@ -363,6 +363,9 @@ class ConnectionController extends Controller {
         $task->message = (String)$newTaskFromDevice->message;
         $task->user = $this->userId;
         if ($task->save()) {
+            foreach ($newTaskFromDevice->conditions->condition as $c) {
+                $this->addConditionFromXML($c, $task->id);
+            }
             $changeDatetime = (String)$newTaskFromDevice->change[0]->changeDatetime;
             $task->loggingChangesForSync("Created", $changeDatetime);
             return $task->id;
@@ -377,8 +380,6 @@ class ConnectionController extends Controller {
         $task = Task::findOne($id);
         $task->message = $message;
         $task->description = $description;
-        Yii::warning("=====conditions======");
-        Yii::warning($changedTask->conditions);
         $task->save();
         $this->cleanDeletedConditions($changedTask->conditions->condition, $task->id);
         foreach ($changedTask->conditions->condition as $c) {
@@ -400,10 +401,7 @@ class ConnectionController extends Controller {
             $condition->task_id = $taskId;
             $condition->save();
         }
-        Yii::warning("!!!!@@@");
-        Yii::warning($conditionXML);
-        Yii::warning($conditionXML->events);
-        Yii::warning($conditionXML->events->event);
+
         $this->cleanDeletedEvents($conditionXML->events->event, $conditionXML->id);
         foreach($conditionXML->events->event as $e) {
             $this->addEventFromXML($e, $condition->id);
@@ -421,10 +419,6 @@ class ConnectionController extends Controller {
             $event = new Event();
             $event->condition_id = $conditionId;
         }
-        Yii::warning("Fucking value");
-        Yii::warning($eventXML);
-        Yii::warning($eventXML->type);
-        Yii::warning((string)$eventXML->type);
         $event->type = EventType::getTypeIdByName((string)$eventXML->type);
         $event->params = (string)$eventXML->params;
         $event->save();

@@ -61,7 +61,7 @@ var ConditionTypeSelectorView = Backbone.View.extend({
         eventJSON.type = "TIME";
 
         date = new Date();
-        eventJSON.params = {datetime:  moment(date).format("DD-MM-YYYY hh:mm:ss"), offset: date.getTimezoneOffset()}
+        eventJSON.params = {datetime:  moment(date).format("DD-MM-YYYY HH:mm:ss"), offset: date.getTimezoneOffset()}
         var events = {
             TIME: new Event(eventJSON) || null
         }

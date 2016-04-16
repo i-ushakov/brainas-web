@@ -54,11 +54,11 @@ var TaskTimeConditionView = Backbone.View.extend({
         this.$el.find(".datetimepicker").datetimepicker({
             inline: true,
             sideBySide: true,
-            defaultDate: moment(datetime, "DD-MM-YYYY hh:mm:ss")
+            defaultDate: moment(datetime, "DD-MM-YYYY HH:mm:ss")
         });
 
         this.$el.find(".datetimepicker").on("dp.change", function (e) {
-            params = {datetime: e.date.format('DD-MM-YYYY hh:mm:ss'), offset: e.date.utcOffset()};
+            params = {datetime: e.date.format('DD-MM-YYYY HH:mm:ss'), offset: e.date.utcOffset()};
             self.event.set("params", params);
             self.model.trigger("conditionWasChanged", this.model);
         });
