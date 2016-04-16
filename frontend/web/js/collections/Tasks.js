@@ -24,6 +24,7 @@ var Tasks = Backbone.Collection.extend({
         }
         var self = this;
         _.each(response, function(task) {
+            self.remove(task.id)
             self.add(new Task(task));
         });
 
