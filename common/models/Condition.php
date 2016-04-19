@@ -17,6 +17,13 @@ class Condition extends ActiveRecord {
         return 'conditions';
     }
 
+    public function rules()
+    {
+        return [
+            ['events', 'validateEvents']
+        ];
+    }
+
     public function getEvents() {
         return $this->hasMany(Event::className(), ['condition_id' => 'id']);
     }
@@ -42,6 +49,13 @@ class Condition extends ActiveRecord {
         return parent::beforeDelete();
     }
 
+    public function validateEvents($attribute, $params) {
+        foreach ($this->$attribute as $event) {
+            if (!$event->validate()) {
+                $this->addError($attribute, 'Invalid events');
+            }
+        }
+    }
     /*public function addNewEvent($event) {
         return true;
     }*/

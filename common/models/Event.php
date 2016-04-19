@@ -9,6 +9,7 @@
 namespace common\models;
 
 
+use Yii;
 use yii\db\ActiveRecord;
 
 class Event extends ActiveRecord {
@@ -17,7 +18,23 @@ class Event extends ActiveRecord {
         return 'events';
     }
 
+
+    public function rules()
+    {
+        return [
+            ['params', 'validateParams']
+        ];
+    }
+
     public function getEventType() {
         return $this->hasOne(EventType::className(), ['id' => 'type']);
+    }
+
+    public function validateParams($attribute, $p) {
+        $params = json_decode($this->$attribute);
+        if (empty($params)) {
+            $this->addError($attribute, 'Corrupted params of events');
+            Yii::error("#PROBLEM: We have empty/null (event) params after json_decode() for event with id = " . $this->id, "Corrupted_data");
+        }
     }
 }
