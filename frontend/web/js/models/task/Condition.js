@@ -8,10 +8,9 @@ var app = app || {};
 var Condition = Backbone.Model.extend({
     type : null,
 
-    default : {
+    defaults : {
         id : null,
-        events: {},
-        validationErrors: []
+        events: {}
     },
 
     initialize : function(condition) {
@@ -38,6 +37,7 @@ var Condition = Backbone.Model.extend({
     },
 
     validate: function(attributes) {
+        this.validationErrors = [];
         var event = attributes.events[Object.keys(attributes.events)[0]];
         if (!event.isValid()) {
             this.validationErrors.push(event.validationErrors);

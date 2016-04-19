@@ -10,7 +10,7 @@ var Event = Backbone.Model.extend({
 
     params: {},
 
-    default: {
+    defaults : {
         validationErrors: []
     },
 
@@ -42,6 +42,7 @@ var Event = Backbone.Model.extend({
     },
 
     validate: function(attributes) {
+        this.validationErrors = [];
         if (_.isEmpty(attributes.params)) {
             this.validationErrors.push("Empty params in event with CID = " + this.cid + " and id = " + this.id);
         }
