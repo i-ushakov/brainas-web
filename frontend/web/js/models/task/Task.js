@@ -19,7 +19,9 @@ var Task = Backbone.Model.extend({
         var conditions = new Conditions();
         _.each(task.conditions, function(condition) {
             var condition = new Condition(condition);
-            conditions.push(condition);
+            if (condition.isValid()) {
+                conditions.push(condition);
+            }
         });
         this.set('conditions', conditions);
     },

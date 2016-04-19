@@ -10,9 +10,14 @@ var Event = Backbone.Model.extend({
 
     params: {},
 
+    default: {
+        validationErrors: []
+    },
+
     initialize: function(event) {
+        this.set('id', event.eventId);
         this.type = event.type;
-        this.params = event.params
+        this.params = event.params;
     },
 
     getEventInfo: function() {
@@ -34,6 +39,15 @@ var Event = Backbone.Model.extend({
         }
 
         return info;
+    },
+
+    validate: function(attributes) {
+        if (_.isEmpty(attributes.params)) {
+            this.validationErrors.push("Empty params in event with CID = " + this.cid + " and id = " + this.id);
+        }
+        if(!_.isEmpty(this.validationErrors)) {
+            return this.validationErrors;
+        }
     }
 
 });

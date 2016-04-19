@@ -11,6 +11,7 @@ var Condition = Backbone.Model.extend({
     default : {
         id : null,
         events: {},
+        validationErrors: []
     },
 
     initialize : function(condition) {
@@ -33,6 +34,16 @@ var Condition = Backbone.Model.extend({
             return "GPS";
         } else if (this.get("events")['TIME'] != undefined) {
             return "TIME";
+        }
+    },
+
+    validate: function(attributes) {
+        var event = attributes.events[Object.keys(attributes.events)[0]];
+        if (!event.isValid()) {
+            this.validationErrors.push(event.validationErrors);
+        }
+        if(!_.isEmpty(this.validationErrors)) {
+            return this.validationErrors;
         }
     }
 });

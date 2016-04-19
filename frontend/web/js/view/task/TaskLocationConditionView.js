@@ -23,6 +23,9 @@ var TaskLocationConditionView = Backbone.View.extend({
     initialize: function (options) {
         this.parent = options.parent;
         this.params = this.model.get("events").GPS.get("params");
+        if (this.params == null || this.params === undefined) {
+            return null;
+        }
         this.geocoder = new google.maps.Geocoder();
         // For handling a situation when  browser's default location was set.
         if (this.params.address === undefined || this.params.address === "") {
