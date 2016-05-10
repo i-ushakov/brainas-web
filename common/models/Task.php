@@ -10,7 +10,7 @@ namespace common\models;
 
 use Yii;
 use yii\db\ActiveRecord;
-use common\infrastructure\ChangedTask;
+use common\infrastructure\ChangeOfTask;
 
 class Task extends ActiveRecord {
 
@@ -51,12 +51,12 @@ class Task extends ActiveRecord {
     }
 
     public function loggingChangesForSync($action, $changeDatetime = null) {
-        $changedTask = ChangedTask::find()
+        $changedTask = ChangeOfTask::find()
             ->where(['user_id' => $this->user, 'task_id' => $this->id])
             ->orderBy('id')
             ->one();
         if (empty($changedTask)) {
-            $changedTask = new ChangedTask();
+            $changedTask = new ChangeOfTask();
             $changedTask->task_id = $this->id;
             $changedTask->user_id = $this->user;
         }

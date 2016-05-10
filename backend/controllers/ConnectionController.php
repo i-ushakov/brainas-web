@@ -13,11 +13,12 @@ namespace backend\controllers;
 use Google_Client;
 use Yii;
 use common\models\User;
-use common\infrastructure\ChangedTask;
+use common\infrastructure\ChangeOfTask;
 use common\models\Task;
 use common\models\Condition;
 use common\models\Event;
 use common\models\EventType;
+use backend\components\XMLResponseBuilder;
 
 
 use yii\web\Controller;
@@ -44,14 +45,14 @@ class ConnectionController extends Controller {
 
         // Get chnaged and deletet task
         // from time of last sync for this user
-        $changes = $this->getChanges();
+        $serverChanges = $this->getChanges();
 
         // The objects that was updated from device
-        $this->synchronizedObjects = $this->processAllChangesFromDevice($changes);
+        $this->synchronizedObjects = $this->processAllChangesFromDevice($serverChanges);
 
         // Build xml-document with server-changes
         // and data about changes from device that were accepted
-        $xmlResponse = $this->buildXMLResponse($changes, $this->token);
+        $xmlResponse = XMLResponseBuilder::buildXMLResponse($serverChanges, $this->synchronizedObjects, $this->initSyncTime, $this->token);
 
         echo $xmlResponse;
     }
@@ -107,167 +108,44 @@ class ConnectionController extends Controller {
     }
 
     private function getChanges() {
-        $changes = array();
+        $serverChanges = array();
         if (!isset($_POST['initSyncTime'])) {
             // Getting changed tasks from website
-            $changedTasks = $this->getChangedTasks(null);
+            $changesOfTasks = $this->getChangedTasks(null);
             $currentDatetime = new \DateTime();
             $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
             $this->initSyncTime = $currentDatetime->format('Y-m-d H:i:s');
         } else {
             $this->initSyncTime = $_POST['initSyncTime'];
-            $changedTasks = $this->getChangedTasks($this->initSyncTime);
+            $changesOfTasks = $this->getChangedTasks($this->initSyncTime);
             $currentDatetime = new \DateTime();
             $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
             $this->initSyncTime = $currentDatetime->format('Y-m-d H:i:s');
         }
 
-        $changes['tasks']['created'] = array();
-        $changes['tasks']['updated'] = array();
-        $changes['tasks']['deleted'] = array();
-        foreach ($changedTasks as $changedTask) {
-            if ($changedTask->action == "Created") {
-                $changes['tasks']['created'][$changedTask->task_id]['action'] = $changedTask->action;
-                $changes['tasks']['created'][$changedTask->task_id]['datetime'] = $changedTask->datetime;
-            } else if ($changedTask->action == "Changed") {
-                $changes['tasks']['updated'][$changedTask->task_id]['action'] = $changedTask->action;
-                $changes['tasks']['updated'][$changedTask->task_id]['datetime'] = $changedTask->datetime;
-            } else if ($changedTask->action == "Deleted") {
-                $changes['tasks']['deleted'][$changedTask->task_id]['action'] = $changedTask->action;
-                $changes['tasks']['deleted'][$changedTask->task_id]['datetime'] = $changedTask->datetime;
+        $serverChanges['tasks']['created'] = array();
+        $serverChanges['tasks']['updated'] = array();
+        $serverChanges['tasks']['deleted'] = array();
+        foreach ($changesOfTasks as $changeOfTask) {
+            if ($changeOfTask->action == "Created") {
+                $serverChanges['tasks']['created'][$changeOfTask->task_id]['action'] = $changeOfTask->action;
+                $serverChanges['tasks']['created'][$changeOfTask->task_id]['datetime'] = $changeOfTask->datetime;
+                $serverChanges['tasks']['created'][$changeOfTask->task_id]['object'] = $changeOfTask->task;
+            } else if ($changeOfTask->action == "Changed") {
+                $serverChanges['tasks']['updated'][$changeOfTask->task_id]['action'] = $changeOfTask->action;
+                $serverChanges['tasks']['updated'][$changeOfTask->task_id]['datetime'] = $changeOfTask->datetime;
+                $serverChanges['tasks']['updated'][$changeOfTask->task_id]['object'] = $changeOfTask->task;
+            } else if ($changeOfTask->action == "Deleted") {
+                $serverChanges['tasks']['deleted'][$changeOfTask->task_id]['action'] = $changeOfTask->action;
+                $serverChanges['tasks']['deleted'][$changeOfTask->task_id]['datetime'] = $changeOfTask->datetime;
             }
         }
-        return $changes;
-    }
-
-    private function buildXMLResponse($changes, $token) {
-        $xmlResponse = "";
-        $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
-        $xmlResponse .= '<syncResponse>';
-        $xmlResponse .= '<tasks>';
-
-        // Created tasks
-        $xmlResponse .= '<created>';
-        $createdTasks = Task::find()
-            ->where(array('in', 'id', array_keys($changes['tasks']['created'])))
-            ->orderBy('id')
-            ->all();
-        foreach ($createdTasks as $createdTask) {
-            $xmlResponse .= $this->buildTaskXml($createdTask,  $changes['tasks']['created'][$createdTask->id]['datetime']);
-        }
-        $xmlResponse .= '</created>';
-
-        // Updated tasks
-        $xmlResponse .= '<updated>';
-        $updatedTasks = Task::find()
-            ->where(array('in', 'id', array_keys($changes['tasks']['updated'])))
-            ->orderBy('id')
-            ->all();
-        foreach ($updatedTasks as $updatedTask) {
-            $xmlResponse .= $this->buildTaskXml($updatedTask, $changes['tasks']['updated'][$updatedTask->id]['datetime']);
-        }
-        $xmlResponse .= '</updated>';
-
-        // Deleted Tasks
-        $xmlResponse .= '<deleted>';
-        foreach ($changes['tasks']['deleted'] as $id => $d) {
-            $xmlResponse .= '<deletedTask ' .
-                'global-id="' . $id . '" ' .
-                'time-changes="' . $d['datetime'] . '"' .
-                '></deletedTask>';
-        }
-
-        $xmlResponse .= '</deleted>';
-        $xmlResponse .= '</tasks>';
-
-        if (!empty($this->synchronizedObjects)) {
-            $xmlResponse .= '<synchronizedObjects>';
-            // Tasks
-            $synchronizedTasks = $this->synchronizedObjects['tasks'];
-            if (!empty($synchronizedTasks)) {
-                $xmlResponse .= '<synchronizedTasks>';
-                foreach($synchronizedTasks as $localId => $globalId) {
-                    $xmlResponse .= "<synchronizedTask>" .
-                        "<localId>" . $localId . "</localId>" .
-                        "<globalId>" . $globalId . "</globalId>" .
-                        "</synchronizedTask>";
-                }
-                $xmlResponse .= '</synchronizedTasks>';
-            }
-            // Conditions
-            if (!empty($this->synchronizedObjects['conditions'])) {
-                $synchronizedConditions = $this->synchronizedObjects['conditions'];
-                $xmlResponse .= '<synchronizedConditions>';
-                foreach($synchronizedConditions as $localId => $globalId) {
-                    $xmlResponse .= "<synchronizedCondition>" .
-                        "<localId>" . $localId . "</localId>" .
-                        "<globalId>" . $globalId . "</globalId>" .
-                        "</synchronizedCondition>";
-                }
-                $xmlResponse .= '</synchronizedConditions>';
-            }
-
-            // Events
-            if (!empty($this->synchronizedObjects['events'])) {
-                $synchronizedEvents = $this->synchronizedObjects['events'];
-                $xmlResponse .= '<synchronizedEvents>';
-                foreach($synchronizedEvents as $localId => $globalId) {
-                    $xmlResponse .= "<synchronizedEvent>" .
-                        "<localId>" . $localId . "</localId>" .
-                        "<globalId>" . $globalId . "</globalId>" .
-                        "</synchronizedEvent>";
-                }
-                $xmlResponse .= '</synchronizedEvents>';
-            }
-            $xmlResponse .= '</synchronizedObjects>';
-        }
-
-
-        $xmlResponse .= '<initSyncTime>' . $this->initSyncTime . '</initSyncTime>';
-        $xmlResponse .=  "<accessToken>" . json_encode($token) . "</accessToken>";;
-
-        $xmlResponse .= '</syncResponse>';
-
-        return $xmlResponse;
-    }
-
-    private function buildTaskXml($task, $datetime) {
-        $xml = '' .
-            '<task global-id="' . $task->id . '" time-changes="' . $datetime . '">' .
-                '<message>' . $task->message . '</message>' .
-                '<description>' . $task->description . '</description>' .
-                '<conditions>' . $this->buildConditionsPart($task) . '</conditions>' .
-                '<status>WAITING</status>' .
-            '</task>';
-        return $xml;
-    }
-
-    private function buildConditionsPart($task) {
-        $xml = "";
-        $conditions = $task->conditions;
-        foreach($conditions as $condition){
-            if ($condition->validate()) {
-                $xml .= "<condition id='" . $condition->id . "' task-id='" . $condition->task_id . "'>";
-                $events = $condition->events;
-                foreach ($events as $event) {
-                    $xml .= "<event type='" . $event->eventType->name . "' id='" . $event->id . "'>";
-                    $xml .= "<params>";
-                    $params = json_decode($event->params);
-                    foreach ($params as $name => $value) {
-                        $xml .= "<$name>$value</$name>";
-                    }
-                    $xml .= "</params>";
-                    $xml .= "</event>";
-                }
-                $xml .= "</condition>";
-            }
-        }
-        return $xml;
+        return $serverChanges;
     }
 
     private function getChangedTasks($initSyncTime) {
         if ($initSyncTime != null) {
-            $changedTasks = ChangedTask::find()
+            $changesOfTasks = ChangeOfTask::find()
                 ->where([
                     'and',
                     ['=', 'user_id', $this->userId],
@@ -276,12 +154,12 @@ class ConnectionController extends Controller {
                 ->orderBy('datetime')
                 ->all();
         } else {
-            $changedTasks = ChangedTask::find()
+            $changesOfTasks = ChangeOfTask::find()
                 ->where(['user_id' => $this->userId])
                 ->orderBy('datetime')
                 ->all();
         }
-        return $changedTasks;
+        return $changesOfTasks;
     }
 
     private function getTokenFromPost() {
@@ -318,11 +196,11 @@ class ConnectionController extends Controller {
         }
     }
 
-    private function processAllChangesFromDevice($changes) {
+    private function processAllChangesFromDevice($serverChanges) {
         $synchronizedTasks = array();
-        $allChangesInXML = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
+        $allDeviceChangesInXML = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
 
-        $changedTasks = $allChangesInXML->changedTasks;
+        $changedTasks = $allDeviceChangesInXML->changedTasks;
         foreach($changedTasks->changedTask as $changedTask) {
             $statusOfChanges = (String)$changedTask->change[0]->status;
             if ((string)$changedTask['globalId'] == 0 && $statusOfChanges != "DELETED") {
@@ -343,14 +221,14 @@ class ConnectionController extends Controller {
                         } elseif ($status == "UPDATED" || $status == "CREATED") {
                             $this->updateTaskFromDevice($changedTask);
                         }
-                        unset($changes['tasks']['updated'][$globalId]);
+                        unset($serverChanges['tasks']['updated'][$globalId]);
                     }
                     $synchronizedTasks[$localId] = $globalId;
                 } else {
-                    $changes['tasks']['deleted'][$globalId]['action'] = "Deleted";
+                    $serverChanges['tasks']['deleted'][$globalId]['action'] = "Deleted";
                     $currentDatetime = new \DateTime();
                     $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
-                    $changes['tasks']['deleted'][$globalId]['datetime'] = $currentDatetime->format('Y-m-d H:i:s');
+                    $serverChanges['tasks']['deleted'][$globalId]['datetime'] = $currentDatetime->format('Y-m-d H:i:s');
                     $synchronizedTasks[$localId] = $globalId;
                 }
             }
@@ -471,7 +349,7 @@ class ConnectionController extends Controller {
     }
 
     private function getTimeOfTaskChanges($taskid) {
-        $changedTask = ChangedTask::find()
+        $changedTask = ChangeOfTask::find()
             ->where(['user_id' => $this->userId, 'task_id' => $taskid])
             ->orderBy('id')
             ->one();

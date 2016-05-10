@@ -9,11 +9,16 @@
 namespace common\infrastructure;
 
 use yii\db\ActiveRecord;
+use common\models\Task;
 
-class ChangedTask extends ActiveRecord {
+class ChangeOfTask extends ActiveRecord {
 
     public static function tableName()
     {
         return 'sync_changed_tasks';
+    }
+
+    public function getTask() {
+        return $this->hasOne(Task::className(), ['id' => 'task_id']);
     }
 }
