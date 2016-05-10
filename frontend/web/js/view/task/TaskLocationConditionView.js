@@ -26,8 +26,8 @@ var TaskLocationConditionView = Backbone.View.extend({
         if (this.params == null || this.params === undefined) {
             return null;
         }
+
         this.geocoder = new google.maps.Geocoder();
-        // For handling a situation when  browser's default location was set.
         if (this.params.address === undefined || this.params.address === "") {
             this.changeLocationParams(new google.maps.LatLng(this.params.lat, this.params.lng));
         }
@@ -187,7 +187,7 @@ var TaskLocationConditionView = Backbone.View.extend({
                     alert('No results found');
                 }
             } else {
-                alert('Geocoder failed due to: ' + status);
+                //alert('Geocoder failed due to: ' + status);
             }
         });
 
