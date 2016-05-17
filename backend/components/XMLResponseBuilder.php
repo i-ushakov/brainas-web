@@ -29,7 +29,14 @@ class XMLResponseBuilder {
         // Updated tasks
         $xmlResponse .= '<updated>';
         foreach ($serverChanges['tasks']['updated'] as $id => $serverChange) {
-            $xmlResponse .= self::buildXmlOfTask($serverChange['object'],  $serverChange['datetime']);
+            if (isset($serverChange['object']) && !empty($serverChange['object'])) {
+                $xmlResponse .= self::buildXmlOfTask($serverChange['object'], $serverChange['datetime']);
+            } else {
+                \Yii::info(
+                    "We have a server change without object with datetime = " . $serverChange['datetime'] .
+                    " for task with id = " . $id, "MyLog"
+                );
+            }
         }
         $xmlResponse .= '</updated>';
 
