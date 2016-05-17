@@ -10,6 +10,7 @@
 namespace backend\controllers;
 
 
+use backend\components\TaskXMLHelper;
 use Google_Client;
 use Yii;
 use common\models\User;
@@ -53,7 +54,6 @@ class ConnectionController extends Controller {
         // Build xml-document with server-changes
         // and data about changes from device that were accepted
         $xmlResponse = XMLResponseBuilder::buildXMLResponse($serverChanges, $this->synchronizedObjects, $this->initSyncTime, $this->token);
-
         echo $xmlResponse;
     }
 
@@ -127,11 +127,11 @@ class ConnectionController extends Controller {
         $serverChanges['tasks']['updated'] = array();
         $serverChanges['tasks']['deleted'] = array();
         foreach ($changesOfTasks as $changeOfTask) {
-            if ($changeOfTask->action == "Created") {
+            if ($changeOfTask->action == "Created" && $this->isChangedTaskExistInDb($changeOfTask)) {
                 $serverChanges['tasks']['created'][$changeOfTask->task_id]['action'] = $changeOfTask->action;
                 $serverChanges['tasks']['created'][$changeOfTask->task_id]['datetime'] = $changeOfTask->datetime;
                 $serverChanges['tasks']['created'][$changeOfTask->task_id]['object'] = $changeOfTask->task;
-            } else if ($changeOfTask->action == "Changed") {
+            } else if ($changeOfTask->action == "Changed" && $this->isChangedTaskExistInDb($changeOfTask)) {
                 $serverChanges['tasks']['updated'][$changeOfTask->task_id]['action'] = $changeOfTask->action;
                 $serverChanges['tasks']['updated'][$changeOfTask->task_id]['datetime'] = $changeOfTask->datetime;
                 $serverChanges['tasks']['updated'][$changeOfTask->task_id]['object'] = $changeOfTask->task;
@@ -141,6 +141,26 @@ class ConnectionController extends Controller {
             }
         }
         return $serverChanges;
+    }
+
+    /*
+     * Here we handle situation when we have info about task changes
+     * and the same time task is not exist in database
+     */
+    private function isChangedTaskExistInDb($changeOfTask) {
+        if(isset($changeOfTask->task) && !empty($changeOfTask->task) && $changeOfTask->task instanceof Task) {
+            return true;
+        } else {
+            \Yii::info(
+                "We have info about task changes without object in DB with datetime = " .$changeOfTask->datetime .
+                " for task with id = " . $changeOfTask->task_id .
+                ". So we change action from '" . $changeOfTask->action . "' to 'Deleted'", "MyLog"
+            );
+            $changeOfTask->action = "Deleted";
+            $changeOfTask->save();
+            return false;
+        }
+
     }
 
     private function getChangedTasks($initSyncTime) {
@@ -244,7 +264,7 @@ class ConnectionController extends Controller {
         $task->user = $this->userId;
         if ($task->save()) {
             foreach ($newTaskFromDevice->conditions->condition as $c) {
-                $this->addConditionFromXML($c, $task->id);
+                TaskXMLHelper::addConditionFromXML($c, $task->id, $this->synchronizedObjects);
             }
             $changeDatetime = (String)$newTaskFromDevice->change[0]->changeDatetime;
             $task->loggingChangesForSync("Created", $changeDatetime);
@@ -261,83 +281,13 @@ class ConnectionController extends Controller {
         $task->message = $message;
         $task->description = $description;
         $task->save();
-        $this->cleanDeletedConditions($changedTask->conditions->condition, $task->id);
+        TaskXMLHelper::cleanDeletedConditions($changedTask->conditions->condition, $task->id);
         foreach ($changedTask->conditions->condition as $c) {
-            $this->addConditionFromXML($c, $task->id);
+            TaskXMLHelper::addConditionFromXML($c, $task->id, $this->synchronizedObjects);
         }
         $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
         $task->loggingChangesForSync("Changed", $changeDatetime);
         return $task->id;
-    }
-
-    private function addConditionFromXML(\SimpleXMLElement $conditionXML, $taskId) {
-        if (isset($conditionXML['globalId']) && $conditionXML['globalId'] != 0) {
-            $conditionId = $conditionXML['globalId'];
-            $condition = Condition::find($conditionId)
-                ->where(['id' => $conditionId])
-                ->one();
-        } else {
-            $condition = new Condition();
-            $condition->task_id = $taskId;
-            $condition->save();
-        }
-
-        $this->cleanDeletedEvents($conditionXML->events->event, $conditionXML->id);
-        foreach($conditionXML->events->event as $e) {
-            $this->addEventFromXML($e, $condition->id);
-        }
-        $this->synchronizedObjects['conditions'][(string)$conditionXML['localId']] = $condition->id;
-    }
-
-    private function addEventFromXML(\SimpleXMLElement $eventXML, $conditionId) {
-        if (isset($eventXML['globalId']) && $eventXML['globalId'] != 0) {
-            $eventId = $eventXML['globalId'];
-            $event = Event::find($eventId)
-                ->where(['id' => $eventId])
-                ->one();
-        } else {
-            $event = new Event();
-            $event->condition_id = $conditionId;
-        }
-        $event->type = EventType::getTypeIdByName((string)$eventXML->type);
-        $event->params = (string)$eventXML->params;
-        $event->save();
-        $this->synchronizedObjects['events'][(string)$eventXML['localId']] = (string)$eventXML['globalId'];
-    }
-
-    private function cleanDeletedConditions(\SimpleXMLElement $conditionsXML, $taskId) {
-        $conditionsIds = array();
-        foreach ($conditionsXML as $conditionXML) {
-            if (isset($conditionXML['globalId']) && $conditionXML['globalId'] != 0) {
-                $conditionsIds[] = $conditionXML['globalId'];
-            }
-        }
-        $conditionsFromDB = Condition::find()
-            ->where(['task_id' => $taskId])
-            ->all();
-        foreach($conditionsFromDB as $conditionFromDB) {
-            if(!in_array ($conditionFromDB->id, $conditionsIds)) {
-                $conditionFromDB->delete();
-            }
-        }
-    }
-
-
-    private function cleanDeletedEvents(\SimpleXMLElement $eventsXML, $conditionId) {
-        $eventsIds = array();
-        foreach ($eventsXML as $eventXML) {
-            if (isset($eventXML['globalId']) && $eventXML['globalId'] != 0) {
-                $eventsIds[] = $eventXML['globalId'];
-            }
-        }
-        $eventsFromDB = Event::find()
-            ->where(['condition_id' => $conditionId])
-            ->all();
-        foreach($eventsFromDB as $eventFromDB) {
-            if(!in_array ($eventFromDB->id, $eventsIds)) {
-                $eventFromDB->delete();
-            }
-        }
     }
 
     private function deleteTaskFromDevice ($changedTask) {
