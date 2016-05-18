@@ -55,6 +55,7 @@ var TaskCardView = Backbone.View.extend({
             this.saveBtn.text("Create");
         }
 
+        //this.listenTo(this.model, 'change', this.renderContent); //TODO render internal part of window updatable
         this.model.on({"save": this.onSaveHandler});
     },
 

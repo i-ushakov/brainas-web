@@ -22,12 +22,12 @@ var Tasks = Backbone.Collection.extend({
         if (response.status == "FAILED") {
             return this.models;
         }
-        var self = this;
+        var tasks = [];
         _.each(response, function(task) {
-            self.remove(task.id)
-            self.add(new Task(task));
+            var taskModel = new Task(task)
+            tasks.push(taskModel);
         });
-
+        this.set(tasks);
         return this.models;
     }
 });
