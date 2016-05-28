@@ -45,6 +45,18 @@ class Task extends ActiveRecord {
         $this->loggingChangesForSync($action);
     }
 
+    public function beforeDelete()
+    {
+        if (parent::beforeDelete()) {
+            foreach (Condition::find()->where('task_id = ' . $this->id)->all() as $condition) {
+                $condition->delete();
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function afterDelete() {
         parent::afterDelete();
         $this->loggingChangesForSync("Deleted");
