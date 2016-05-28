@@ -46,10 +46,28 @@ $(function () {
     // check for Geolocation support
     if (navigator.geolocation) {
         console.log('Geolocation is supported!');
-        navigator.geolocation.getCurrentPosition(function(position) {app.location = position;} );
+        navigator.geolocation.getCurrentPosition(function(position) {
+            app.location = position;}, getCurrentPositionError );
     } else {
         console.log('Geolocation is not supported for this Browser/OS version yet.');
     }
 
     setInterval(app.refreshAuthorization, 1000 * 60 * 15);
 });
+
+function getCurrentPositionError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            console.log("User denied the request for Geolocation.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            console.log("Location information is unavailable.");
+            break;
+        case error.TIMEOUT:
+            console.log("The request to get user location timed out.");
+            break;
+        case error.UNKNOWN_ERROR:
+            console.log("An unknown error occurred.");
+            break;
+    }
+}
