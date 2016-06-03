@@ -5,7 +5,7 @@ use \backend\components\TaskXMLHelper;
 
 /* @var $scenario Codeception\Scenario */
 
-return;
+
 $task1 = array('model'=> array('id' => 1));
 $condition1 = array(
     'model' => array('id' => 1001, 'task_id' => $task1['model']['id'])

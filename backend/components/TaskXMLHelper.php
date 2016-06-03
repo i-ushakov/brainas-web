@@ -86,4 +86,10 @@ class TaskXMLHelper {
             }
         }
     }
+
+    static public function retrieveExistingTasksFromXML(\SimpleXMLElement $allDeviceChangesInXML) {
+        $json = $allDeviceChangesInXML->existingTasks;
+        $existingTasks = json_decode($json, true);
+        return $existingTasks;
+    }
 }

@@ -21,4 +21,30 @@ class ChangeOfTask extends ActiveRecord {
     public function getTask() {
         return $this->hasOne(Task::className(), ['id' => 'task_id']);
     }
+
+    static public function loggingChangesForSync($action, $changeDatetime = null, $task) {
+        $changedTask = ChangeOfTask::find()
+            ->where(['user_id' => $task->user, 'task_id' => $task->id])
+            ->orderBy('id')
+            ->one();
+        if (empty($changedTask)) {
+            $changedTask = new ChangeOfTask();
+            $changedTask->task_id = $task->id;
+            $changedTask->user_id = $task->user;
+        }
+
+        if ($changeDatetime == null) {
+            $currentDatetime = new \DateTime();
+            $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
+            $changedTask->datetime = $currentDatetime->format('Y-m-d H:i:s');
+        } else {
+            $changedTask->datetime = $changeDatetime;
+        }
+        $changedTask->action = $action;
+        $changedTask->save();
+    }
+
+    static public function removeFromChangeLog($taskId) {
+        ChangeOfTask::find()->where(['task_id' => $taskId])->one()->delete();
+    }
 }

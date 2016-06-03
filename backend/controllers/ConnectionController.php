@@ -10,6 +10,7 @@
 namespace backend\controllers;
 
 
+use backend\components\TaskHelper;
 use backend\components\TaskXMLHelper;
 use Google_Client;
 use Yii;
@@ -33,6 +34,7 @@ class ConnectionController extends Controller {
     private $token;
     private $initSyncTime = null;
     private $synchronizedObjects;
+    private $existingTasksOnDevice;
 
     public function beforeAction($action) {
         $this->enableCsrfValidation = false;
@@ -125,7 +127,7 @@ class ConnectionController extends Controller {
 
         $serverChanges['tasks']['created'] = array();
         $serverChanges['tasks']['updated'] = array();
-        $serverChanges['tasks']['deleted'] = array();
+
         foreach ($changesOfTasks as $changeOfTask) {
             if ($changeOfTask->action == "Created" && $this->isChangedTaskExistInDb($changeOfTask)) {
                 $serverChanges['tasks']['created'][$changeOfTask->task_id]['action'] = $changeOfTask->action;
@@ -135,9 +137,6 @@ class ConnectionController extends Controller {
                 $serverChanges['tasks']['updated'][$changeOfTask->task_id]['action'] = $changeOfTask->action;
                 $serverChanges['tasks']['updated'][$changeOfTask->task_id]['datetime'] = $changeOfTask->datetime;
                 $serverChanges['tasks']['updated'][$changeOfTask->task_id]['object'] = $changeOfTask->task;
-            } else if ($changeOfTask->action == "Deleted") {
-                $serverChanges['tasks']['deleted'][$changeOfTask->task_id]['action'] = $changeOfTask->action;
-                $serverChanges['tasks']['deleted'][$changeOfTask->task_id]['datetime'] = $changeOfTask->datetime;
             }
         }
         return $serverChanges;
@@ -216,10 +215,13 @@ class ConnectionController extends Controller {
         }
     }
 
-    private function processAllChangesFromDevice($serverChanges) {
+    private function processAllChangesFromDevice(&$serverChanges) {
         $synchronizedTasks = array();
         $allDeviceChangesInXML = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
 
+        // Find tasks that exists on device (client) but absent on server (use serverId)
+        $this->existingTasksOnDevice = TaskXMLHelper::retrieveExistingTasksFromXML($allDeviceChangesInXML);
+        $serverChanges['tasks']['deleted'] = TaskHelper::getTasksRemovedOnServer($this->existingTasksOnDevice, $this->userId);
         $changedTasks = $allDeviceChangesInXML->changedTasks;
         foreach($changedTasks->changedTask as $changedTask) {
             $statusOfChanges = (String)$changedTask->change[0]->status;
@@ -245,10 +247,7 @@ class ConnectionController extends Controller {
                     }
                     $synchronizedTasks[$localId] = $globalId;
                 } else {
-                    $serverChanges['tasks']['deleted'][$globalId]['action'] = "Deleted";
-                    $currentDatetime = new \DateTime();
-                    $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
-                    $serverChanges['tasks']['deleted'][$globalId]['datetime'] = $currentDatetime->format('Y-m-d H:i:s');
+                    $serverChanges['tasks']['deleted'][$globalId] = $localId;
                     $synchronizedTasks[$localId] = $globalId;
                 }
             }
@@ -267,7 +266,7 @@ class ConnectionController extends Controller {
                 TaskXMLHelper::addConditionFromXML($c, $task->id, $this->synchronizedObjects);
             }
             $changeDatetime = (String)$newTaskFromDevice->change[0]->changeDatetime;
-            $task->loggingChangesForSync("Created", $changeDatetime);
+            ChangeOfTask::loggingChangesForSync("Created", $changeDatetime, $task);
             return $task->id;
         }
         return 0;
@@ -286,7 +285,7 @@ class ConnectionController extends Controller {
             TaskXMLHelper::addConditionFromXML($c, $task->id, $this->synchronizedObjects);
         }
         $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
-        $task->loggingChangesForSync("Changed", $changeDatetime);
+        ChangeOfTask::loggingChangesForSync("Changed", $changeDatetime, $task);
         return $task->id;
     }
 
@@ -313,17 +312,14 @@ class ConnectionController extends Controller {
     private function getRefreshToken() {
         $refreshToken = null;
         $params = [':user_id' => $this->userId];
-Yii::warning("=====getRefreshToken======");
-        Yii::warning($this->userId);
         $r = Yii::$app->db->createCommand('SELECT * FROM refresh_tokens WHERE user_id=:user_id')
             ->bindValues($params)
             ->queryOne();
-        Yii::warning('SELECT * FROM refresh_tokens WHERE user_id=:user_id');
+
         if (isset($r['refresh_token'])) {
             $refreshToken = $r['refresh_token'];
         }
-        Yii::warning("===========");
-        Yii::warning($refreshToken);
+
         return $refreshToken;
     }
 

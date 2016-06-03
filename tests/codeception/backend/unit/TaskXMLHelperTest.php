@@ -8,6 +8,7 @@
 namespace tests\codeception\backend\unit;
 
 
+use backend\components\TaskHelper;
 use \backend\components\TaskXMLHelper;
 use \common\models\Task as Task;
 use \common\models\Condition;
@@ -79,5 +80,16 @@ class TaskXMLHelperTest extends \yii\codeception\TestCase {
         $this->assertEquals(array_keys($expectedSynchronizedObjects['events']), array_keys($actualSynchronizedObjects['events']));
         $this->assertEquals(0, Event::find()->where(['params' => $oldEventParams])->count());
         $this->assertEquals(1, Event::find()->where(['params' => $newEventParams])->count());
-}
+    }
+
+    public function testRetrieveExistingTasksFromXML() {
+        $expected = array('11' => '1', '22' => '2');
+        $xmlFromDevice = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>
+            <changes>
+                <existingTasks>{\"11\":\"1\", \"22\":\"2\"}</existingTasks>
+                <changedTasks></changedTasks>
+            </changes>";
+        $actual = TaskXMLHelper::retrieveExistingTasksFromXML(new \SimpleXMLElement(($xmlFromDevice)));
+        $this->assertEquals($expected,$actual);
+    }
 }

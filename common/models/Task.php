@@ -42,7 +42,7 @@ class Task extends ActiveRecord {
         } else {
             $action = "Changed";
         }
-        $this->loggingChangesForSync($action);
+        ChangeOfTask::loggingChangesForSync($action, null, $this);
     }
 
     public function beforeDelete()
@@ -59,44 +59,6 @@ class Task extends ActiveRecord {
 
     public function afterDelete() {
         parent::afterDelete();
-        $this->loggingChangesForSync("Deleted");
-    }
-
-    public function loggingChangesForSync($action, $changeDatetime = null) {
-        $changedTask = ChangeOfTask::find()
-            ->where(['user_id' => $this->user, 'task_id' => $this->id])
-            ->orderBy('id')
-            ->one();
-        if (empty($changedTask)) {
-            $changedTask = new ChangeOfTask();
-            $changedTask->task_id = $this->id;
-            $changedTask->user_id = $this->user;
-        }
-
-        if ($changeDatetime == null) {
-            $currentDatetime = new \DateTime();
-            $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
-            $changedTask->datetime = $currentDatetime->format('Y-m-d H:i:s');
-        } else {
-            $changedTask->datetime = $changeDatetime;
-        }
-        $changedTask->action = $action;
-        $changedTask->save();
-    }
-
-    public function addConditionFromXML(\SimpleXMLElement $conditionXML) {
-        if (isset($conditionXML['globalId'])) {
-            $conditionId = $conditionXML['globalId'];
-            $condition = Condition::find($conditionId)
-                ->where(['id' => $conditionId])
-                ->one();
-        } else {
-            $condition = new Condition();
-            $condition->task_id = $this->id;
-            $condition->save();
-        }
-        foreach($conditionXML->events->event as $event) {
-            $condition->addEventFromXML($event);
-        }
+        ChangeOfTask::removeFromChangeLog($this->id);
     }
 }

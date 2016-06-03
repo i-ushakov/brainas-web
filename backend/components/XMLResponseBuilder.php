@@ -42,10 +42,10 @@ class XMLResponseBuilder {
 
         // Deleted Tasks
         $xmlResponse .= '<deleted>';
-        foreach ($serverChanges['tasks']['deleted'] as $id => $d) {
+        foreach ($serverChanges['tasks']['deleted'] as $globalId => $localId) {
             $xmlResponse .= '<deletedTask ' .
-                'global-id="' . $id . '" ' .
-                'time-changes="' . $d['datetime'] . '"' .
+                'global-id="' . $globalId . '" ' .
+                'local-id="' . $localId . '"' .
                 '></deletedTask>';
         }
         $xmlResponse .= '</deleted>';
