@@ -10,17 +10,12 @@
 namespace backend\controllers;
 
 
-use backend\components\TaskHelper;
-use backend\components\TaskXMLHelper;
 use Google_Client;
 use Yii;
 use common\models\User;
 use common\infrastructure\ChangeOfTask;
 use common\models\Task;
-use common\models\Condition;
-use common\models\Event;
-use common\models\EventType;
-use backend\components\XMLResponseBuilder;
+use backend\components\TaskSyncHelper;
 
 
 use yii\web\Controller;
@@ -32,9 +27,7 @@ class ConnectionController extends Controller {
 
     private $userId;
     private $token;
-    private $initSyncTime = null;
     private $synchronizedObjects;
-    private $existingTasksOnDevice;
 
     public function beforeAction($action) {
         $this->enableCsrfValidation = false;
@@ -44,20 +37,16 @@ class ConnectionController extends Controller {
 
     public function actionGetTasks() {
         // get user id and access token
-        $this->verifyUserAccess();
+        $token = $this->verifyUserAccess();
 
-        // Get chnaged and deletet task
-        // from time of last sync for this user
-        $serverChanges = $this->getChanges();
+        // retrive xml-document with device changes from file
+        $deviceChanges = $this->loadDeviceChangesFromXML();
+        $taskSyncHelper = new TaskSyncHelper($deviceChanges, $this->userId, $token);
+        $xmlResponse = $taskSyncHelper->doSynchronizationOfTasks();
 
-        // The objects that was updated from device
-        $this->synchronizedObjects = $this->processAllChangesFromDevice($serverChanges);
-
-        // Build xml-document with server-changes
-        // and data about changes from device that were accepted
-        $xmlResponse = XMLResponseBuilder::buildXMLResponse($serverChanges, $this->synchronizedObjects, $this->initSyncTime, $this->token);
         echo $xmlResponse;
     }
+
 
     private function verifyUserAccess() {
         // Create Google client and get accessToken
@@ -83,6 +72,7 @@ class ConnectionController extends Controller {
             }
         }
         $this->token = $token;
+        return $token;
     }
 
     private static function getGoogleClient() {
@@ -109,76 +99,9 @@ class ConnectionController extends Controller {
         return $token;
     }
 
-    private function getChanges() {
-        $serverChanges = array();
-        if (!isset($_POST['initSyncTime'])) {
-            // Getting changed tasks from website
-            $changesOfTasks = $this->getChangedTasks(null);
-            $currentDatetime = new \DateTime();
-            $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
-            $this->initSyncTime = $currentDatetime->format('Y-m-d H:i:s');
-        } else {
-            $this->initSyncTime = $_POST['initSyncTime'];
-            $changesOfTasks = $this->getChangedTasks($this->initSyncTime);
-            $currentDatetime = new \DateTime();
-            $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
-            $this->initSyncTime = $currentDatetime->format('Y-m-d H:i:s');
-        }
-
-        $serverChanges['tasks']['created'] = array();
-        $serverChanges['tasks']['updated'] = array();
-
-        foreach ($changesOfTasks as $changeOfTask) {
-            if ($changeOfTask->action == "Created" && $this->isChangedTaskExistInDb($changeOfTask)) {
-                $serverChanges['tasks']['created'][$changeOfTask->task_id]['action'] = $changeOfTask->action;
-                $serverChanges['tasks']['created'][$changeOfTask->task_id]['datetime'] = $changeOfTask->datetime;
-                $serverChanges['tasks']['created'][$changeOfTask->task_id]['object'] = $changeOfTask->task;
-            } else if ($changeOfTask->action == "Changed" && $this->isChangedTaskExistInDb($changeOfTask)) {
-                $serverChanges['tasks']['updated'][$changeOfTask->task_id]['action'] = $changeOfTask->action;
-                $serverChanges['tasks']['updated'][$changeOfTask->task_id]['datetime'] = $changeOfTask->datetime;
-                $serverChanges['tasks']['updated'][$changeOfTask->task_id]['object'] = $changeOfTask->task;
-            }
-        }
-        return $serverChanges;
-    }
-
-    /*
-     * Here we handle situation when we have info about task changes
-     * and the same time task is not exist in database
-     */
-    private function isChangedTaskExistInDb($changeOfTask) {
-        if(isset($changeOfTask->task) && !empty($changeOfTask->task) && $changeOfTask->task instanceof Task) {
-            return true;
-        } else {
-            \Yii::info(
-                "We have info about task changes without object in DB with datetime = " .$changeOfTask->datetime .
-                " for task with id = " . $changeOfTask->task_id .
-                ". So we change action from '" . $changeOfTask->action . "' to 'Deleted'", "MyLog"
-            );
-            $changeOfTask->action = "Deleted";
-            $changeOfTask->save();
-            return false;
-        }
-
-    }
-
-    private function getChangedTasks($initSyncTime) {
-        if ($initSyncTime != null) {
-            $changesOfTasks = ChangeOfTask::find()
-                ->where([
-                    'and',
-                    ['=', 'user_id', $this->userId],
-                    ['>', 'datetime', $initSyncTime]
-                ])
-                ->orderBy('datetime')
-                ->all();
-        } else {
-            $changesOfTasks = ChangeOfTask::find()
-                ->where(['user_id' => $this->userId])
-                ->orderBy('datetime')
-                ->all();
-        }
-        return $changesOfTasks;
+    private function loadDeviceChangesFromXML() {
+        $deviceChangesInXML = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
+        return $deviceChangesInXML;
     }
 
     private function getTokenFromPost() {
@@ -212,100 +135,6 @@ class ConnectionController extends Controller {
             $user->email = $userEmail;
             $user->save();
             return $user->id;
-        }
-    }
-
-    private function processAllChangesFromDevice(&$serverChanges) {
-        $synchronizedTasks = array();
-        $allDeviceChangesInXML = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
-
-        // Find tasks that exists on device (client) but absent on server (use serverId)
-        $this->existingTasksOnDevice = TaskXMLHelper::retrieveExistingTasksFromXML($allDeviceChangesInXML);
-        $serverChanges['tasks']['deleted'] = TaskHelper::getTasksRemovedOnServer($this->existingTasksOnDevice, $this->userId);
-        $changedTasks = $allDeviceChangesInXML->changedTasks;
-        foreach($changedTasks->changedTask as $changedTask) {
-            $statusOfChanges = (String)$changedTask->change[0]->status;
-            if ((string)$changedTask['globalId'] == 0 && $statusOfChanges != "DELETED") {
-                $globalId = $this->addTaskFromDevice($changedTask);
-                $localId = (string)$changedTask['id'];
-                $synchronizedTasks[$localId] = $globalId;
-            } else {
-                $globalId = (string)$changedTask['globalId'];
-                $localId = (string)$changedTask['id'];
-                if (Task::findOne($globalId) != null) {
-                    $serverChangesTime = $this->getTimeOfTaskChanges($globalId);
-                    $clientChangesTime = (String)$changedTask->change[0]->changeDatetime;
-                    if (strtotime($serverChangesTime) < strtotime($clientChangesTime)) {
-                        $status = (String)$changedTask->change[0]->status;
-                        if ($status == "DELETED") {
-                            $this->deleteTaskFromDevice($changedTask);
-                            $localId = 0;
-                        } elseif ($status == "UPDATED" || $status == "CREATED") {
-                            $this->updateTaskFromDevice($changedTask);
-                        }
-                        unset($serverChanges['tasks']['updated'][$globalId]);
-                    }
-                    $synchronizedTasks[$localId] = $globalId;
-                } else {
-                    $serverChanges['tasks']['deleted'][$globalId] = $localId;
-                    $synchronizedTasks[$localId] = $globalId;
-                }
-            }
-        }
-
-        $this->synchronizedObjects['tasks'] = $synchronizedTasks;
-        return $this->synchronizedObjects;
-    }
-
-    private function addTaskFromDevice ($newTaskFromDevice) {
-        $task = new Task();
-        $task->message = (String)$newTaskFromDevice->message;
-        $task->user = $this->userId;
-        if ($task->save()) {
-            foreach ($newTaskFromDevice->conditions->condition as $c) {
-                TaskXMLHelper::addConditionFromXML($c, $task->id, $this->synchronizedObjects);
-            }
-            $changeDatetime = (String)$newTaskFromDevice->change[0]->changeDatetime;
-            ChangeOfTask::loggingChangesForSync("Created", $changeDatetime, $task);
-            return $task->id;
-        }
-        return 0;
-    }
-
-    private function updateTaskFromDevice ($changedTask) {
-        $id = (string)$changedTask['globalId'];
-        $message = (string)$changedTask->message;
-        $description = (string)$changedTask->description;
-        $task = Task::findOne($id);
-        $task->message = $message;
-        $task->description = $description;
-        $task->save();
-        TaskXMLHelper::cleanDeletedConditions($changedTask->conditions->condition, $task->id);
-        foreach ($changedTask->conditions->condition as $c) {
-            TaskXMLHelper::addConditionFromXML($c, $task->id, $this->synchronizedObjects);
-        }
-        $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
-        ChangeOfTask::loggingChangesForSync("Changed", $changeDatetime, $task);
-        return $task->id;
-    }
-
-    private function deleteTaskFromDevice ($changedTask) {
-        $id = (string)$changedTask['globalId'];
-        $task = Task::findOne($id);
-        if (isset($task)) {
-            $task->delete();
-        }
-    }
-
-    private function getTimeOfTaskChanges($taskid) {
-        $changedTask = ChangeOfTask::find()
-            ->where(['user_id' => $this->userId, 'task_id' => $taskid])
-            ->orderBy('id')
-            ->one();
-        if (!is_null($changedTask)) {
-            return $changedTask->datetime;
-        } else {
-            return null;
         }
     }
 
