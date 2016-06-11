@@ -53,8 +53,8 @@ class GoogleAuthHelper {
         $client->setAccessToken($token);
         if ($client->isAccessTokenExpired()) {
             if (isset($token['refresh_token'])) {
-                $client->refreshToken($token['refresh_token']);
-                $token = $client->getAccessToken();
+                $token = $client->refreshToken($token['refresh_token']);
+                $client->setAccessToken($token);
             } else {
                 throw new InvalidArgumentException();
             }

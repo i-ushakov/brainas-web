@@ -43,7 +43,6 @@ class ConnectionController extends Controller {
 
     public function actionGetTasks() {
         // get user id and access token
-        Yii::warning("actionGetTasks");
         $token = $this->getTokenFromPost();
         try {
             $authInfo = GoogleAuthHelper::verifyUserAccess($token);
