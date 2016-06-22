@@ -14,6 +14,10 @@ var Task = Backbone.Model.extend({
     description : null,
     conditions: new Conditions(),
 
+    defaults : {
+        preventUpdateFromServer : false
+    },
+
     initialize : function(task) {
         this.id = task.id;
         var conditions = new Conditions();
