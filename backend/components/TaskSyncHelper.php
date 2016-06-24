@@ -144,9 +144,11 @@ class TaskSyncHelper {
         $id = (string)$changedTask['globalId'];
         $message = (string)$changedTask->message;
         $description = (string)$changedTask->description;
+        $picture = (string)$changedTask->picture;
         $task = Task::findOne($id);
         $task->message = $message;
         $task->description = $description;
+        $task->picture = $picture;
         $task->save();
         TaskXMLHelper::cleanDeletedConditions($changedTask->conditions->condition, $task->id);
         foreach ($changedTask->conditions->condition as $c) {
