@@ -10,6 +10,7 @@ namespace common\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+
 use common\infrastructure\ChangeOfTask;
 
 class Task extends ActiveRecord {
@@ -33,6 +34,10 @@ class Task extends ActiveRecord {
 
     public function getConditions() {
         return $this->hasMany(Condition::className(), ['task_id' => 'id']);
+    }
+
+    public function getPicture() {
+        return $this->hasOne(PictureOfTask::className(), ['task_id' => 'id']);
     }
 
     public function afterSave($insert, $changedAttributes) {

@@ -87,6 +87,7 @@ var Task = Backbone.Model.extend({
         this.set("id", task.id);
         this.set("message", task.message);
         this.set("description", task.description);
+        this.set("picture", task.picture);
         var conditions = new Conditions();
         _.each(task.conditions, function(condition) {
             var condition = new Condition(condition);

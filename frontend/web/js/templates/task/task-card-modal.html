@@ -8,7 +8,11 @@
                     <div class="alerts-cont"></div>
                     <div class="task-card-top container">
                         <div class="task-picture-cont col-md-2">
-                            <img class='task-card-image' src="<%= app.url %>images/pictures.png" />
+                            <% if (picture) { %>
+                                <img class="task-card-image" src = "<%= picture %>" />
+                            <% } else { %>
+                                <img class='task-card-image' src="<%= app.url %>images/pictures.png" />
+                            <% } %>
                         </div>
                         <div class="task-general-info-cont col-md-4">
                             <div class="task-message-cont"><%= message %></div>

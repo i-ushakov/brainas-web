@@ -11,9 +11,11 @@ namespace frontend\controllers;
 
 use common\models\Condition;
 use common\models\Event;
+use frontend\components\GoogleDriveHelper;
 use Yii;
 use yii\web\Controller;
 use common\models\Task;
+use common\models\PictureOfTask;
 use common\models\EventType;
 use yii\helpers\Json;
 
@@ -22,18 +24,75 @@ class TaskController extends Controller {
     private $userId;
     private $result = array();
 
+    public function beforeAction($action) {
+        $this->enableCsrfValidation = false;
+        return parent::beforeAction($action);
+    }
 
+
+    public function actionTestCode() {
+        define('APPLICATION_NAME', 'Brainas app');
+        define('CLIENT_SECRET_PATH',"/var/www/brainas.net/backend/config/client_secret_925705811320-cenbqg1fe5jb804116oefl78sbishnga.apps.googleusercontent.com.json");
+        define('CREDENTIALS_PATH', '/var/www/brainas.net/frontend/credentials');
+        define('SCOPES', implode(' ', array(
+                \Google_Service_Drive::DRIVE_APPDATA,
+                \Google_Service_Drive::DRIVE_METADATA,
+                \Google_Service_Drive::DRIVE_FILE,
+                )
+        ));
+        $client = new \Google_Client();
+        $client->setApplicationName(APPLICATION_NAME);
+        $client->setScopes(SCOPES);
+        $client->setAuthConfigFile(CLIENT_SECRET_PATH);
+        $client->setDeveloperKey('f958e7db2a82727525e231bd43aabfeddae0a2f3');
+        $client->setRedirectUri("postmessage");
+        $client->setAccessType('offline');
+
+        $authCode = file_get_contents('php://input');
+
+        if (isset($authCode)) {
+            $accessToken = $client->authenticate($authCode);
+            \Yii::$app->response->format = 'json';
+            $service = new \Google_Service_Drive($client);
+
+            $optParams = array(
+                'pageSize' => 10,
+                'fields' => "nextPageToken, files(id, name)"
+            );
+            $results = $service->files->listFiles($optParams);
+
+            $results =  $service->files->listFiles(array(
+                'spaces' => 'appDataFolder',
+                'fields' => 'nextPageToken, files(id, name, webContentLink)',
+                'pageSize' => 10
+            ));
+
+            if (count($results->getFiles()) == 0) {
+                //print "No files found.\n";
+            } else {
+                //print "Files:\n";
+                foreach ($results->getFiles() as $file) {
+                    printf("%s (%s)\n", $file->getName(), $file->getId());
+                    print_r("111".$file->getWebContentLink(). "11111");
+                }
+            }
+            $fileId = "1rwymhdIqpVgd3lhH1Qp5VXpGipDjtSO-MinR3KL_xwzP";
+            $content = $service->files->get($fileId, array(
+                'alt' => 'media' ));
+            return;
+        }
+    }
     /**
      * Return tasks
      *
      * @return mixed
      */
     public function actionGet() {
-
         if (!Yii::$app->user->isGuest) {
-           $userId =  Yii::$app->user->id;
+            $userId =  Yii::$app->user->id;
             $tasks = Task::find()
                 ->where(['user' => $userId])
+                ->with('picture')
                 ->orderBy('id')
                 ->all();
         } else {
@@ -46,7 +105,7 @@ class TaskController extends Controller {
 
         $tasksArray = array();
         foreach ($tasks as $task) {
-            $tasksArray[] = $this->prepareTsakForSending($task);
+            $tasksArray[] = $this->prepareTaskForSending($task);
         }
 
         \Yii::$app->response->format = 'json';
@@ -137,7 +196,7 @@ class TaskController extends Controller {
             if ($task->validate()) {
                 $task->save();
                 $this->result['status'] = "OK";
-                $this->result['task'] = $this->prepareTsakForSending($task);
+                $this->result['task'] = $this->prepareTaskForSending($task);
             } else {
                 $errors = $task->errors;
                 $this->result['status'] = "FAILED";
@@ -180,12 +239,65 @@ class TaskController extends Controller {
         }
     }
 
-    private function prepareTsakForSending($task){
+    public function getGoogleClient() {
+        define('APPLICATION_NAME', 'Brainas app');
+        define('CLIENT_SECRET_PATH',"/var/www/brainas.net/backend/config/client_secret_925705811320-cenbqg1fe5jb804116oefl78sbishnga.apps.googleusercontent.com.json");
+        define('CREDENTIALS_PATH', '/var/www/brainas.net/frontend/config/credentials.json');
+        define('SCOPES', implode(' ', array(
+                \Google_Service_Drive::DRIVE_METADATA_READONLY)
+        ));
+
+
+        $client = new \Google_Client();
+        $client->setApplicationName(APPLICATION_NAME);
+        $client->setScopes(SCOPES);
+        $client->setAuthConfigFile(CLIENT_SECRET_PATH);
+        $client->setRedirectUri("https://brainas.com/task/test-code");
+        $client->setAccessType('offline');
+
+       // $client->setAccessToken($accessToken);
+
+        //if (file_exists(CREDENTIALS_PATH)) {
+            //$accessToken = file_get_contents(CREDENTIALS_PATH);
+        //} else {
+            $authUrl = $client->createAuthUrl();
+            printf("Open the following link in your browser:\n%s\n", $authUrl);
+            print 'Enter verification code: ';
+            //$authCode = trim(fgets(STDIN));
+
+            // Exchange authorization code for an access token.
+            //$accessToken = $client->authenticate($authCode);
+
+            // Store the credentials to disk.
+            //if(!file_exists(dirname(CREDENTIALS_PATH))) {
+               //mkdir(dirname(CREDENTIALS_PATH), 0700, true);
+            //}
+            //file_put_contents(CREDENTIALS_PATH, $accessToken);
+            //printf("Credentials saved to %s\n", CREDENTIALS_PATH);
+        //}
+        //$client->setAccessToken($accessToken);
+
+        // Refresh the token if it's expired.
+        //if ($client->isAccessTokenExpired()) {
+            //$client->refreshToken($client->getRefreshToken());
+            //file_put_contents(CREDENTIALS_PATH, $client->getAccessToken());
+        //}
+        $accessTokent = $client->fetchAccessTokenWithAuthCode("4/Vj3wPOx6CjHUBTBvimef4Jh_RmvqWyruh6z_s7g6ZcE");
+        //$accessTokent = $client->getAccessToken();
+        file_put_contents(CREDENTIALS_PATH, $client->getAccessToken());
+        return $client;
+    }
+
+    private function prepareTaskForSending($task){
         $item['id'] = $task->id;
         $item['message'] = $task->message;
         $item['description'] =  nl2br($task->description);
+
+        if ($task->picture != null) {
+            $item['picture'] = GoogleDriveHelper::buildImageRef($task->picture->google_drive_id);
+        }
         $conditions = $task->conditions;
-        foreach($conditions as $condition){
+        foreach($conditions as $condition) {
             $c = array();
             $c['conditionId'] = $condition->id;
             $events = $condition->events;

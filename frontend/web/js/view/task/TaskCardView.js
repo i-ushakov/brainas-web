@@ -67,9 +67,10 @@ var TaskCardView = Backbone.View.extend({
         var params = {
             message: this.model.get("message"),
             description: this.model.get("description"),
+            picture: this.model.get("picture"),
             createMode: this.createMode
         };
-        var modal = $(this.template(params));
+        var modal = $(this.template(params).trim())
         this.setElement(modal.modal('show'));
         $(modal.on('hidden.bs.modal', function () {
             self.close();
