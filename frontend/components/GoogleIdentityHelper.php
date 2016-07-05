@@ -97,7 +97,7 @@ class GoogleIdentityHelper {
         if ($client->isAccessTokenExpired() && isset($user->refresh_token)) {
             $client->refreshToken($user->refresh_token);
             $accessToken = $client->getAccessToken();
-            $user->access_token = $accessToken;
+            $user->access_token = json_encode($accessToken);
             $user->save();
         }
     }
