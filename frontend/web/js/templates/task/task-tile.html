@@ -4,7 +4,13 @@
         <div class="task-tile tile-lightgree">
             <div class="delete-img-cont"><img src="<%=app.url%>images/delete_icon_100.png"/></div>
             <div class="task-tile-top">
-                <img class="task-picture" src="<%= app.url %>images/pictures.png">
+                <div class="task-card-image-cont">
+                    <% if (picture_id) { %>
+                        <img class="task-card-image" src = "<%= app.googleDriveImageUrl + picture_id %>" />
+                    <% } else { %>
+                        <img class="task-picture" src="<%= app.url %>images/pictures.png" />
+                    <% } %>
+                </div>
             </div>
             <div class="task-message">
                 <%= message %>

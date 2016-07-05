@@ -8,8 +8,8 @@
                     <div class="alerts-cont"></div>
                     <div class="task-card-top container">
                         <div class="task-picture-cont col-md-2">
-                            <% if (picture) { %>
-                                <img class="task-card-image" src = "<%= picture %>" />
+                            <% if (picture_id) { %>
+                                <img class="task-card-image" src = "<%= app.googleDriveImageUrl + picture_id %>" />
                             <% } else { %>
                                 <img class='task-card-image' src="<%= app.url %>images/pictures.png" />
                             <% } %>

@@ -67,7 +67,7 @@ var TaskCardView = Backbone.View.extend({
         var params = {
             message: this.model.get("message"),
             description: this.model.get("description"),
-            picture: this.model.get("picture"),
+            picture_id: this.model.get("picture_google_drive_id"),
             createMode: this.createMode
         };
         var modal = $(this.template(params).trim())

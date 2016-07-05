@@ -196,6 +196,10 @@ a.desc:after {
     min-height: 150px;
     max-height: 150px;
 }
+.task-card-image-cont {
+    padding: 4px;
+}
+
 
 .task-card-top {
     margin-top: 10px;

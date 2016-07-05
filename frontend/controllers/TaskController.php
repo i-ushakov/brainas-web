@@ -294,7 +294,8 @@ class TaskController extends Controller {
         $item['description'] =  nl2br($task->description);
 
         if ($task->picture != null) {
-            $item['picture'] = GoogleDriveHelper::buildImageRef($task->picture->google_drive_id);
+            $item['picture_name'] = $task->picture->name;
+            $item['picture_google_drive_id'] = $task->picture->google_drive_id;
         }
         $conditions = $task->conditions;
         foreach($conditions as $condition) {
