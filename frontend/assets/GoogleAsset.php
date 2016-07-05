@@ -20,6 +20,8 @@ class GoogleAsset extends AssetBundle
     ];
     public $js = [
         'https://maps.googleapis.com/maps/api/js?key=AIzaSyALoOSAt19qKApEaQxnDEuHxsn9f7Kn46E&libraries=places',
+        'https://apis.google.com/js/platform.js?onload=start',
+        'js/google_signin.js',
     ];
     public $depends = [
     ];

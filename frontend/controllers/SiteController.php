@@ -3,10 +3,12 @@ namespace frontend\controllers;
 
 use Yii;
 use common\models\LoginForm;
+use common\models\User;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use frontend\components\GoogleIdentityHelper;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
@@ -18,6 +20,12 @@ use yii\filters\AccessControl;
  */
 class SiteController extends Controller
 {
+
+    public function beforeAction($action) {
+        $this->enableCsrfValidation = false;
+        return parent::beforeAction($action);
+    }
+
     /**
      * @inheritdoc
      */
@@ -94,6 +102,49 @@ class SiteController extends Controller
                 'model' => $model,
             ]);
         }
+    }
+
+    /**
+     * SignIn with google.
+     *
+     */
+    public function actionSignIn() {
+        $result = array();
+        $authCode = file_get_contents('php://input');
+
+        if (isset($authCode)) {
+            $client = GoogleIdentityHelper::getGoogleClient();
+            $accessToken = $client->authenticate($authCode);
+            $userEmail = GoogleIdentityHelper::authenticationOfUser($accessToken);
+            if ($userEmail != null) {
+                $user = GoogleIdentityHelper::loginUserInYii($userEmail, $accessToken);
+                if ($user != null){
+                    $result['status'] = "SUCCESS";
+                    $result['message'] = "User was logged as " . Yii::$app->user->identity['username'];
+                } else {
+                    $result['status'] = "FAILED";
+                    $result['message'] = "Cannot authenticate user";
+                }
+            } else {
+                $result['status'] = "FAILED";
+                $result['message'] = "Cannot authenticate user";
+            }
+        } else {
+            $result['status'] = "FAILED";
+            $result['message'] = "Code is null";
+        }
+
+        \Yii::$app->response->format = 'json';
+        echo json_encode($result);
+        return;
+    }
+
+    /**
+     * SignOut with google.
+     *
+     */
+    public function actionSignOut() {
+        Yii::$app->user->logout();
     }
 
     /**

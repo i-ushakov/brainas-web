@@ -9,6 +9,7 @@ var TaskPanelView = Backbone.View.extend({
 
     events: {
         'click #sing-in-btn': 'signInBtnHandler',
+        'click #signinButtonCenter' : 'signInBtnHandler'
     },
 
     template: _.template($('#task-panel-template').html()),
@@ -62,9 +63,9 @@ var TaskPanelView = Backbone.View.extend({
         }
     },
 
-    signInBtnHandler: function(event) {
-        $(event.toElement).prop('disabled', true)
-        $(".gitkit-id-submit").trigger('click');
+    signInBtnHandler : function () {
+        auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
+        return false;
     }
 
 });
