@@ -295,7 +295,7 @@ class TaskController extends Controller {
 
         if ($task->picture != null) {
             $item['picture_name'] = $task->picture->name;
-            $item['picture_google_drive_id'] = $task->picture->google_drive_id;
+            $item['picture_google_drive_id'] = $task->picture->file_id;
         }
         $conditions = $task->conditions;
         foreach($conditions as $condition) {

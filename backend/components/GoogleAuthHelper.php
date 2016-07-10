@@ -21,7 +21,7 @@ class GoogleAuthHelper {
         $client->setAuthConfigFile(self::$jsonGoogleClientConfig);
         //$client->setRedirectUri("http://brainas.net/backend/web/connection/");
         $client->setRedirectUri("http://brainas.net/site/login");
-        $client->setScopes("https://www.googleapis.com/auth/plus.login");
+        $client->setScopes("https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/drive");
         $client->setAccessType('online'); //offline
         $client->setApprovalPrompt('force');
 
@@ -128,4 +128,6 @@ class GoogleAuthHelper {
 
         return $refreshToken;
     }
+
+
 }

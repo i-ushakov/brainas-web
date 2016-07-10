@@ -10,6 +10,27 @@ namespace frontend\components;
 
 use Yii;
 class GoogleDriveHelper {
+    private static $instance;
+    private $client;
+    private $driveService;
+
+    public static function getInstance($client) {
+        if (null === static::$instance) {
+            static::$instance = new static($client);
+        }
+
+        return static::$instance;
+    }
+
+
+    protected function __construct($client) {
+        $this->driveService = new \Google_Service_Drive($client);
+    }
+
+    private function __clone() {}
+
+    private function __wakeup() {}
+
     static public function getImageFolder() {
         $imageFolderPath = "";
         $client = GoogleIdentityHelper::getGoogleClient();
@@ -64,4 +85,35 @@ class GoogleDriveHelper {
         return $imageRef;
     }
 
+    static public function test($imageGoogleDriveId) {
+        var_dump("imageGoogleDriveId");
+        var_dump($imageGoogleDriveId);
+        $client = GoogleIdentityHelper::getGoogleClient();
+        $user = \Yii::$app->user->identity;
+        $client->setAccessToken($user->access_token);
+
+        $driveService = new \Google_Service_Drive($client);
+        $pageToken = null;
+        do {
+            $response = $driveService->files->listFiles(array(
+                'q' => "name='task_img_1467800323282.png'",
+                'spaces' => 'drive',
+                'pageToken' => $pageToken,
+                'fields' => 'nextPageToken, files(id, name, webViewLink)',
+            ));
+            foreach ($response->files as $file) {
+            printf("Found file: %s (%s) (%s)\n", $file->name, $file->id, $file->webViewLink);
+            }
+        } while ($pageToken != null);
+    }
+
+    public function getFileIdByName($fileName) {
+        $response = $this->driveService->files->listFiles(array(
+            'q' => "name='$fileName'",
+            'spaces' => 'drive',
+            'fields' => 'nextPageToken, files(id, name)',
+        ));
+        $file = $response->files[0];
+        return $file->id;
+    }
 }
