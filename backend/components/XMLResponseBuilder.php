@@ -107,6 +107,7 @@ class XMLResponseBuilder {
             '<task global-id="' . $task->id . '" time-changes="' . $datetime . '">' .
             '<message>' . $task->message . '</message>' .
             '<description>' . $task->description . '</description>' .
+            self::addPictureEntity($task->picture) .
             '<conditions>' . self::buildXmlOfConditions($task) . '</conditions>' .
             '<status>WAITING</status>' .
             '</task>';
@@ -134,5 +135,17 @@ class XMLResponseBuilder {
             }
         }
         return $xml;
+    }
+
+    private function addPictureEntity($picture) {
+        $xmlPart = "";
+        if (isset($picture) && isset($picture->name)) {
+            $xmlPart =
+                '<picture><name> ' . $picture->name . ' </name>' .
+                    (isset($picture->driver_id) ? '<driverId>' + $picture->driver_id + '</driverId>' : '') .
+                    (isset($picture->file_id) ? '<fileId>' + $picture->file_id + '</fileId>' : '') .
+                '</picture>';
+        }
+        return $xmlPart;
     }
 }

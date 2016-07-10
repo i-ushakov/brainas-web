@@ -1,8 +1,10 @@
 <?php
 namespace backend\components;
 
+use common\models\GoogleDriveFolder;
 use common\models\Task;
 use common\infrastructure\ChangeOfTask;
+use frontend\components\GoogleDriveHelper;
 
 
 /**
@@ -13,26 +15,31 @@ use common\infrastructure\ChangeOfTask;
  */
 
 class TaskSyncHelper {
-    private $deviceChanges;
+    private $syncDataFromDevice;
     private $serverChanges;
     private $userId;
     private $token;
+    private $client;
 
-    function __construct(\SimpleXMLElement $deviceChanges, $userId, $token) {
-        $this->deviceChanges = $deviceChanges;
+    function __construct(\SimpleXMLElement $syncDataFromDevice, $userId, $token) {
+        $this->syncDataFromDevice = $syncDataFromDevice;
         $this->userId = $userId;
         $this->token = $token;
+        $this->client = GoogleAuthHelper::getGoogleClient();
+        $this->client->setAccessToken($this->token);
     }
 
-    public function doSynchronizationOfTasks() {
+    public function doSynchronization() {
         $initSyncTime = $this->getInitSyncTimeFromPost();
+
+        //$this->processProjectFolders($this->syncDataFromDevice->);
 
         // Get chnaged and deletet task
         // from time of last sync for this user
         $serverChanges = $this->getServerChanges($initSyncTime);
 
         // We process changes from device and we'll return ids of synchronized objects (task, conditions, events)
-        $synchronizedObjects = $this->processChangesFromDevice($serverChanges);
+        $synchronizedObjects = $this->processTaskChangesFromDevice($serverChanges);
 
         // Build xml-document with server-changes
         // and data about changes from device that were accepted
@@ -65,15 +72,15 @@ class TaskSyncHelper {
         return $serverChanges;
     }
 
-    public function processChangesFromDevice(&$serverChanges) {
+    public function processTaskChangesFromDevice(&$serverChanges) {
         $synchronizedObjects = array();
         $synchronizedTasks = array();
 
         // Find tasks that exists on device (client) but absent on server (use serverId)
-        $existingTasksOnDevice = TaskXMLHelper::retrieveExistingTasksFromXML($this->deviceChanges);
+        $existingTasksOnDevice = TaskXMLHelper::retrieveExistingTasksFromXML($this->syncDataFromDevice);
         $serverChanges['tasks']['deleted'] = TaskHelper::getTasksRemovedOnServer($existingTasksOnDevice, $this->userId);
 
-        $changedTasks = $this->deviceChanges->changedTasks;
+        $changedTasks = $this->syncDataFromDevice->changedTasks;
         foreach($changedTasks->changedTask as $changedTask) {
             $statusOfChanges = (String)$changedTask->change[0]->status;
             $globalId = (string)$changedTask['globalId'];
@@ -128,10 +135,14 @@ class TaskSyncHelper {
     private function addTaskFromDevice ($newTaskFromDevice, &$synchronizedObjects) {
         $task = new Task();
         $task->message = (String)$newTaskFromDevice->message;
+        $task->description = (String)$newTaskFromDevice->description;
         $task->user = $this->userId;
         if ($task->save()) {
             foreach ($newTaskFromDevice->conditions->condition as $c) {
                 TaskXMLHelper::addConditionFromXML($c, $task->id, $synchronizedObjects);
+            }
+            if (isset($newTaskFromDevice->picture)) {
+                $this->savePistureOfTask($newTaskFromDevice->picture, $task->id);
             }
             $changeDatetime = (String)$newTaskFromDevice->change[0]->changeDatetime;
             ChangeOfTask::loggingChangesForSync("Created", $changeDatetime, $task);
@@ -141,15 +152,16 @@ class TaskSyncHelper {
     }
 
     private function updateTaskFromDevice ($changedTask, &$synchronizedObjects) {
-        $id = (string)$changedTask['globalId'];
+        $taskId = (string)$changedTask['globalId'];
         $message = (string)$changedTask->message;
         $description = (string)$changedTask->description;
-        $picture = (string)$changedTask->picture;
-        $task = Task::findOne($id);
+        $task = Task::findOne($taskId);
         $task->message = $message;
         $task->description = $description;
-        $task->picture = $picture;
         $task->save();
+        if (isset($changedTask->picture)) {
+            $this->savePistureOfTask($changedTask->picture, $taskId);
+        }
         TaskXMLHelper::cleanDeletedConditions($changedTask->conditions->condition, $task->id);
         foreach ($changedTask->conditions->condition as $c) {
             TaskXMLHelper::addConditionFromXML($c, $task->id, $synchronizedObjects);
@@ -157,6 +169,18 @@ class TaskSyncHelper {
         $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
         ChangeOfTask::loggingChangesForSync("Changed", $changeDatetime, $task);
         return $task->id;
+    }
+
+    private function savePistureOfTask($pictureXML, $taskId)
+    {
+        $picture = new GoogleDriveFolder();
+        $picture->task_id = $taskId;
+        $picture->name = $pictureXML->fileName;
+        if (isset($pictureXML->driveId)) {
+            $picture->drive_id = $pictureXML->driveId;
+        }
+        $picture->file_id = GoogleDriveHelper::getInstance($this->client)->getFileIdByName($pictureXML->fileName);
+        $picture->save();
     }
 
     private function deleteTaskFromDevice ($deletedTask) {
