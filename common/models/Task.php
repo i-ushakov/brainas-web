@@ -56,7 +56,7 @@ class Task extends ActiveRecord {
             foreach (Condition::find()->where('task_id = ' . $this->id)->all() as $condition) {
                 $condition->delete();
             }
-            foreach(GoogleDriveFolder::find()->where('task_id = ' . $this->id)->all() as $pictureOfTask) {
+            foreach(PictureOfTask::find()->where('task_id = ' . $this->id)->all() as $pictureOfTask) {
                 $pictureOfTask->delete();
             }
             return true;
