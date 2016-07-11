@@ -2,6 +2,7 @@
 namespace backend\components;
 
 use common\models\GoogleDriveFolder;
+use common\models\PictureOfTask;
 use common\models\Task;
 use common\infrastructure\ChangeOfTask;
 use frontend\components\GoogleDriveHelper;
@@ -173,7 +174,7 @@ class TaskSyncHelper {
 
     private function savePistureOfTask($pictureXML, $taskId)
     {
-        $picture = new GoogleDriveFolder();
+        $picture = new PictureOfTask();
         $picture->task_id = $taskId;
         $picture->name = $pictureXML->fileName;
         if (isset($pictureXML->driveId)) {

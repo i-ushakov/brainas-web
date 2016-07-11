@@ -101,14 +101,4 @@ class GoogleIdentityHelper {
             $user->save();
         }
     }
-
-    static private function actualizeRefreshToken($accessToken) {
-        if (isset($accessToken['refresh_token'])) {
-            self::saveRefreshTokenInDB($accessToken['refresh_token']);
-            return $accessToken;
-        } else {
-            $accessToken['refresh_token'] = self::retrieveRefreshTokenFromDB($accessToken['refresh_token']);
-            return $accessToken;
-        }
-    }
 }
