@@ -27,6 +27,12 @@ var TaskCardView = Backbone.View.extend({
         'click .task-description-edit .cancel-edit-icon': 'cancelEditDescription',
         'click #save-changes-btn': 'save',
         'click #addConditionBtn': 'addConditionHandler',
+        'mouseenter .task-picture-cont' : 'showChangePictureBtn',
+        'mouseleave .task-picture-cont' : 'hideChangePictureBtn',
+        'click .task-picture-cont' : 'showChangePictureBlock',
+        'click #cancelPictureBtn' : 'cancelChangePicture',
+        'change #pictureUploadBtn' : 'uploadPictureHandler',
+
 
         'keyup .task-message-edit textarea': 'changeMessageHandler',
         'keyup .task-description-edit textarea': 'changeDescriptionHandler',
@@ -243,5 +249,74 @@ var TaskCardView = Backbone.View.extend({
 
     remove: function(){
         this.model.set("preventUpdateFromServer", false);
-    }
+    },
+
+    showChangePictureBtn: function() {
+        $('.change-picture-btn').show();
+    },
+
+    hideChangePictureBtn: function() {
+        $('.change-picture-btn').hide();
+    },
+
+    showChangePictureBlock: function() {
+
+    },
+
+    cancelChangePicture: function() {
+        $('.picture-picker-block').collapse('toggle');
+    },
+
+    uploadPictureHandler: function(event) {
+        /*$('form[name=upload_picture]').on('submit', function(e) {
+            debugger;
+            e.preventDefault();
+        });
+        /*var options=
+        {
+            target:'#preview',
+            url:'https://brainas.com',
+            beforeSubmit:  showLoading,
+            error: function(e){
+                alert("Error: " + e);
+            }
+        };
+        function showLoading(){
+            debugger;
+            $('#preview').html("<img src='images/loader.gif' alt='Loading.....'/>");
+        }
+        $('form[name=upload_picture]').ajaxForm(options);*/
+
+        /*$('form[name=upload_picture]').ajaxSubmit();*/
+
+
+        function readURL(input) {
+            if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+                alert('The File APIs are not fully supported in this browser.');
+                return;
+            }
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+
+                    $('#image').attr('src', e.target.result);
+                    $.post('/picture/upload', {imageData:e.target.result}, function(data){
+                        debugger;
+                        //recieve information back from php through the echo function(not required)
+
+                    });
+                };
+
+
+                debugger;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        var inputElement = event.target
+
+        readURL(inputElement);
+    },
+
+
 });

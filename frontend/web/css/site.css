@@ -485,3 +485,61 @@ a.desc:after {
     font-weight: bold;
     color: white;
 }
+
+/* Picture Picker */
+
+.picture-picker-block {
+    padding: 6px;
+    margin: 6px;
+}
+
+.picture-preview {
+    text-align: center;
+}
+
+.upload-btn-cont {
+    margin-top: 12px;
+}
+
+.download-ref-cont {
+    margin-top: 12px;
+    width: 100%;
+}
+
+.download-ref-cont input {
+    width: 95%;
+}
+
+
+.picture-picker-block .buttons-cont {
+    margin-top: 12px;
+    text-align: right;
+}
+
+.picture-placeholder{
+   margin-top: 20px;
+}
+
+.task-picture-cont {
+    cursor: pointer;
+}
+.change-picture-btn {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    top: 30px;
+    left: 40%;
+}
+
+.change-picture-btn .inner{
+    position: relative;
+    background-color: #222222;
+    color: white;
+    opacity: 0.5;
+    left: -40%;
+    padding: 5px;
+}
+
+.change-picture-btn .inner:hover {
+    opacity: 0.9;
+}
