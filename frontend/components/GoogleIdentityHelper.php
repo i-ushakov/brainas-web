@@ -30,6 +30,24 @@ class GoogleIdentityHelper {
         return $client;
     }
 
+    static public function getGoogleClientWithToken($user) {
+        $client = self::getGoogleClient();
+        $client->setAccessToken($user->access_token );
+        if ($client->isAccessTokenExpired() && isset($user->refresh_token)) {
+            $client->refreshToken($user->refresh_token);
+            $user->access_token = json_encode($client->getAccessToken());
+            $user->save();
+        }
+        return $client;
+        /*else {
+            $result['status'] = "FAILED";
+            $result['code'] = "no_refresh_token";
+            $result['message'] = "Access tokent txpired and we havn't refresh_token";
+        }
+            TODO May be must be an object ... GoogleClientWithToken($client)... ->errors, ->token, ->message ->status*/
+
+    }
+
     static public function authenticationOfUser($accessToken) {
         if ($accessToken != null) {
             $client = self::getGoogleClient();

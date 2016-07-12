@@ -13,6 +13,7 @@ class GoogleDriveHelper {
     private static $instance;
     private $client;
     private $driveService;
+    private $message;
 
     public static function getInstance($client) {
         if (null === static::$instance) {
@@ -23,7 +24,7 @@ class GoogleDriveHelper {
     }
 
 
-    protected function __construct($client) {
+    public function __construct($client) {
         $this->driveService = new \Google_Service_Drive($client);
     }
 
@@ -115,5 +116,14 @@ class GoogleDriveHelper {
         ));
         $file = $response->files[0];
         return $file->id;
+    }
+
+    public function removeFile($fileId) {
+        if (!isset($fileId) || $fileId== "") {
+            $this->message = "No have fileId";
+            return false;
+        }
+        $this->driveService->files->delete($fileId);
+        return true;
     }
 }

@@ -49,7 +49,9 @@ var TaskCardView = Backbone.View.extend({
             'onConditionCancledHandler',
             'onDeleteConditionHandler',
             'saveNewPicture',
-            'uploadPictureHandler');
+            'uploadPictureHandler',
+            'cancelChangePicture',
+            'close');
 
         if (this.model === undefined) {
             return;
@@ -77,9 +79,12 @@ var TaskCardView = Backbone.View.extend({
     },
 
     render: function() {
+        var self = this;
         var modal = this.renderCard();
         this.setElement(modal.modal('show'));
         $(modal.on('hidden.bs.modal', function () {
+            debugger;
+            self.removeTmpPicture();
             self.close();
         }));
         this.renderConditions();
@@ -127,6 +132,17 @@ var TaskCardView = Backbone.View.extend({
             condition.on('conditionWasRemoved', self.onDeleteConditionHandler);
             condition.on('conditionWasChanged', self.taskWasChangedHandler);
         });
+    },
+
+    close: function(){
+        // COMPLETELY UNBIND THE VIEW
+        this.undelegateEvents();
+
+        this.$el.removeData().unbind();
+
+        // Remove view from DOM
+        this.remove();
+        Backbone.View.prototype.remove.call(this);
     },
 
     editMessage: function() {
@@ -211,6 +227,7 @@ var TaskCardView = Backbone.View.extend({
                 app.MainPanelView.taskPanelView.model.tasks.add(newTask);
             }
             debugger;
+            this.tmpPicture = null;
             this.model.update(result.task);
             this.refreshCard();
         }
@@ -279,48 +296,41 @@ var TaskCardView = Backbone.View.extend({
 
     saveNewPicture: function() {
         debugger;
-        if(this.newPicture){
-            this.model.set('picture_file_id', this.newPicture.pictureFileId);
-            this.model.set('picture_name', this.newPicture.pictureName);
-            debugger;
-            this.model.save(function() {
-                refrshTaskPicrute();
-            });
+        if(this.tmpPicture){
+            var self = this;
+            this.model.set('picture_file_id', this.tmpPicture.pictureFileId);
+            this.model.set('picture_name', this.tmpPicture.pictureName);
+            this.model.save();
         }
-
         $('.picture-picker-block').collapse('toggle');
     },
 
     cancelChangePicture: function() {
-        if(this.newPicture)this.newPicture = null;
+        this.removeTmpPicture();
         $('.picture-picker-block').collapse('toggle');
+    },
+
+    removeTmpPicture: function() {
+        debugger;
+        if (this.tmpPicture) {
+            var pictureForRemove = new Picture({
+                task_id: null,
+                name: this.tmpPicture.pictureName,
+                file_id: this.tmpPicture.pictureFileId
+            });
+            pictureForRemove.remove();
+            this.tmpPicture = null;
+            $('img#picture-preview').attr('src', '');
+            $('#pictureUploadBtn').replaceWith($('#pictureUploadBtn').clone(true));
+
+        }
     },
 
     uploadPictureHandler: function(event) {
         var self = this;
-        /*$('form[name=upload_picture]').on('submit', function(e) {
-            debugger;
-            e.preventDefault();
-        });
-        /*var options=
-        {
-            target:'#preview',
-            url:'https://brainas.com',
-            beforeSubmit:  showLoading,
-            error: function(e){
-                alert("Error: " + e);
-            }
-        };
-        function showLoading(){
-            debugger;
-            $('#preview').html("<img src='images/loader.gif' alt='Loading.....'/>");
-        }
-        $('form[name=upload_picture]').ajaxForm(options);*/
-
-        /*$('form[name=upload_picture]').ajaxSubmit();*/
-
-
         function readURL(input) {
+            // TODO move to separate function
+            // and use this http://stackoverflow.com/questions/12281775/get-data-from-file-input-in-jquery
             if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
                 alert('The File APIs are not fully supported in this browser.');
                 return;
@@ -331,12 +341,12 @@ var TaskCardView = Backbone.View.extend({
 
                     $('#image').attr('src', e.target.result);
                     $.post('/picture/upload', {imageData:e.target.result}, function(data){
-
                         debugger;
                         $('#savePictureBtn').removeClass('disabled');
                         dataJson = JSON.parse(data);
                         if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
-                            self.newPicture = {
+                            self.removeTmpPicture();
+                            self.tmpPicture = {
                                 pictureName : dataJson.picture_name,
                                 pictureFileId : dataJson.picture_file_id,
                             }
@@ -352,14 +362,11 @@ var TaskCardView = Backbone.View.extend({
                     });
                 };
 
-
-                debugger;
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
         var inputElement = event.target
-
         readURL(inputElement);
     },
 
