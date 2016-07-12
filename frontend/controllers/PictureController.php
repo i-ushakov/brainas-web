@@ -65,7 +65,8 @@ class PictureController extends Controller {
                 if ($file != null) {
                     $result['status'] = "SUCCESS";
                     $result['message'] = "Image successfuly upload inot google docs";
-                    $result['fileid'] = $file->id;
+                    $result['picture_name'] = $imageName;
+                    $result['picture_file_id'] = $file->id;
                 }
             } else {
                 $result['status'] = "FAILED";

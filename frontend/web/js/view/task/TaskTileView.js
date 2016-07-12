@@ -35,7 +35,7 @@ var TaskTileView = Backbone.View.extend({
         var params = {
             id : this.model.id,
             message : this.model.get("message"),
-            picture_id : this.model.get("picture_google_drive_id")
+            picture_id : this.model.get("picture_file_id")
         };
         this.$el.html(this.template(params));
         return this.$el;

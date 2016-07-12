@@ -128,6 +128,7 @@ class TaskController extends Controller {
 
                 $task = Task::find($taskId)
                     ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
+                    ->with('picture')
                     ->one();
 
                 if (empty($task)) {
@@ -147,6 +148,19 @@ class TaskController extends Controller {
 
             if (isset($taskForSave['description'])) {
                 $task->description = $taskForSave['description'];
+            }
+
+            if (isset($taskForSave['picture_name']) && isset($taskForSave['picture_file_id'])) {
+                $currentPicture = $task->picture;
+                if (isset($currentPicture)) {
+                    $currentPicture->delete();
+                }
+
+                $newPictureOfTask = new PictureOfTask();
+                $newPictureOfTask->task_id = $task->id;
+                $newPictureOfTask->name = $taskForSave['picture_name'];
+                $newPictureOfTask->file_id = $taskForSave['picture_file_id'];
+                $newPictureOfTask->save();
             }
 
             $this->cleanDeletedConditions($taskForSave['conditions'], $task->id);
@@ -295,7 +309,7 @@ class TaskController extends Controller {
 
         if ($task->picture != null) {
             $item['picture_name'] = $task->picture->name;
-            $item['picture_google_drive_id'] = $task->picture->file_id;
+            $item['picture_file_id'] = $task->picture->file_id;
         }
         $conditions = $task->conditions;
         foreach($conditions as $condition) {

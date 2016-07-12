@@ -31,7 +31,9 @@ var TaskCardView = Backbone.View.extend({
         'mouseleave .task-picture-cont' : 'hideChangePictureBtn',
         'click .task-picture-cont' : 'showChangePictureBlock',
         'click #cancelPictureBtn' : 'cancelChangePicture',
+        'click #savePictureBtn' : 'saveNewPicture',
         'change #pictureUploadBtn' : 'uploadPictureHandler',
+
 
 
         'keyup .task-message-edit textarea': 'changeMessageHandler',
@@ -41,7 +43,13 @@ var TaskCardView = Backbone.View.extend({
     template: _.template( $('#task-card-modal-template').html()),
 
     initialize: function (options) {
-        _.bindAll(this, 'onSaveHandler', 'onEventTypeSelectedHandler', 'onConditionCancledHandler', 'onDeleteConditionHandler');
+        _.bindAll(this,
+            'onSaveHandler',
+            'onEventTypeSelectedHandler',
+            'onConditionCancledHandler',
+            'onDeleteConditionHandler',
+            'saveNewPicture',
+            'uploadPictureHandler');
 
         if (this.model === undefined) {
             return;
@@ -69,14 +77,7 @@ var TaskCardView = Backbone.View.extend({
     },
 
     render: function() {
-        var self = this;
-        var params = {
-            message: this.model.get("message"),
-            description: this.model.get("description"),
-            picture_id: this.model.get("picture_google_drive_id"),
-            createMode: this.createMode
-        };
-        var modal = $(this.template(params).trim())
+        var modal = this.renderCard();
         this.setElement(modal.modal('show'));
         $(modal.on('hidden.bs.modal', function () {
             self.close();
@@ -85,7 +86,19 @@ var TaskCardView = Backbone.View.extend({
     },
 
     refreshCard: function() {
-        this.renderConditions();
+        this.renderCard();
+        var modal = this.renderCard();
+        this.$el.html(modal.html())
+    },
+
+    renderCard: function() {
+        var params = {
+            message: this.model.get("message"),
+            description: this.model.get("description"),
+            picture_id: this.model.get("picture_file_id"),
+            createMode: this.createMode
+        };
+        return $(this.template(params).trim());
     },
 
     renderConditions: function() {
@@ -197,6 +210,7 @@ var TaskCardView = Backbone.View.extend({
                 var newTask = new Task(result.task);
                 app.MainPanelView.taskPanelView.model.tasks.add(newTask);
             }
+            debugger;
             this.model.update(result.task);
             this.refreshCard();
         }
@@ -263,11 +277,27 @@ var TaskCardView = Backbone.View.extend({
 
     },
 
+    saveNewPicture: function() {
+        debugger;
+        if(this.newPicture){
+            this.model.set('picture_file_id', this.newPicture.pictureFileId);
+            this.model.set('picture_name', this.newPicture.pictureName);
+            debugger;
+            this.model.save(function() {
+                refrshTaskPicrute();
+            });
+        }
+
+        $('.picture-picker-block').collapse('toggle');
+    },
+
     cancelChangePicture: function() {
+        if(this.newPicture)this.newPicture = null;
         $('.picture-picker-block').collapse('toggle');
     },
 
     uploadPictureHandler: function(event) {
+        var self = this;
         /*$('form[name=upload_picture]').on('submit', function(e) {
             debugger;
             e.preventDefault();
@@ -301,7 +331,22 @@ var TaskCardView = Backbone.View.extend({
 
                     $('#image').attr('src', e.target.result);
                     $.post('/picture/upload', {imageData:e.target.result}, function(data){
+
                         debugger;
+                        $('#savePictureBtn').removeClass('disabled');
+                        dataJson = JSON.parse(data);
+                        if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
+                            self.newPicture = {
+                                pictureName : dataJson.picture_name,
+                                pictureFileId : dataJson.picture_file_id,
+                            }
+                            $('.picture-preview-cont').show();
+                            $('img#picture-preview').attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
+                            $('.picture-placeholder').hide();
+                        } else {
+                            $('.picture-preview-con').hide();
+                            $('.picture-placeholder').show();
+                        }
                         //recieve information back from php through the echo function(not required)
 
                     });
