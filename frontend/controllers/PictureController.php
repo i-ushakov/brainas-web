@@ -22,6 +22,13 @@ class PictureController extends Controller {
         "image/bmp" => 'bmp'
     ];
 
+    public $exif_imagetype_code_mimeTypes = [
+        1 => "image/gif",
+        2 => "image/jpeg",
+        3 => "image/png",
+        6 => 'image/bmp'
+    ];
+
     public function beforeAction($action) {
         $this->enableCsrfValidation = false;
         return parent::beforeAction($action);
@@ -56,7 +63,7 @@ class PictureController extends Controller {
                         'parents' => array($pictureFolderId)));
                     $file = $driveService->files->create($fileMetadata, array(
                         'data' => $imgData,
-                        'mimeType' => 'image/jpeg',
+                        'mimeType' => $mimeType,
                         'uploadType' => 'multipart',
                         'fields' => 'id'));
 
@@ -81,6 +88,67 @@ class PictureController extends Controller {
         \Yii::$app->response->format = 'json';
         return json_encode($result);
 
+    }
+
+    public function actionDownload() {
+        $result = array();
+        if ((!Yii::$app->user->isGuest)) {
+            $user = \Yii::$app->user->identity;
+
+            if (isset($_POST['imageUrl'])) {
+                $imageUrl = $_POST['imageUrl'];
+                $imageContent = file_get_contents($imageUrl);
+                if (isset($imageContent)) {
+                    $client = GoogleIdentityHelper::getGoogleClientWithToken($user);
+                    if ($client != null) {
+                        $pictureFolderId = $user->pictureFolder->resource_id;
+                        if (!isset($pictureFolderId)) {
+                            $pictureFolderId = $this->createGoogleDriveFolders($client);
+                        }
+
+                        file_put_contents("/var/www/brainas.net/tmp/testImg", $imageContent);
+                        $imageType = exif_imagetype ("/var/www/brainas.net/tmp/testImg");
+                        $mimeType = $this->exif_imagetype_code_mimeTypes[$imageType];
+                        $imageName = "task_picture_" . round(microtime(true) * 1000) . "." . $this->mimeTypes_Extensions[$mimeType];
+                        $driveService = new \Google_Service_Drive($client);
+                        $fileMetadata = new \Google_Service_Drive_DriveFile(array(
+                            'name' => $imageName,
+                            'mimeType' => $mimeType,
+                            'parents' => array($pictureFolderId)));
+                        $file = $driveService->files->create($fileMetadata, array(
+                            'data' => $imageContent,
+                            'mimeType' => $mimeType,
+                            'uploadType' => 'multipart',
+                            'fields' => 'id'));
+
+                        if ($file != null) {
+                            $result['status'] = "SUCCESS";
+                            $result['message'] = "Image successfuly upload inot google docs";
+                            $result['picture_name'] = $imageName;
+                            $result['picture_file_id'] = $file->id;
+                        }
+                    } else {
+                        $result['status'] = "FAILED";
+                        $result['code'] = "problem_with_token";
+                        $result['message'] = "problem_with_token";
+                    }
+                } else {
+                    $result['status'] = "FAILED";
+                    $result['code'] = "bad_url";
+                    $result['message'] = "bad_url";
+                }
+            } else {
+                $result['status'] = "FAILED";
+                $result['code'] = "no_url";
+                $result['message'] = "no_url";
+            }
+        } else {
+            $result['status'] = "FAILED";
+            $result['code'] = "must_be_signed_in";
+            $result['message'] = "User is not signin";
+        }
+        \Yii::$app->response->format = 'json';
+        return json_encode($result);
     }
 
     public function actionRemove() {

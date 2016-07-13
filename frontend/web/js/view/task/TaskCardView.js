@@ -33,8 +33,7 @@ var TaskCardView = Backbone.View.extend({
         'click #cancelPictureBtn' : 'cancelChangePicture',
         'click #savePictureBtn' : 'saveNewPicture',
         'change #pictureUploadBtn' : 'uploadPictureHandler',
-
-
+        'input #downloadRefInput' : 'onDownloadRefChanged',
 
         'keyup .task-message-edit textarea': 'changeMessageHandler',
         'keyup .task-description-edit textarea': 'changeDescriptionHandler',
@@ -83,7 +82,6 @@ var TaskCardView = Backbone.View.extend({
         var modal = this.renderCard();
         this.setElement(modal.modal('show'));
         $(modal.on('hidden.bs.modal', function () {
-            debugger;
             self.removeTmpPicture();
             self.close();
         }));
@@ -226,7 +224,6 @@ var TaskCardView = Backbone.View.extend({
                 var newTask = new Task(result.task);
                 app.MainPanelView.taskPanelView.model.tasks.add(newTask);
             }
-            debugger;
             this.tmpPicture = null;
             this.model.update(result.task);
             this.refreshCard();
@@ -295,7 +292,6 @@ var TaskCardView = Backbone.View.extend({
     },
 
     saveNewPicture: function() {
-        debugger;
         if(this.tmpPicture){
             var self = this;
             this.model.set('picture_file_id', this.tmpPicture.pictureFileId);
@@ -311,7 +307,6 @@ var TaskCardView = Backbone.View.extend({
     },
 
     removeTmpPicture: function() {
-        debugger;
         if (this.tmpPicture) {
             var pictureForRemove = new Picture({
                 task_id: null,
@@ -341,7 +336,6 @@ var TaskCardView = Backbone.View.extend({
 
                     $('#image').attr('src', e.target.result);
                     $.post('/picture/upload', {imageData:e.target.result}, function(data){
-                        debugger;
                         $('#savePictureBtn').removeClass('disabled');
                         dataJson = JSON.parse(data);
                         if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
@@ -371,4 +365,27 @@ var TaskCardView = Backbone.View.extend({
     },
 
 
+    onDownloadRefChanged : function () {
+        var self = this;
+        var imageUrl = $("#downloadRefInput").val();
+        $.post('/picture/download', {imageUrl:imageUrl}, function(data){
+            $('#savePictureBtn').removeClass('disabled');
+            dataJson = JSON.parse(data);
+            if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
+                self.removeTmpPicture();
+                self.tmpPicture = {
+                    pictureName : dataJson.picture_name,
+                    pictureFileId : dataJson.picture_file_id,
+                }
+                $('.picture-preview-cont').show();
+                $('img#picture-preview').attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
+                $('.picture-placeholder').hide();
+            } else {
+                $('.picture-preview-con').hide();
+                $('.picture-placeholder').show();
+            }
+            //recieve information back from php through the echo function(not required)
+
+        });
+    }
 });
