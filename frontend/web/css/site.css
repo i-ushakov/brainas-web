@@ -160,7 +160,6 @@ a.desc:after {
 
 .task-tile .task-tile-top {
     min-height: 130px;
-    max-height: 130px;
 }
 
 .task-tile .task-message {
@@ -172,7 +171,7 @@ a.desc:after {
 .delete-img-cont {
     position: absolute;
     top: 20px;
-    left: 243px;
+    left: 250px;
     cursor: pointer;
     opacity: 0.6;
 }
@@ -182,22 +181,31 @@ a.desc:after {
 }
 
 .delete-img-cont img {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-    min-height: 30px;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
 }
 
 
 /* Task's card */
 .task-card .task-card-top .task-card-image {
-    min-width: 150px;
     max-width: 150px;
-    min-height: 150px;
     max-height: 150px;
+    height: auto;
+    width: auto;
 }
-.task-card-image-cont {
+.task-tile-image-cont {
     padding: 4px;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.task-tile-image-cont img{
+    max-width: 175px;
+    max-height: 175px;
+    width: auto;
+    height: auto;
 }
 
 
@@ -493,10 +501,16 @@ a.desc:after {
     margin: 6px;
 }
 
-.picture-preview {
+.picture-picker-left {
     text-align: center;
 }
 
+#picture-preview {
+    max-width: 120px;
+    max-height: 120px;
+    width: auto;
+    height: auto;
+}
 .upload-btn-cont {
     margin-top: 12px;
 }
