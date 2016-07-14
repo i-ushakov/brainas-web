@@ -303,6 +303,7 @@ var TaskCardView = Backbone.View.extend({
 
     cancelChangePicture: function() {
         this.removeTmpPicture();
+        this.setPlaceHolderText();
         $('.picture-picker-block').collapse('toggle');
     },
 
@@ -332,8 +333,25 @@ var TaskCardView = Backbone.View.extend({
             }
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
-                reader.onload = function (e) {
+                /*var fd = new FormData(document.getElementById("uploadTaskPicture"));
+                fd.append("CustomField", "This is some extra data");
 
+                $.ajax({
+                    url: "/picture/upload",
+                    type: "POST",
+                    data: fd,
+                    processData: false,  // tell jQuery not to process the data
+                    contentType: 'application/x-www-form-urlencoded',   // tell jQuery not to set contentType
+                    success: function(response){
+                        console.log("Response was "  + response);
+                    },
+                    failure: function(result){
+                        console.log("FAILED");
+                        console.log(result);
+                    }
+                });*/
+                reader.onload = function (e) {
+                    self.addSpinerLoader();
                     $('#image').attr('src', e.target.result);
                     $.post('/picture/upload', {imageData:e.target.result}, function(data){
                         $('#savePictureBtn').removeClass('disabled');
@@ -344,12 +362,14 @@ var TaskCardView = Backbone.View.extend({
                                 pictureName : dataJson.picture_name,
                                 pictureFileId : dataJson.picture_file_id,
                             }
-                            $('.picture-preview-cont').show();
                             $('img#picture-preview').attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
+                            $('.picture-preview-cont').show();
                             $('.picture-placeholder').hide();
+                            this.setPlaceHolderText();
                         } else {
                             $('.picture-preview-con').hide();
                             $('.picture-placeholder').show();
+                            this.setPlaceHolderText();
                         }
                         //recieve information back from php through the echo function(not required)
 
@@ -368,24 +388,55 @@ var TaskCardView = Backbone.View.extend({
     onDownloadRefChanged : function () {
         var self = this;
         var imageUrl = $("#downloadRefInput").val();
+        this.addSpinerLoader();
         $.post('/picture/download', {imageUrl:imageUrl}, function(data){
-            $('#savePictureBtn').removeClass('disabled');
             dataJson = JSON.parse(data);
             if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
+                $('#savePictureBtn').removeClass('disabled');
                 self.removeTmpPicture();
                 self.tmpPicture = {
                     pictureName : dataJson.picture_name,
                     pictureFileId : dataJson.picture_file_id,
                 }
-                $('.picture-preview-cont').show();
                 $('img#picture-preview').attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
+                $('.picture-preview-cont').show();
                 $('.picture-placeholder').hide();
-            } else {
-                $('.picture-preview-con').hide();
+                self.setPlaceHolderText();
+            } else if (dataJson.code === "bad_url" || dataJson.code === "bad_image_format") {
+                self.showErrorIconWithMessage(dataJson.message);
+                $('.picture-preview-cont').hide();
                 $('.picture-placeholder').show();
+            } else {
+                $('.picture-preview-cont').hide();
+                $('.picture-placeholder').show();
+                self.setPlaceHolderText();
             }
             //recieve information back from php through the echo function(not required)
 
+        }).always(function(data) {
+
         });
+    },
+
+    addSpinerLoader: function() {
+        $('#savePictureBtn').addClass('disabled');
+        $('.picture-preview-cont').hide();
+        $('.picture-placeholder').show();
+        $('.picture-placeholder').html("<div class='loader'></div>");
+    },
+
+    removeSpinnerLoader: function() {
+
+    },
+
+    setPlaceHolderText: function() {
+        $('#savePictureBtn').addClass('disabled');
+        $('.picture-placeholder').html("Picture is not selected");
+        $('.picture-placeholder').show();
+    },
+
+    showErrorIconWithMessage: function(message) {
+        $('.picture-placeholder').html(
+            "<div>" + message + "</div><div class='thumbsDownCont'><span class='glyphicon glyphicon-thumbs-down'></span></div>");
     }
 });

@@ -15,6 +15,8 @@ use frontend\components\GoogleDriveHelper;
 
 
 class PictureController extends Controller {
+    const TMP_FOLDER = "/var/www/brainas.net/frontend/tmp/testImg";
+
     public $mimeTypes_Extensions = [
         "image/jpeg" => 'jpg',
         "image/gif" => 'gif',
@@ -95,10 +97,10 @@ class PictureController extends Controller {
         if ((!Yii::$app->user->isGuest)) {
             $user = \Yii::$app->user->identity;
 
-            if (isset($_POST['imageUrl'])) {
-                $imageUrl = $_POST['imageUrl'];
-                $imageContent = file_get_contents($imageUrl);
-                if (isset($imageContent)) {
+            if (isset($_POST['imageUrl']) && trim($_POST['imageUrl']) != "") {
+                $imageUrl = trim($_POST['imageUrl']);
+                if ($this->checkResponseCodeIsOk($imageUrl)) {
+                    $imageContent = file_get_contents($imageUrl);
                     $client = GoogleIdentityHelper::getGoogleClientWithToken($user);
                     if ($client != null) {
                         $pictureFolderId = $user->pictureFolder->resource_id;
@@ -106,26 +108,36 @@ class PictureController extends Controller {
                             $pictureFolderId = $this->createGoogleDriveFolders($client);
                         }
 
-                        file_put_contents("/var/www/brainas.net/tmp/testImg", $imageContent);
-                        $imageType = exif_imagetype ("/var/www/brainas.net/tmp/testImg");
-                        $mimeType = $this->exif_imagetype_code_mimeTypes[$imageType];
-                        $imageName = "task_picture_" . round(microtime(true) * 1000) . "." . $this->mimeTypes_Extensions[$mimeType];
-                        $driveService = new \Google_Service_Drive($client);
-                        $fileMetadata = new \Google_Service_Drive_DriveFile(array(
-                            'name' => $imageName,
-                            'mimeType' => $mimeType,
-                            'parents' => array($pictureFolderId)));
-                        $file = $driveService->files->create($fileMetadata, array(
-                            'data' => $imageContent,
-                            'mimeType' => $mimeType,
-                            'uploadType' => 'multipart',
-                            'fields' => 'id'));
+                        file_put_contents(self::TMP_FOLDER, $imageContent);
+                        $imageType = exif_imagetype(self::TMP_FOLDER);
+                        if (isset($this->exif_imagetype_code_mimeTypes[$imageType])) {
+                            $mimeType = $this->exif_imagetype_code_mimeTypes[$imageType];
+                        } else {
+                            $mimeType = null;
+                        }
+                        if (isset($this->mimeTypes_Extensions[$mimeType])) {
+                            $imageName = "task_picture_" . round(microtime(true) * 1000) . "." . $this->mimeTypes_Extensions[$mimeType];
+                            $driveService = new \Google_Service_Drive($client);
+                            $fileMetadata = new \Google_Service_Drive_DriveFile(array(
+                                'name' => $imageName,
+                                'mimeType' => $mimeType,
+                                'parents' => array($pictureFolderId)));
+                            $file = $driveService->files->create($fileMetadata, array(
+                                'data' => $imageContent,
+                                'mimeType' => $mimeType,
+                                'uploadType' => 'multipart',
+                                'fields' => 'id'));
 
-                        if ($file != null) {
-                            $result['status'] = "SUCCESS";
-                            $result['message'] = "Image successfuly upload inot google docs";
-                            $result['picture_name'] = $imageName;
-                            $result['picture_file_id'] = $file->id;
+                            if ($file != null) {
+                                $result['status'] = "SUCCESS";
+                                $result['message'] = "Image successfuly upload inot google docs";
+                                $result['picture_name'] = $imageName;
+                                $result['picture_file_id'] = $file->id;
+                            }
+                        } else {
+                            $result['status'] = "FAILED";
+                            $result['code'] = "bad_image_format";
+                            $result['message'] = "Bad image format";
                         }
                     } else {
                         $result['status'] = "FAILED";
@@ -135,7 +147,7 @@ class PictureController extends Controller {
                 } else {
                     $result['status'] = "FAILED";
                     $result['code'] = "bad_url";
-                    $result['message'] = "bad_url";
+                    $result['message'] = "Bad reference";
                 }
             } else {
                 $result['status'] = "FAILED";
@@ -178,5 +190,19 @@ class PictureController extends Controller {
     private function createGoogleDriveFolders($client) {
         $driveService = new \Google_Service_Drive($client);
         // TODO create folders
+    }
+
+    private function checkResponseCodeIsOk($url) {
+        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+            return false;
+        }
+        $headers = get_headers($url);
+        $response = substr($headers[0], 9, 3);
+        if ($response != "200") {
+            return false;
+        } else {
+            return true;
+        }
+
     }
 }
