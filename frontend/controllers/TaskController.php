@@ -151,26 +151,24 @@ class TaskController extends Controller {
                 $task->description = $taskForSave['description'];
             }
 
-            if (
-                isset($taskForSave['picture_name']) &&
-                isset($taskForSave['picture_file_id']) &&
-                $taskForSave['picture_name'] != $task->picture->name &&
-                $taskForSave['picture_file_id'] != $task->picture->file_id
-            ) {
-                $currentPicture = $task->picture;
-                if (isset($currentPicture)) {
-                    $googleDriveHelper = new GoogleDriveHelper(
-                        GoogleIdentityHelper::getGoogleClientWithToken(\Yii::$app->user->identity)
-                    );
-                    $googleDriveHelper->removeFile($currentPicture->file_id);
-                    $currentPicture->delete();
-                }
+            if (isset($taskForSave['picture_name']) && isset($taskForSave['picture_file_id']))
+            {
+               if ((!isset($task->picture->file_id) || $taskForSave['picture_file_id'] != $task->picture->file_id)) {
+                   $currentPicture = $task->picture;
+                   if (isset($currentPicture)) {
+                       $googleDriveHelper = new GoogleDriveHelper(
+                           GoogleIdentityHelper::getGoogleClientWithToken(\Yii::$app->user->identity)
+                       );
+                       $googleDriveHelper->removeFile($currentPicture->file_id);
+                       $currentPicture->delete();
+                   }
 
-                $newPictureOfTask = new PictureOfTask();
-                $newPictureOfTask->task_id = $task->id;
-                $newPictureOfTask->name = $taskForSave['picture_name'];
-                $newPictureOfTask->file_id = $taskForSave['picture_file_id'];
-                $newPictureOfTask->save();
+                   $newPictureOfTask = new PictureOfTask();
+                   $newPictureOfTask->task_id = $task->id;
+                   $newPictureOfTask->name = $taskForSave['picture_name'];
+                   $newPictureOfTask->file_id = $taskForSave['picture_file_id'];
+                   $newPictureOfTask->save();
+               }
             }
 
             $this->cleanDeletedConditions($taskForSave['conditions'], $task->id);

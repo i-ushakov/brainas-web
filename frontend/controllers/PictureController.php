@@ -8,6 +8,7 @@
 
 namespace frontend\controllers;
 
+use common\models\GoogleDriveFolder;
 use Yii;
 use yii\web\Controller;
 use frontend\components\GoogleIdentityHelper;
@@ -37,6 +38,7 @@ class PictureController extends Controller {
     }
 
     public function actionUpload() {
+        Yii::warning("== actionUpload ==");
         $result = array();
         $imgData = $_POST['imageData'];
 
@@ -51,10 +53,7 @@ class PictureController extends Controller {
             $client = GoogleIdentityHelper::getGoogleClientWithToken($user);
 
             if ($client != null) {
-                $pictureFolderId = $user->pictureFolder->resource_id;
-                if (!isset($pictureFolderId)) {
-                    $pictureFolderId = $this->createGoogleDriveFolders($client);
-                }
+                $pictureFolderId = $this->getPictureFolder($client, $user);
 
                 if (isset($this->mimeTypes_Extensions[$mimeType])) {
                     $imageName = "task_picture_" . round(microtime(true) * 1000) . "." . $this->mimeTypes_Extensions[$mimeType];
@@ -103,11 +102,7 @@ class PictureController extends Controller {
                     $imageContent = file_get_contents($imageUrl);
                     $client = GoogleIdentityHelper::getGoogleClientWithToken($user);
                     if ($client != null) {
-                        $pictureFolderId = $user->pictureFolder->resource_id;
-                        if (!isset($pictureFolderId)) {
-                            $pictureFolderId = $this->createGoogleDriveFolders($client);
-                        }
-
+                        $pictureFolderId = $this->getPictureFolder($client, $user);
                         file_put_contents(self::TMP_FOLDER, $imageContent);
                         $imageType = exif_imagetype(self::TMP_FOLDER);
                         if (isset($this->exif_imagetype_code_mimeTypes[$imageType])) {
@@ -187,10 +182,6 @@ class PictureController extends Controller {
         return json_encode($result);
     }
 
-    private function createGoogleDriveFolders($client) {
-        $driveService = new \Google_Service_Drive($client);
-        // TODO create folders
-    }
 
     private function checkResponseCodeIsOk($url) {
         if (filter_var($url, FILTER_VALIDATE_URL) === false) {
@@ -204,5 +195,70 @@ class PictureController extends Controller {
             return true;
         }
 
+    }
+
+    private function getPictureFolder($client, $user) {
+        Yii::warning("== getPictureFolder ==");
+        $pictureFolderId = $user->pictureFolder->resource_id;
+        if (!isset($pictureFolderId) || !$this->isFolderExist($pictureFolderId, $client)) {
+            $projectFolderId = $user->projectFolder->resource_id;
+            if (isset($projectFolderId) && $this->isFolderExist($projectFolderId, $client)) {
+                $pictureFolderId = $this->createGoogleDriveFolders($client, "Pictures", $projectFolderId);
+            } else {
+                $projectFolderId = $this->createGoogleDriveFolders($client, "Brain Assistant Project", null);
+                $pictureFolderId = $this->createGoogleDriveFolders($client, "Pictures", $projectFolderId);
+                $this->createRecordAboutFolder($user->id, 1, $projectFolderId);
+            }
+            $this->createRecordAboutFolder($user->id, 2, $pictureFolderId);
+
+        }
+        return $pictureFolderId;
+    }
+
+    private function createGoogleDriveFolders($client, $name, $parent) {
+        $driveService = new \Google_Service_Drive($client);
+        $parmas = array(
+            'name' => $name,
+            'mimeType' => 'application/vnd.google-apps.folder');
+        if ($parent != null) {
+            $parmas['parents'] = array($parent);
+        }
+
+        $fileMetadata = new \Google_Service_Drive_DriveFile($parmas);
+        $file = $driveService->files->create($fileMetadata, array(
+            'fields' => 'id'));
+        return $file->id;
+    }
+
+    private function createRecordAboutFolder($userId, $folderType, $resourceId) {
+        $pictureFolder = GoogleDriveFolder::findOne(['user_id' => $userId, 'folder_type' => $folderType]);
+        if (!isset($pictureFolder)) {
+            $pictureFolder = new GoogleDriveFolder();
+        }
+        $pictureFolder->user_id = $userId;
+        $pictureFolder->folder_type = $folderType;
+        $pictureFolder->resource_id = $resourceId;
+        $pictureFolder->save();
+    }
+
+    private function isFolderExist($folderId, $client) {
+        Yii::warning("== isFolderExist ==");
+        $driveService = new \Google_Service_Drive($client);
+        $response = $driveService->files->listFiles(array(
+            'q' => "mimeType='application/vnd.google-apps.folder'",
+            'spaces' => 'drive',
+            'fields' => 'files(id, name)',
+        ));
+
+        foreach ($response->files as $folders) {
+            Yii::warning("folder id: " . $folders->id);
+            Yii::warning("folder name: " . $folders->name);
+            if($folders->id == $folderId) {
+                Yii::warning("true!!!");
+                return true;
+            }
+        }
+        Yii::warning("false!!!");
+        return false;
     }
 }

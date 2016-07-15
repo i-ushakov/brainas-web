@@ -304,6 +304,7 @@ var TaskCardView = Backbone.View.extend({
     cancelChangePicture: function() {
         this.removeTmpPicture();
         this.setPlaceHolderText();
+        $('#savePictureBtn').addClass('disabled');
         $('.picture-picker-block').collapse('toggle');
     },
 
@@ -365,14 +366,16 @@ var TaskCardView = Backbone.View.extend({
                             $('img#picture-preview').attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
                             $('.picture-preview-cont').show();
                             $('.picture-placeholder').hide();
-                            this.setPlaceHolderText();
+                            $('#savePictureBtn').removeClass('disabled');
+                            self.setPlaceHolderText();
                         } else {
                             $('.picture-preview-con').hide();
                             $('.picture-placeholder').show();
-                            this.setPlaceHolderText();
+                            self.setPlaceHolderText();
                         }
                         //recieve information back from php through the echo function(not required)
 
+                    }).fail(function(data) {
                     });
                 };
 
@@ -401,6 +404,7 @@ var TaskCardView = Backbone.View.extend({
                 $('img#picture-preview').attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
                 $('.picture-preview-cont').show();
                 $('.picture-placeholder').hide();
+                $('#savePictureBtn').removeClass('disabled');
                 self.setPlaceHolderText();
             } else if (dataJson.code === "bad_url" || dataJson.code === "bad_image_format") {
                 self.showErrorIconWithMessage(dataJson.message);
@@ -430,9 +434,7 @@ var TaskCardView = Backbone.View.extend({
     },
 
     setPlaceHolderText: function() {
-        $('#savePictureBtn').addClass('disabled');
         $('.picture-placeholder').html("Picture is not selected");
-        $('.picture-placeholder').show();
     },
 
     showErrorIconWithMessage: function(message) {
