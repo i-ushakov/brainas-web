@@ -181,7 +181,11 @@ class TaskSyncHelper {
             $picture->drive_id = $pictureXML->driveId;
         }
         $picture->file_id = GoogleDriveHelper::getInstance($this->client)->getFileIdByName($pictureXML->fileName);
-        $picture->save();
+        if ($picture->file_id != null) {
+            $picture->save();
+        } else {
+            return false;
+        }
     }
 
     private function deleteTaskFromDevice ($deletedTask) {

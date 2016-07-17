@@ -101,10 +101,18 @@ class ConnectionController extends Controller {
                 $pictureFolder->save();
             }
 
-            $settings[GoogleDriveFolder::PROJECT_FOLDER_DRIVE_ID] = $projectFolder->drive_id;
-            $settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID] = $projectFolder->resource_id;
-            $settings[GoogleDriveFolder::PICTURE_FOLDER_DRIVE_ID] = $pictureFolder->drive_id;
-            $settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID] = $pictureFolder->resource_id;
+            if (isset($projectFolder->drive_id)) {
+                $settings[GoogleDriveFolder::PROJECT_FOLDER_DRIVE_ID] = $projectFolder->drive_id;
+            }
+            if (isset($projectFolder->resource_id)) {
+                $settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID] = $projectFolder->resource_id;
+            }
+            if (isset($pictureFolder->drive_id)) {
+                $settings[GoogleDriveFolder::PICTURE_FOLDER_DRIVE_ID] = $pictureFolder->drive_id;
+            }
+            if (isset($pictureFolder->resource_id)) {
+                $settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID] = $pictureFolder->resource_id;
+            }
             return json_encode($settings);
         } else {
             return null;

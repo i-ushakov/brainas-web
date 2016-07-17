@@ -114,8 +114,12 @@ class GoogleDriveHelper {
             'spaces' => 'drive',
             'fields' => 'nextPageToken, files(id, name)',
         ));
-        $file = $response->files[0];
-        return $file->id;
+        if (count($response->files) > 0) {
+            $file = $response->files[0];
+            return $file->id;
+        } else {
+            return null;
+        }
     }
 
     public function removeFile($fileId) {

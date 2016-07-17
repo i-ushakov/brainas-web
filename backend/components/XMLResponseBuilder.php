@@ -141,10 +141,14 @@ class XMLResponseBuilder {
         $xmlPart = "";
         if (isset($picture) && isset($picture->name)) {
             $xmlPart =
-                '<picture><name> ' . $picture->name . ' </name>' .
-                    (isset($picture->driver_id) ? '<driverId>' + $picture->driver_id + '</driverId>' : '') .
-                    (isset($picture->file_id) ? '<fileId>' + $picture->file_id + '</fileId>' : '') .
-                '</picture>';
+                '<picture><name>' . $picture->name . '</name>';
+            if (isset($picture->drive_id)) {
+                $xmlPart .= '<driveId>' . $picture->drive_id . '</driveId>';
+            }
+            if (isset($picture->file_id)) {
+                $xmlPart .= '<fileId>' . $picture->file_id . '</fileId>';
+            }
+            $xmlPart .= '</picture>';
         }
         return $xmlPart;
     }

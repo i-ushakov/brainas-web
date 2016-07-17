@@ -133,6 +133,7 @@ var TaskCardView = Backbone.View.extend({
     },
 
     close: function(){
+        this.removeTmpPicture();
         // COMPLETELY UNBIND THE VIEW
         this.undelegateEvents();
 
