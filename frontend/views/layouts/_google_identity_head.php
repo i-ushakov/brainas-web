@@ -3,34 +3,50 @@
 use common\models\User;
 use common\infrastructure\SingInLog;
 
-//$pathToGITFolder = __DIR__ .'/../../identity-toolkit-php-master/';
-//$pathToConfigFolder = __DIR__ .'/../../config/';
-//set_include_path(get_include_path() . PATH_SEPARATOR . $pathToGITFolder . 'vendor/google/apiclient/src');
-//require_once $pathToGITFolder . 'vendor/autoload.php';
-//$gitkitClient = Gitkit_Client::createFromFile($pathToConfigFolder . 'gitkit-server-config.json');
-//$gitkitUser = $gitkitClient->getUserInRequest();
-//$accessToken = $gitkitClient->getTokenString();
-
 if (!Yii::$app->user->isGuest) {
     \frontend\components\GoogleIdentityHelper::refreshUserAccessToken();
 }
 ?>
 
 <script type=text/javascript>
+    var auth2;
+    var checkAuthInterval;
+
     function start() {
         gapi.load('auth2', function() {
             auth2 = gapi.auth2.init({
                 client_id: '925705811320-cenbqg1fe5jb804116oefl78sbishnga.apps.googleusercontent.com',
                 scope: 'email https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appfolder'
             });
+            auth2.isSignedIn.listen(signinChanged);
         });
+    }
+
+    function signinChanged() {
+        if (app.singedIn) {
+            if (auth2.isSignedIn.get()) {
+                startCheckingIsUserSignIn(auth2);
+            } else {
+                signOutCallback();
+            }
+        }
+    }
+
+    function startCheckingIsUserSignIn() {
+        checkAuthInterval = setInterval(function() {
+            if (!auth2.isSignedIn.get()) {
+                signOutCallback();
+            }
+        }, 1000 * 7);
+    }
 
 
+    function stopCheckingIsUserSignIn() {
+        clearInterval(checkAuthInterval);
     }
 
     function signInCallback(authResult) {
         if (authResult['code']) {
-
             // Hide the sign-in button now that the user is authorized, for example:
             $('#signinButton').attr('style', 'display: none');
 
@@ -52,20 +68,20 @@ if (!Yii::$app->user->isGuest) {
     }
 
     function signOutCallback() {
-            // Hide the sign-in button now that the user is authorized, for example:
-            $('#signinButton').attr('style', 'display: none');
+        // Hide the sign-in button now that the user is authorized, for example:
+        $('#signinButton').attr('style', 'display: none');
 
-            // Send the code to the server
-            $.ajax({
-                type: 'POST',
-                url: 'https://brainas.com/site/sign-out',
-                contentType: 'application/octet-stream; charset=utf-8',
-                success: function(result) {
-                    window.location.reload();
-                    // Handle or verify the server response.
-                },
-                processData: false
-            });
+        // Send the code to the server
+        $.ajax({
+            type: 'POST',
+            url: 'https://brainas.com/site/sign-out',
+            contentType: 'application/octet-stream; charset=utf-8',
+            success: function(result) {
+                window.location.reload();
+                // Handle or verify the server response.
+            },
+            processData: false
+        });
     }
 
     $(document).ready(function() {
