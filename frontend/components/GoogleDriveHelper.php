@@ -37,12 +37,8 @@ class GoogleDriveHelper {
         $imageFolderPath = "";
         $client = GoogleIdentityHelper::getGoogleClient();
         $user = \Yii::$app->user->identity;
-        var_dump("==access_token1==");
-        var_dump($user->access_token);
         GoogleIdentityHelper::refreshUserAccessToken();
         $client->setAccessToken($user->access_token);
-        var_dump("==access_token2==");
-        var_dump($user->access_token);
         $driveService = new \Google_Service_Drive($client);
         $pageToken = null;
         do {
