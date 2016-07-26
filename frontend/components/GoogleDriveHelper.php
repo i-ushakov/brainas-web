@@ -139,7 +139,7 @@ class GoogleDriveHelper {
             'fields' => 'nextPageToken, files(id, name)',
         );
         if ($datetime != null) {
-            $params['q'] .= " and modifiedTime > '$datetime'";
+            $params['q'] .= " and modifiedTime < '$datetime'";
         }
         $response = $this->driveService->files->listFiles($params);
 
@@ -159,7 +159,7 @@ class GoogleDriveHelper {
                 $activePictures[] = $taskPictureName;
             }
         }
-        $picturesInFolder = $this->getListOfFiles($user->pictureFolder->resource_id, date('Y-m-d\TH:i:s', strtotime('+1 hour')));
+        $picturesInFolder = $this->getListOfFiles($user->pictureFolder->resource_id, date('Y-m-d\TH:i:s', strtotime('-1 hour')));
         foreach($picturesInFolder as $pictureInFolder) {
             if (!in_array($pictureInFolder->name, $activePictures) && strpos("task_picture_", $pictureInFolder->name) == 0) {
                 $this->removeFile($pictureInFolder->id);
