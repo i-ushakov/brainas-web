@@ -53,7 +53,7 @@ if (!Yii::$app->user->isGuest) {
             // Send the code to the server
             $.ajax({
                 type: 'POST',
-                url: '/site/sign-in',
+                url: 'https://brainas.net/site/sign-in',
                 contentType: 'application/octet-stream; charset=utf-8',
                 success: function(result) {
                     window.location.reload();
@@ -74,7 +74,7 @@ if (!Yii::$app->user->isGuest) {
         // Send the code to the server
         $.ajax({
             type: 'POST',
-            url: '/site/sign-out',
+            url: 'https://brainas.net/site/sign-out',
             contentType: 'application/octet-stream; charset=utf-8',
             success: function(result) {
                 window.location.reload();
