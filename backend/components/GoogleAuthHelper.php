@@ -16,15 +16,25 @@ use common\models\User;
 class GoogleAuthHelper {
     public static $jsonGoogleClientConfig = "/var/www/brainas.net/backend/config/client_secret_925705811320-cenbqg1fe5jb804116oefl78sbishnga.apps.googleusercontent.com.json";
 
-    static public  function getGoogleClient() {
+    static public function getGoogleClient() {
         $client = new Google_Client();
         $client->setAuthConfigFile(self::$jsonGoogleClientConfig);
         //$client->setRedirectUri("http://brainas.net/backend/web/connection/");
         $client->setRedirectUri("http://brainas.net/site/login");
         $client->setScopes("https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.appdata");
-        $client->setAccessType('online'); //offline
-        $client->setApprovalPrompt('force');
+        $client->setAccessType('offline'); //online
+        //$client->setApprovalPrompt('force');
 
+        return $client;
+    }
+
+    static public function getGoogleClientWithToken($accessToken) {
+        $client = self::getGoogleClient();
+        $client->setAccessToken($accessToken);
+        if ($client->isAccessTokenExpired() && isset($accessToken[refresh_token])) {
+            $accessToken = $client->refreshToken($accessToken[refresh_token]);
+            $client->setAccessToken($accessToken);
+        }
         return $client;
     }
 

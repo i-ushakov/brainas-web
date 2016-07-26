@@ -9,6 +9,7 @@
 namespace frontend\components;
 
 use Yii;
+use common\models\Task;
 class GoogleDriveHelper {
     private static $instance;
     private $client;
@@ -129,5 +130,40 @@ class GoogleDriveHelper {
         }
         $this->driveService->files->delete($fileId);
         return true;
+    }
+
+    /**
+     * @param $folderId
+     * @return array
+     */
+    public function getListOfFiles($folderId) {
+        $response = $this->driveService->files->listFiles(array(
+            'q' => "'$folderId'" . " in parents",
+            'spaces' => 'drive',
+            'fields' => 'nextPageToken, files(id, name)',
+        ));
+
+        $filesInFolder = array();
+        foreach ($response->files as $file) {
+            $filesInFolder[] = $file;
+        }
+        return $filesInFolder;
+    }
+
+    public function deleteUnusedPictures($user) {
+        $activePictures = array();
+        $tasks = Task::find()->where(['user' => $user->id])->with('picture')->all();
+        foreach ($tasks as $task) {
+            if (isset($task->picture)) {
+                $taskPictureName = $task->picture->name;
+                $activePictures[] = $taskPictureName;
+            }
+        }
+        $picturesInFolder = $this->getListOfFiles($user->pictureFolder->resource_id);
+        foreach($picturesInFolder as $pictureInFolder) {
+            if (!in_array($pictureInFolder->name, $activePictures) && strpos("task_picture_", $pictureInFolder->name) == 0) {
+                $this->removeFile($pictureInFolder->id);
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace backend\components;
 use common\models\GoogleDriveFolder;
 use common\models\PictureOfTask;
 use common\models\Task;
+use common\models\User;
 use common\infrastructure\ChangeOfTask;
 use frontend\components\GoogleDriveHelper;
 
@@ -22,16 +23,15 @@ class TaskSyncHelper {
     private $token;
     private $client;
 
-    function __construct(\SimpleXMLElement $syncDataFromDevice, $userId, $token) {
+    function __construct(\SimpleXMLElement $syncDataFromDevice, $userId, $accessToken) {
         $this->syncDataFromDevice = $syncDataFromDevice;
         $this->userId = $userId;
-        $this->token = $token;
-        $this->client = GoogleAuthHelper::getGoogleClient();
-        $this->client->setAccessToken($this->token);
+        $this->token = $accessToken;
+        $this->client = GoogleAuthHelper::getGoogleClientWithToken($accessToken);
     }
 
     public function doSynchronization() {
-        $initSyncTime = $this->getInitSyncTimeFromPost();
+        $initSyncTime = $this->getInitSyncTime();
 
         //$this->processProjectFolders($this->syncDataFromDevice->);
 
@@ -46,6 +46,8 @@ class TaskSyncHelper {
         // and data about changes from device that were accepted
         $initSyncTime = $this->getCurrentTime();
         $xmlResponse = XMLResponseBuilder::buildXMLResponse($serverChanges, $synchronizedObjects, $initSyncTime, $this->token);
+
+        $this->deleteUnusedPictures();
         return $xmlResponse;
     }
 
@@ -174,7 +176,10 @@ class TaskSyncHelper {
 
     private function savePistureOfTask($pictureXML, $taskId)
     {
-        $picture = new PictureOfTask();
+        $picture = PictureOfTask::find()->where(['task_id' => $taskId])->one();
+        if (!isset($picture)) {
+            $picture = new PictureOfTask();
+        }
         $picture->task_id = $taskId;
         $picture->name = $pictureXML->fileName;
         if (isset($pictureXML->driveId)) {
@@ -208,10 +213,12 @@ class TaskSyncHelper {
         }
     }
 
-    private function getInitSyncTimeFromPost() {
+    private function getInitSyncTime() {
         $initSyncTime = null;
         if (isset($_POST['initSyncTime'])) {
             $initSyncTime = $_POST['initSyncTime'];
+        } else {
+            $initSyncTime = $this->getCurrentTime();
         }
         return $initSyncTime;
     }
@@ -238,6 +245,11 @@ class TaskSyncHelper {
             );
             return false;
         }
+    }
 
+    private function deleteUnusedPictures() {
+        $user = User::find()->where(['id' => $this->userId])->one();
+        $googleDriveHelper = GoogleDriveHelper::getInstance($this->client);
+        $googleDriveHelper->deleteUnusedPictures($user);
     }
 }
