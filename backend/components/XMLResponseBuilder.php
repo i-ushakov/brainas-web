@@ -12,7 +12,7 @@ use \common\models\Task;
 
 class XMLResponseBuilder {
 
-    static function buildXMLResponse($serverChanges, $synchronizedObjects, $initSyncTime, $token) {
+    static function buildXMLResponse($serverChanges, $synchronizedObjects, $lastSyncTime, $token) {
         $xmlResponse = "";
         $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
         $xmlResponse .= '<syncResponse>';
@@ -94,7 +94,7 @@ class XMLResponseBuilder {
             $xmlResponse .= '</synchronizedObjects>';
         }
 
-        $xmlResponse .= '<initSyncTime>' . $initSyncTime . '</initSyncTime>';
+        $xmlResponse .= '<lastSyncTime>' . $lastSyncTime . '</lastSyncTime>';
         $xmlResponse .=  "<accessToken>" . json_encode($token) . "</accessToken>";
 
         $xmlResponse .= '</syncResponse>';

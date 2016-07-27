@@ -94,11 +94,11 @@ class XMLResponseBuilderTest extends \yii\codeception\TestCase
         $synchronizedObjects['tasks'] = array();
         $synchronizedObjects['tasks'][$synchronizedTask10['localId']] = $synchronizedTask10['globalId'];
 
-        $initSyncTime = "2016-04-05 11:37:10";
+        $lastSyncTime = "2016-04-05 11:37:10";
 
         $tokenJSON = "{acceessToken: Ac_c_ess_Token#, param1: val1}";
 
-        $actualXMLStr = XMLResponseBuilder::buildXMLResponse($serverChanges, $synchronizedObjects, $initSyncTime, $tokenJSON);
+        $actualXMLStr = XMLResponseBuilder::buildXMLResponse($serverChanges, $synchronizedObjects, $lastSyncTime, $tokenJSON);
 
         $expectedXMLStr =
             '<?xml version="1.0" encoding="UTF-8"?>' .
@@ -171,7 +171,7 @@ class XMLResponseBuilderTest extends \yii\codeception\TestCase
                         '</synchronizedTask>' .
                     '</synchronizedTasks>' .
                 '</synchronizedObjects>' .
-                '<initSyncTime>' . $initSyncTime . '</initSyncTime>' .
+                '<lastSyncTime>' . $lastSyncTime . '</lastSyncTime>' .
                 "<accessToken>\"" . $tokenJSON . "\"</accessToken>" .
             "</syncResponse>";
         //file_put_contents("expectedXMLStr.xml", $expectedXMLStr);

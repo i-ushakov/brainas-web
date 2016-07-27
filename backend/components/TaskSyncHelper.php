@@ -31,31 +31,31 @@ class TaskSyncHelper {
     }
 
     public function doSynchronization() {
-        $initSyncTime = $this->getInitSyncTime();
+        $lastSyncTime = $this->getLastSyncTimeFromPost();
 
         //$this->processProjectFolders($this->syncDataFromDevice->);
 
         // Get chnaged and deletet task
         // from time of last sync for this user
-        $serverChanges = $this->getServerChanges($initSyncTime);
+        $serverChanges = $this->getServerChanges($lastSyncTime);
 
         // We process changes from device and we'll return ids of synchronized objects (task, conditions, events)
         $synchronizedObjects = $this->processTaskChangesFromDevice($serverChanges);
 
         // Build xml-document with server-changes
         // and data about changes from device that were accepted
-        $initSyncTime = $this->getCurrentTime();
-        $xmlResponse = XMLResponseBuilder::buildXMLResponse($serverChanges, $synchronizedObjects, $initSyncTime, $this->token);
+        $lastSyncTime = $this->getCurrentTime();
+        $xmlResponse = XMLResponseBuilder::buildXMLResponse($serverChanges, $synchronizedObjects, $lastSyncTime, $this->token);
 
         $this->deleteUnusedPictures();
         return $xmlResponse;
     }
 
-    public function getServerChanges($initSyncTime) {
+    public function getServerChanges($lastSyncTime) {
         $serverChanges = array();
 
         // getting last changed tasks
-        $changesOfTasks = $this->getChangedTasks($initSyncTime);
+        $changesOfTasks = $this->getChangedTasks($lastSyncTime);
 
         $serverChanges['tasks']['created'] = array();
         $serverChanges['tasks']['updated'] = array();
@@ -116,13 +116,13 @@ class TaskSyncHelper {
         return $synchronizedObjects;
     }
 
-    private function getChangedTasks($initSyncTime) {
-        if ($initSyncTime != null) {
+    private function getChangedTasks($lastSyncTime) {
+        if ($lastSyncTime != null) {
             $changesOfTasks = ChangeOfTask::find()
                 ->where([
                     'and',
                     ['=', 'user_id', $this->userId],
-                    ['>', 'datetime', $initSyncTime]
+                    ['>', 'datetime', $lastSyncTime]
                 ])
                 ->orderBy('datetime')
                 ->all();
@@ -213,21 +213,21 @@ class TaskSyncHelper {
         }
     }
 
-    private function getInitSyncTime() {
-        $initSyncTime = null;
-        if (isset($_POST['initSyncTime'])) {
-            $initSyncTime = $_POST['initSyncTime'];
+    private function getLastSyncTimeFromPost() {
+        $lastSyncTime = null;
+        if (isset($_POST['lastSyncTime'])) {
+            $lastSyncTime = $_POST['lastSyncTime'];
         } else {
-            $initSyncTime = $this->getCurrentTime();
+            return null;
         }
-        return $initSyncTime;
+        return $lastSyncTime;
     }
 
     private function getCurrentTime() {
         $currentDatetime = new \DateTime();
         $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
-        $initSyncTime = $currentDatetime->format('Y-m-d H:i:s');
-        return $initSyncTime;
+        $lastSyncTime = $currentDatetime->format('Y-m-d H:i:s');
+        return $lastSyncTime;
     }
 
     /*
