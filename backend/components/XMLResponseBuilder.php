@@ -142,9 +142,6 @@ class XMLResponseBuilder {
         if (isset($picture) && isset($picture->name)) {
             $xmlPart =
                 '<picture><name>' . $picture->name . '</name>';
-            if (isset($picture->drive_id)) {
-                $xmlPart .= '<driveId>' . $picture->drive_id . '</driveId>';
-            }
             if (isset($picture->file_id)) {
                 $xmlPart .= '<fileId>' . $picture->file_id . '</fileId>';
             }
