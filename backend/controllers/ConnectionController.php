@@ -170,7 +170,9 @@ class ConnectionController extends Controller {
         Yii::warning("==222==");
         Yii::warning($data);
         $userEmail = $data['email'];
-        $user = User::find(['username' => $userEmail])->one();
+        $user = User::find()->where(['username' => $userEmail])->one();
+        Yii::warning("==3333==");
+        Yii::warning($user);
         return $user;
     }
 
