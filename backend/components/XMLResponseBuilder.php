@@ -143,7 +143,7 @@ class XMLResponseBuilder {
             $xmlPart =
                 '<picture><name>' . $picture->name . '</name>';
             if (isset($picture->file_id)) {
-                $xmlPart .= '<fileId>' . $picture->file_id . '</fileId>';
+                $xmlPart .= '<resourceId>' . $picture->file_id . '</resourceId>';
             }
             $xmlPart .= '</picture>';
         }
