@@ -72,8 +72,16 @@ class ConnectionController extends Controller {
 
     private function handleSettings($user, $settings) {
         if ($user != null) {
+            Yii::warning("===111===");
+            Yii::warning($user);
+            Yii::warning($user->projectFolder->id);
+            Yii::warning($user->pictureFolder->id);
             $projectFolder = GoogleDriveFolder::findOne(['id' => $user->projectFolder->id]);
             $pictureFolder = GoogleDriveFolder::findOne(['id' => $user->pictureFolder->id]);
+            Yii::warning("==projectFolder==");
+            Yii::warning($projectFolder);
+            Yii::warning("==pictureFolder==");
+            Yii::warning($pictureFolder);
 
             if (isset($settings) && !empty($settings)) {
                 if (isset($settings[GoogleDriveFolder::PROJECT_FOLDER_DRIVE_ID]) &&
