@@ -12,9 +12,7 @@ use Yii;
 use yii\db\ActiveRecord;
 
 class GoogleDriveFolder extends ActiveRecord {
-    const PROJECT_FOLDER_DRIVE_ID = 'PROJECT_FOLDER_DRIVE_ID';
     const PROJECT_FOLDER_RESOURCE_ID = 'PROJECT_FOLDER_RESOURCE_ID';
-    const PICTURE_FOLDER_DRIVE_ID = 'PICTURE_FOLDER_DRIVE_ID';
     const PICTURE_FOLDER_RESOURCE_ID = 'PICTURE_FOLDER_RESOURCE_ID';
 
     public static function tableName() {
