@@ -151,6 +151,9 @@ class GoogleDriveHelper {
     }
 
     public function deleteUnusedPictures($user) {
+        if (!isset($user) || !isset($user->pictureFolder) || !isset($user->pictureFolder->resource_id)) {
+            return;
+        }
         $activePictures = array();
         $tasks = Task::find()->where(['user' => $user->id])->with('picture')->all();
         foreach ($tasks as $task) {
