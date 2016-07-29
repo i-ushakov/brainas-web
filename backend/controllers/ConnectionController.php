@@ -76,11 +76,6 @@ class ConnectionController extends Controller {
             $pictureFolder = GoogleDriveFolder::findOne(['id' => $user->pictureFolder->id]);
 
             if (isset($settings) && !empty($settings)) {
-                if (isset($settings[GoogleDriveFolder::PROJECT_FOLDER_DRIVE_ID]) &&
-                    $settings[GoogleDriveFolder::PROJECT_FOLDER_DRIVE_ID] != ""
-                ) {
-                    $projectFolder->drive_id = $settings[GoogleDriveFolder::PROJECT_FOLDER_DRIVE_ID];
-                }
                 if (isset($settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID]) &&
                     $settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID] != ""
                 ) {
@@ -88,11 +83,6 @@ class ConnectionController extends Controller {
                 }
                 $projectFolder->save();
 
-                if (isset($settings[GoogleDriveFolder::PICTURE_FOLDER_DRIVE_ID]) &&
-                    $settings[GoogleDriveFolder::PICTURE_FOLDER_DRIVE_ID] != ""
-                ) {
-                    $pictureFolder->drive_id = $settings[GoogleDriveFolder::PICTURE_FOLDER_DRIVE_ID];
-                }
                 if (isset($settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID]) &&
                     $settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID] != ""
                 ) {
