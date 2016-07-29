@@ -176,28 +176,20 @@ class TaskSyncHelper {
 
     private function savePistureOfTask($pictureXML, $taskId)
     {
-        \Yii::warning("==savePistureOfTask==");
         $picture = PictureOfTask::find()->where(['task_id' => $taskId])->one();
         if (!isset($picture)) {
             $picture = new PictureOfTask();
         }
-        \Yii::warning("==taskId==");
-        \Yii::warning($taskId);
+
         $picture->task_id = $taskId;
-        \Yii::warning("==pictureXML->fileName==");
-        \Yii::warning($pictureXML->fileName);
         $picture->name = $pictureXML->fileName;
-        if (isset($pictureXML->driveId)) {
-            $picture->drive_id = $pictureXML->driveId;
-        }
-        $picture->file_id = GoogleDriveHelper::getInstance($this->client)->getFileIdByName($pictureXML->fileName);
-        \Yii::warning("==picture->file_id==");
-        \Yii::warning($picture->file_id);
-        if ($picture->file_id != null) {
-            $picture->save();
+
+        if (isset($pictureXML->resourceId)) {
+            $picture->file_id = $pictureXML->resourceId;
         } else {
-            return false;
+            $picture->file_id = GoogleDriveHelper::getInstance($this->client)->getFileIdByName($pictureXML->fileName);
         }
+        $picture->save();
     }
 
     private function deleteTaskFromDevice ($deletedTask) {
