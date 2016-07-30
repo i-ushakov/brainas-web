@@ -106,6 +106,9 @@ class GoogleDriveHelper {
     }
 
     public function getFileIdByName($fileName) {
+        if (!isset($fileName)) {
+            return null;
+        }
         $response = $this->driveService->files->listFiles(array(
             'q' => "name='$fileName'",
             'spaces' => 'drive',
@@ -117,6 +120,16 @@ class GoogleDriveHelper {
         } else {
             return null;
         }
+    }
+
+    public function getResourceIdForTask($task) {
+        $resourceId = null;
+        if (isset($task->picture->fileId) && $task->picture->fileId != "") {
+            $resourceId = $task->picture->fileId;
+        } else {
+            $resourceId = $this->getFileIdByName($task->picture->name);
+        }
+        return $resourceId;
     }
 
     public function removeFile($fileId) {
