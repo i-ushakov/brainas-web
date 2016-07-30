@@ -8,6 +8,7 @@
 
 namespace frontend\components;
 
+use common\models\PictureOfTask;
 use Yii;
 use common\models\Task;
 class GoogleDriveHelper {
@@ -128,6 +129,9 @@ class GoogleDriveHelper {
             $resourceId = $task->picture->fileId;
         } else {
             $resourceId = $this->getFileIdByName($task->picture->name);
+            $picture = PictureOfTask::findOne(['task_id' => $task->id]);
+            $picture->file_id = $resourceId;
+            $picture->save();
         }
         return $resourceId;
     }
