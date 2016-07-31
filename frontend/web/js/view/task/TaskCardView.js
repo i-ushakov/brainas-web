@@ -92,6 +92,7 @@ var TaskCardView = Backbone.View.extend({
         this.renderCard();
         var modal = this.renderCard();
         this.$el.html(modal.html())
+        this.renderConditions();
     },
 
     renderCard: function() {
