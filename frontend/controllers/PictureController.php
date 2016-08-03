@@ -16,7 +16,7 @@ use frontend\components\GoogleDriveHelper;
 
 
 class PictureController extends Controller {
-    const TMP_FOLDER = "/var/www/brainas.net/frontend/tmp/testImg";
+    const TMP_FOLDER = "/var/www/brainas.net/frontend/tmp/tmpPicture";
 
     public $mimeTypes_Extensions = [
         "image/jpeg" => 'jpg',
@@ -103,8 +103,8 @@ class PictureController extends Controller {
                     $client = GoogleIdentityHelper::getGoogleClientWithToken($user);
                     if ($client != null) {
                         $pictureFolderId = $this->getPictureFolder($client, $user);
-                        file_put_contents(self::TMP_FOLDER, $imageContent);
-                        $imageType = exif_imagetype(self::TMP_FOLDER);
+                        file_put_contents(self::TMP_FOLDER . $user->id, $imageContent);
+                        $imageType = exif_imagetype(self::TMP_FOLDER . $user->id);
                         if (isset($this->exif_imagetype_code_mimeTypes[$imageType])) {
                             $mimeType = $this->exif_imagetype_code_mimeTypes[$imageType];
                         } else {
@@ -125,7 +125,7 @@ class PictureController extends Controller {
 
                             if ($file != null) {
                                 $result['status'] = "SUCCESS";
-                                $result['message'] = "Image successfuly upload inot google docs";
+                                $result['message'] = "Image successfuly upload into google docs";
                                 $result['picture_name'] = $imageName;
                                 $result['picture_file_id'] = $file->id;
                             }
@@ -242,7 +242,6 @@ class PictureController extends Controller {
     }
 
     private function isFolderExist($folderId, $client) {
-        Yii::warning("== isFolderExist ==");
         $driveService = new \Google_Service_Drive($client);
         $response = $driveService->files->listFiles(array(
             'q' => "mimeType='application/vnd.google-apps.folder'",
@@ -251,14 +250,10 @@ class PictureController extends Controller {
         ));
 
         foreach ($response->files as $folders) {
-            Yii::warning("folder id: " . $folders->id);
-            Yii::warning("folder name: " . $folders->name);
             if($folders->id == $folderId) {
-                Yii::warning("true!!!");
                 return true;
             }
         }
-        Yii::warning("false!!!");
         return false;
     }
 }
