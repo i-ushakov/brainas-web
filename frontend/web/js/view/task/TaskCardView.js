@@ -11,7 +11,9 @@ var TaskCardView = Backbone.View.extend({
 
     infoMessages: {
         emptyMessage: "Message cannot be empty!",
-        moreThan100Chars: "Message cannot be more than 100 character!"
+        moreThan100Chars: "Message cannot be more than 100 character!",
+        bigPicture : "You cannot upload picture more than 10 MB",
+        wrongPictureFormat : "You can upload only JPG and PNG files"
     },
 
     conditionViews: [],
@@ -334,7 +336,18 @@ var TaskCardView = Backbone.View.extend({
                 alert('The File APIs are not fully supported in this browser.');
                 return;
             }
+
             if (input.files && input.files[0]) {
+                // max size 10 MB for picture
+                if (input.files[0].size > 10485760) {
+                    self.addInfoAlert('bigPicture');
+                    return;
+                }
+
+                if (input.files[0].type != "image/jpeg" && input.files[0].type != "image/png") {
+                    self.addInfoAlert('wrongPictureFormat');
+                    return;
+                }
                 var reader = new FileReader();
                 /*var fd = new FormData(document.getElementById("uploadTaskPicture"));
                 fd.append("CustomField", "This is some extra data");
