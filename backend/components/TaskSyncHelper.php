@@ -139,6 +139,7 @@ class TaskSyncHelper {
         $task = new Task();
         $task->message = (String)$newTaskFromDevice->message;
         $task->description = (String)$newTaskFromDevice->description;
+        $task = (string)$newTaskFromDevice->status;
         $task->user = $this->userId;
         if ($task->save()) {
             foreach ($newTaskFromDevice->conditions->condition as $c) {
@@ -156,11 +157,10 @@ class TaskSyncHelper {
 
     private function updateTaskFromDevice ($changedTask, &$synchronizedObjects) {
         $taskId = (string)$changedTask['globalId'];
-        $message = (string)$changedTask->message;
-        $description = (string)$changedTask->description;
         $task = Task::findOne($taskId);
-        $task->message = $message;
-        $task->description = $description;
+        $task->message = (string)$changedTask->message;
+        $task->description = (string)$changedTask->description;
+        $task->status = (string)$changedTask->status;
         $task->save();
         if (isset($changedTask->picture)) {
             $this->savePistureOfTask($changedTask->picture, $taskId);

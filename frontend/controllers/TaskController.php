@@ -13,6 +13,8 @@ use common\models\Condition;
 use common\models\Event;
 use frontend\components\GoogleDriveHelper;
 use frontend\components\GoogleIdentityHelper;
+use frontend\components\TaskConverter;
+use frontend\components\TasksQueryBuilde;
 use Yii;
 use yii\web\Controller;
 use common\models\Task;
@@ -91,11 +93,12 @@ class TaskController extends Controller {
     public function actionGet() {
         if (!Yii::$app->user->isGuest) {
             $userId =  Yii::$app->user->id;
-            $tasks = Task::find()
-                ->where(['user' => $userId])
-                ->with('picture')
-                ->orderBy('id')
-                ->all();
+
+            $tasksQueryBuilde = new TasksQueryBuilde($userId);
+            $statusesFilter = (isset($_GET['statusesFilter']) ? $_GET['statusesFilter'] : null);
+            $typeOfSort = (isset($_GET['typeOfSort']) ? $_GET['typeOfSort'] : null);
+            $tasks = $tasksQueryBuilde->get($statusesFilter, $typeOfSort);
+
         } else {
             $result = array();
             $result['status'] = "FAILED";
@@ -106,7 +109,7 @@ class TaskController extends Controller {
 
         $tasksArray = array();
         foreach ($tasks as $task) {
-            $tasksArray[] = $this->prepareTaskForSending($task);
+            $tasksArray[] = TaskConverter::prepareTaskForResponse($task);
         }
 
         \Yii::$app->response->format = 'json';
@@ -218,7 +221,7 @@ class TaskController extends Controller {
             if ($task->validate()) {
                 $task->save();
                 $this->result['status'] = "OK";
-                $this->result['task'] = $this->prepareTaskForSending($task);
+                $this->result['task'] = TaskConverter::prepareTaskForResponse($task);
             } else {
                 $errors = $task->errors;
                 $this->result['status'] = "FAILED";
@@ -310,34 +313,8 @@ class TaskController extends Controller {
         return $client;
     }
 
-    private function prepareTaskForSending($task){
-        $item['id'] = $task->id;
-        $item['message'] = $task->message;
-        $item['description'] =  nl2br($task->description);
 
-        if ($task->picture != null) {
-            $item['picture_name'] = $task->picture->name;
-            $item['picture_file_id'] = $task->picture->file_id;
-        }
-        $conditions = $task->conditions;
-        foreach($conditions as $condition) {
-            $c = array();
-            $c['conditionId'] = $condition->id;
-            $events = $condition->events;
-            foreach($events as $event) {
-                $c[$event->eventType->name]['eventId'] = $event->id;
-                $c[$event->eventType->name]['type'] = $event->eventType->name;
-                $c[$event->eventType->name]['params'] = json_decode($event->params);
-            }
-            $item['conditions'][] = $c;
-        }
 
-        return $item;
-    }
-
-    /*
-     *
-     */
     private function checkThatUserIsNotAGuest() {
         if (Yii::$app->user->isGuest) {
             $this->result['status'] = "FAILED";
