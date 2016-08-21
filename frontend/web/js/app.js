@@ -4,9 +4,6 @@
 
 var app = app || {};
 
-app.url = '/';
-app.googleDriveImageUrl = "https://drive.google.com/uc?export=view&id=";
-
 app.location = null;
 
 app.getCurrentUserLocation = function() {
@@ -22,7 +19,7 @@ app.setCurrentUserLocation = function(position) {
 }
 
 app.isAuthorized = function() {
-    return false;
+    return app.singedIn;
 }
 
 app.refreshAuthorization = function() {
@@ -34,29 +31,7 @@ app.refreshAuthorization = function() {
     });
 }
 
-$(function () {
-    Backbone.View.prototype.close = function(){
-        this.remove();
-        this.unbind();
-    }
-
-    app.MainPanel = new MainPanel();
-    app.MainPanelView = new MainPanelView({model: app.MainPanel});
-    app.MainPanel.toggleToTaskPanel();
-
-    // check for Geolocation support
-    if (navigator.geolocation) {
-        console.log('Geolocation is supported!');
-        navigator.geolocation.getCurrentPosition(function(position) {
-            app.location = position;}, getCurrentPositionError );
-    } else {
-        console.log('Geolocation is not supported for this Browser/OS version yet.');
-    }
-
-    setInterval(app.refreshAuthorization, 1000 * 60 * 15);
-});
-
-function getCurrentPositionError(error) {
+app.getCurrentPositionError = function(error) {
     switch(error.code) {
         case error.PERMISSION_DENIED:
             console.log("User denied the request for Geolocation.");
@@ -72,3 +47,20 @@ function getCurrentPositionError(error) {
             break;
     }
 }
+
+$(function () {
+    app.MainPanel = new MainPanel();
+    app.MainPanelView = new MainPanelView({model: app.MainPanel});
+    app.MainPanel.toggleToTaskPanel();
+
+    // check for Geolocation support
+    if (navigator.geolocation) {
+        console.log('Geolocation is supported!');
+        navigator.geolocation.getCurrentPosition(function(position) {
+            app.location = position;}, app.getCurrentPositionError );
+    } else {
+        console.log('Geolocation is not supported for this Browser/OS version yet.');
+    }
+
+    setInterval(app.refreshAuthorization, 1000 * 60 * 15);
+});

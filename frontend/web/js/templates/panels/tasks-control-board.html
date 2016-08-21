@@ -1,0 +1,49 @@
+<!-- Template of Main Panel -->
+<script type="text/template" id="tasks-control-board-template">
+    <div id="statuses-filter-block" class="panel panel-primary col-md-5">
+        <div class="panel-heading">Statuses</div>
+        <div class="panel-body">
+            <div class="col-md-3">
+                <input type="checkbox" name="statuses_filter" value="ALL" class="statuses-filter-checkbox"
+                    <% if (typeof all != 'undefined' && all == true) {%> checked <%}%> />
+                <span class="statuses-filter-lbl">All</span>
+                <br/>
+                <input type="checkbox" name="statuses_filter" value="ACTIVE" class="statuses-filter-checkbox"
+                    <% if (typeof active != 'undefined' && active == true) {%> checked <%}%> />
+                <span class="statuses-filter-lbl">Active</span>
+            </div>
+            <div class="col-md-3">
+                <input type="checkbox" name="statuses_filter" value="WAITING" class="statuses-filter-checkbox"
+                    <% if (typeof waiting != 'undefined' && waiting == true) {%> checked <%}%> />
+                <span class="statuses-filter-lbl">Waiting</span>
+                <br/>
+                <input type="checkbox" name="statuses_filter" value="DISABLED" class="statuses-filter-checkbox"
+                    <% if (typeof disabled != 'undefined' && disabled == true) {%> checked <%}%> />
+                <span class="statuses-filter-lbl">Disabled</span>
+            </div>
+            <div class="col-md-3">
+                <input type="checkbox" name="statuses_filter" value="DONE" class="statuses-filter-checkbox"
+                    <% if (typeof done != 'undefined' && done == true) {%> checked <%}%> />
+                <span class="statuses-filter-lbl">Done</span>
+                <br/>
+                <input type="checkbox" name="statuses_filter" value="CANCELED" class="statuses-filter-checkbox"
+                    <% if (typeof canceled != 'undefined' && canceled == true) {%> checked <%}%> />
+                <span class="statuses-filter-lbl">Canceled</span>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div id="type-of-sort-block" class="panel panel-info col-md-2">
+        <div class="panel-heading">Sort by</div>
+        <div class="panel-body">
+            <div class="col-md-16 form-group type-of-sort-cont">
+                <select class="form-control" id="type-of-sort" name="type_of_sort">
+                    <option value="CHANGES">time of changes</option>
+                    <option value="CREATION">time of creation</option>
+                    <option value="NAME">name</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</script>

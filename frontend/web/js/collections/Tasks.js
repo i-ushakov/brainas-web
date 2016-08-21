@@ -20,6 +20,20 @@ var Tasks = Backbone.Collection.extend({
         clearInterval(this.timer);
     },
 
+    fetch: function(options) {
+        if (options == undefined) {
+            var options = {};
+        }
+        var tasksControlBoard = app.MainPanel.get("tasksControlBoard");
+        var statusesFilter = tasksControlBoard.get("statusesFilter");
+        var typeOfSort = tasksControlBoard.get("typeOfSort");
+        options.data = {
+            statusesFilter : statusesFilter,
+            typeOfSort : typeOfSort
+        };
+        return Backbone.Collection.prototype.fetch.call(this, options);
+    },
+
     parse: function(response, options) {
         var collection = this;
         if (response.status == "FAILED") {

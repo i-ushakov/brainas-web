@@ -4,7 +4,8 @@
 
 var app = app || {};
 
-app.url = '/',
+app.url = '/';
+app.googleDriveImageUrl = "https://drive.google.com/uc?export=view&id=";
 
 
 $(function () {

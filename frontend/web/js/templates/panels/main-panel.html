@@ -1,6 +1,22 @@
 <!-- Template of Main Panel -->
 <script type="text/template" id="main-panel-template">
-    <div id="top-main-panel" class="container">Main Panel</div>
+    <div id="top-control-panel" class="container" style="display: none;">
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="active"><a href="#">Tasks</a></li>
+            <li role="presentation"><a href="#">Categories</a></li>
+            <li role="presentation"><a href="#">Settings</a></li>
+            <li role="presentation"><a href="#">Users</a></li>
+        </ul>
+        <div class="panel panel-default" id="board-of-controls">
+            <!-- Tasks control panel -->
+            <div id="task-controls-board"></div>
+            <!-- Categories control panel -->
+            <div id="board-of-categories-controls" style="display: none"></div>
+            <div id="board-of-settings-controls" style="display: none"></div>
+            <div id="board-of-users-controls" style="display: none"></div>
+        </div>
+    </div>
+
     <div id="middle-main-panel" class="container">
         <div id="task-panel" style="display: none;"></div>
     </div>

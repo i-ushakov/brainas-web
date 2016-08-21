@@ -580,3 +580,31 @@ a.desc:after {
 .thumbsDownCont span {
     font-size: 50px
 }
+
+/* Top panel */
+#board-of-controls {
+    padding: 10px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-top: 0px
+}
+
+#statuses-filter-block {
+    margin: 2px;
+    padding: 0px;
+}
+
+#statuses-filter-block .panel-body,
+#type-of-sort-block .panel-body {
+    height: 74px;
+}
+
+/* */
+#type-of-sort-block {
+    margin: 2px;
+    padding: 0px;
+}
+
+.form-group.type-of-sort-cont {
+    margin: 0px;
+}

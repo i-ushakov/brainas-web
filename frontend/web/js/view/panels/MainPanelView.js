@@ -13,11 +13,14 @@ var MainPanelView = Backbone.View.extend({
     taskPanelView: null,
 
     taskPanelViewEl: '#task-panel',
+    tasksControlBoardViewEl : '#task-controls-board',
 
     initialize: function() {
         this.render();
         this.taskPanelView = new TaskPanelView({model: this.model.taskPanel, el: this.taskPanelViewEl});
         this.taskPanelView.render();
+        this.tasksControlBoard = new TasksControlBoardView({model: this.model.get('tasksControlBoard'), el: this.tasksControlBoardViewEl});
+        this.tasksControlBoard.render();
 
         this.listenTo(this.model, "taskPanel:selected", this.showTaskPanel);
         _.bindAll(this, 'showTaskPanel');
@@ -25,9 +28,17 @@ var MainPanelView = Backbone.View.extend({
 
     render: function() {
         this.$el.html(this.template());
+        if (app.isAuthorized()) {
+            this.showTopControlPanel();
+        }
+    },
+
+    showTopControlPanel : function() {
+        $('#top-control-panel').show()
     },
 
     showTaskPanel: function() {
+        // TODO show control task panel in top
         this.taskPanelView.$el.show();
     }
 });

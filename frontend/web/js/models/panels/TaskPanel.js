@@ -8,8 +8,14 @@ var TaskPanel = Backbone.Model.extend({
 
     tasks : null,
 
-    initialize: function() {
+    tasksControlBoard: null,
+
+    initialize: function(options) {
+        this.tasksControlBoard = options.tasksControlBoard;
+        this.listenTo(this.tasksControlBoard, "change", this.loadTasks);
         this.tasks = new Tasks();
+
+        _.bindAll(this, 'loadTasks');
     },
 
     loadTasks: function() {
