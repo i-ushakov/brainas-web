@@ -139,7 +139,7 @@ class TaskSyncHelper {
         $task = new Task();
         $task->message = (String)$newTaskFromDevice->message;
         $task->description = (String)$newTaskFromDevice->description;
-        $task = (string)$newTaskFromDevice->status;
+        $task->status = (string)$newTaskFromDevice->status;
         $task->user = $this->userId;
         if ($task->save()) {
             foreach ($newTaskFromDevice->conditions->condition as $c) {
