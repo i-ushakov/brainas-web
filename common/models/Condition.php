@@ -28,9 +28,30 @@ class Condition extends ActiveRecord {
         return $this->hasMany(Event::className(), ['condition_id' => 'id']);
     }
 
+    public function getTask() {
+        return $this->hasOne(Task::className(), ['id' => 'task_id']);
+    }
+
     public function beforeDelete() {
         Event::deleteAll(['condition_id' => $this->id]);
         return parent::beforeDelete();
+    }
+
+    public function afterDelete() {
+        $task = $this->task;
+        if ($task != null) {
+            $task->updateStatus();
+        }
+        parent::afterDelete();
+    }
+
+
+    public function afterSave($insert, $changedAttributes) {
+        $task = $this->task;
+        if ($task != null) {
+            $task->updateStatus();
+        }
+        return parent::afterSave($insert, $changedAttributes);
     }
 
     public function validateEvents($attribute, $params) {

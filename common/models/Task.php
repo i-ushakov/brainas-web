@@ -72,4 +72,14 @@ class Task extends ActiveRecord {
         parent::afterDelete();
         ChangeOfTask::removeFromChangeLog($this->id);
     }
+
+    public function updateStatus() {
+        $conditions = $this->conditions;
+        if (empty($conditions)) {
+            $this->status = "DISABLED";
+        } else {
+            $this->status = "WAITING";
+        }
+        $this->save();
+    }
 }
