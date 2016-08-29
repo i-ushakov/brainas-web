@@ -144,6 +144,13 @@ a.desc:after {
     margin: 5px;
 }
 
+.task-tile .task-status-lbl {
+    float: left;
+    margin-top: 10px;
+    margin-left: 12px;
+    position: absolute;
+}
+
 .add-new-task-tile {
     text-align: center;
     height: 250px;
@@ -599,7 +606,6 @@ a.desc:after {
     height: 74px;
 }
 
-/* */
 #type-of-sort-block {
     margin: 2px;
     padding: 0px;
@@ -607,4 +613,32 @@ a.desc:after {
 
 .form-group.type-of-sort-cont {
     margin: 0px;
+}
+
+/* Status lbl */
+.status-lbl-cont {
+    border-radius: 2px;
+    border: 1px;
+    padding: 3px;
+    font-weight: bold;
+}
+
+.status-lbl-cont.waiting {
+    background-color: #0000cc;
+    color: white;
+    opacity: 0.8;
+}
+
+.status-lbl-cont.active {
+    background-color: red;
+    color: white;
+    opacity: 0.8;
+}
+
+.status-lbl-cont.disabled,
+.status-lbl-cont.done,
+.status-lbl-cont.canceled {
+    background-color: grey;
+    color: white;
+    opacity: 0.8;
 }

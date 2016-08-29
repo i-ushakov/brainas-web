@@ -1,0 +1,23 @@
+<script type="text/template" id="task-status-template">
+<% if (status == 'ACTIVE') { %>
+    <div class="status-lbl-cont active">
+        Active
+    </div>
+<% } else if (status == 'WAITING') { %>
+    <div class="status-lbl-cont waiting">
+        Waiting
+    </div>
+<% } else if (status == 'DISABLED') { %>
+    <div class="status-lbl-cont disabled">
+        Disabled
+    </div>
+<% } else if (status == 'DONE') { %>
+    <div class="status-lbl-cont done">
+        Done
+    </div>
+<% } else if (status == 'CANCELED') { %>
+    <div class="status-lbl-cont canceled">
+        Canceled
+    </div>
+<% } %>
+</script>

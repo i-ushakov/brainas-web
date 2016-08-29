@@ -38,6 +38,8 @@ var TaskTileView = Backbone.View.extend({
             picture_id : this.model.get("picture_file_id")
         };
         this.$el.html(this.template(params));
+        var taskStatusView = new TaskStatusView({status: this.model.get('status')});
+        this.$el.find('.task-status-lbl').append(taskStatusView.render());
         return this.$el;
     },
 

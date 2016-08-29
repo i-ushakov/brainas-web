@@ -14,6 +14,7 @@ class TaskConverter {
         $item['id'] = $task->id;
         $item['message'] = $task->message;
         $item['description'] = nl2br($task->description);
+        $item['status'] = nl2br($task->status);
 
         if ($task->picture != null) {
             $item['picture_name'] = $task->picture->name;
