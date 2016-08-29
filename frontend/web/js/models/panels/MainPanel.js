@@ -19,12 +19,6 @@ var MainPanel = Backbone.Model.extend({
     },
 
     toggleToTaskPanel: function() {
-        var statusesFilter = this.get('tasksControlBoard').get('statusesFilter');
-        var params = {
-            statusesFilter : statusesFilter
-        }
-
-        this.taskPanel.tasks.set("fetchOptions", params);
         this.taskPanel.loadTasks();
         this.trigger("taskPanel:selected");
     }
