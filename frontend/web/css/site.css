@@ -231,7 +231,7 @@ a.desc:after {
     background-color: lightcyan;
     border: 1px solid lightgrey;
     margin-bottom: 10px;
-    margin-top: 20px;
+    margin-top: 10px;
     border-radius: 3px;
 }
 
@@ -617,7 +617,7 @@ a.desc:after {
 
 /* Status lbl */
 .status-lbl-cont {
-    border-radius: 2px;
+    border-radius: 3px;
     border: 1px;
     padding: 3px;
     font-weight: bold;
@@ -641,4 +641,13 @@ a.desc:after {
     background-color: grey;
     color: white;
     opacity: 0.8;
+}
+
+.task-card .task-status-lbl {
+    float: left;
+    margin: 3px;
+    min-width: 100px;
+    min-height: 50px;
+    line-height: 52px;
+    text-align: center;
 }

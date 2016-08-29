@@ -90,6 +90,12 @@ var TaskCardView = Backbone.View.extend({
         this.renderConditions();
     },
 
+    renderStatus: function(taskCardEl) {
+        var taskStatusEl= taskCardEl.find('.task-status-lbl');
+        var taskStatusView = new TaskStatusView({status: this.model.get('status')});
+        taskStatusEl.append(taskStatusView.render());
+    },
+
     refreshCard: function() {
         this.renderCard();
         var modal = this.renderCard();
@@ -104,7 +110,9 @@ var TaskCardView = Backbone.View.extend({
             picture_id: this.model.get("picture_file_id"),
             createMode: this.createMode
         };
-        return $(this.template(params).trim());
+        var taskCardEl = $(this.template(params).trim());
+        this.renderStatus(taskCardEl);
+        return taskCardEl;
     },
 
     renderConditions: function() {
