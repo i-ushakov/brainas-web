@@ -16,14 +16,15 @@ var TasksControlBoard = Backbone.Model.extend({
     },
 
     SORT_TYPES : {
-        LAST_CHANGES : 'CHANGES',
-        CREATION_TIME : 'CREATION',
-        TASK_TITLE : 'TITLE'
+        TIME_ADDED_NEWEST : 'TIME_ADDED_NEWEST',
+        TIME_ADDED_OLDEST : 'TIME_ADDED_OLDEST',
+        LATEST_CHANGES : 'LATEST_CHANGES',
+        TASK_TITLE : 'TASK_TITLE'
     },
 
     defaults : {
         statusesFilter : ["ACTIVE", "WAITING", "DISABLED"],
-        typeOfSort: 'CHANGES'
+        typeOfSort: 'TIME_ADDED_NEWEST'
     },
 
     addAllToStatusesFilter : function() {
@@ -32,5 +33,13 @@ var TasksControlBoard = Backbone.Model.extend({
 
     clearStatusesFilter : function() {
         this.set('statusesFilter', []);
+    },
+
+    getTypeOfSort: function() {
+        return this.get('typeOfSort');
+    },
+
+    getStatusesFilter: function () {
+        return this.get('statusesFilter');
     }
 });

@@ -24,9 +24,9 @@ var Tasks = Backbone.Collection.extend({
         if (options == undefined) {
             var options = {};
         }
-        var tasksControlBoard = app.MainPanel.get("tasksControlBoard");
+        var tasksControlBoard = app.mainPanel.get("tasksControlBoard");
         var statusesFilter = tasksControlBoard.get("statusesFilter");
-        var typeOfSort = tasksControlBoard.get("typeOfSort");
+        var typeOfSort = app.mainPanel.getTypeOfSort();
         options.data = {
             statusesFilter : statusesFilter,
             typeOfSort : typeOfSort
@@ -54,5 +54,40 @@ var Tasks = Backbone.Collection.extend({
         });
         this.set(tasks);
         return this.models;
+    },
+
+    comparator: function(task) {
+        return -task.id;
+    },
+
+    copmoratorTimeAddedNewest: function(task) {
+        return task.get('created_utc');
+    },
+
+    copmoratorTimeAddedOldest: function(task) {
+        return -task.get('created_utc');
+    },
+
+    copmoratorLatestChanges: function(task) {
+        return task.get('changed_utc');
+    },
+
+    copmoratorTaskTitle: function() {
+        return task.get('message');
+    },
+
+    sortByType: function(typeOfSort) {
+        debugger;
+        if (typeOfSort == "TIME_ADDED_NEWEST") {
+            this.comparator = this.copmoratorTimeAddedNewest;
+        } else if (typeOfSort == "TIME_ADDED_OLDEST") {
+            this.comparator = this.copmoratorTimeAddedOldest;
+        } else if (typeOfSort == "LATEST_CHANGES") {
+            this.comparator = this.copmoratorLatestChanges;
+        } else if (typeOfSort == "TASK_TITLE") {
+            this.comparator = this.copmoratorTaskTitle;
+        }
+        this.sort();
     }
+
 });

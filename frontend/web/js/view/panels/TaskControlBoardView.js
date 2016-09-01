@@ -106,7 +106,7 @@ var TasksControlBoardView = Backbone.View.extend({
     onSortChanged: function() {
         var typeOfSort = $('select[name="type_of_sort"]').val();
         this.model.set('typeOfSort', typeOfSort);
-        if (typeOfSort != "CHANGES") {
+        if (typeOfSort != "TIME_ADDED_NEWEST") {
             this.highlightSortTypeBlock();
         } else {
             this.fadeSortTypeBlock();

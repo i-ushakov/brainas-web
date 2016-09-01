@@ -33,16 +33,25 @@ class TasksQueryBuilde
 
         if ($typeOfSort != null) {
             switch ($typeOfSort){
-                case  "CREATION":
+                case "TIME_ADDED_NEWEST" :
+                    $tasks = $tasksGetQuery->orderBy('created')->all();
+                    break;
+                case "TIME_ADDED_OLDEST" :
+                    $tasks = $tasksGetQuery->orderBy('created desc')->all();
+                    break;
+                case  "LATEST_CHANGES":
+                    $tasks = $tasksGetQuery->orderBy('sync_changed_tasks.datetime')->all();
+                    break;
+                case "TASK_TITLE" :
+                    $tasks = $tasksGetQuery->orderBy('message')->all();
                     break;
                 default :
-                    $tasks = $tasksGetQuery->orderBy('sync_changed_tasks.datetime')->all();
+                    $tasks = $tasksGetQuery->orderBy('created')->all();
                     break;
             }
         } else {
-            $tasks = $tasksGetQuery->orderBy('sync_changed_tasks.datetime')->all();
+            $tasks = $tasks = $tasksGetQuery->orderBy('created')->all();
         }
-
 
         return $tasks;
     }

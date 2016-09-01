@@ -15,15 +15,17 @@ var TaskPanelView = Backbone.View.extend({
     template: _.template($('#task-panel-template').html()),
 
     initialize: function() {
-        _.bindAll(this, 'onTaskSaveHandler');
+        _.bindAll(this, 'onTaskSaveHandler', 'rerenderAllTiles');
 
         var self = this;
 
         self.model.tasks.on("add", function(model) {
             model.on({"save": self.onTaskSaveHandler});
             model.on({"change": self.onTaskSaveHandler});
-            self.addTask(model);
+            //self.addTask(model);
         });
+
+        self.model.tasks.on('sort', this.rerenderAllTiles)
 
         self.model.tasks.on("remove", function(model) {
             self.removeTask(model);
@@ -37,6 +39,14 @@ var TaskPanelView = Backbone.View.extend({
         } else {
             this.$el.find('#user-not-logged-block').show();
         }
+    },
+
+    rerenderAllTiles: function() {
+        var self = this;
+        self.model.tasks.each(function(task) {
+            self.removeTask(task);
+            self.addTask(task);
+        });
     },
 
     addTask: function(task) {

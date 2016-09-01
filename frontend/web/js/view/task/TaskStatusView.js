@@ -17,7 +17,6 @@ var TaskStatusView = Backbone.View.extend({
     events: {},
 
     initialize: function (options) {
-        debugger;
         this.status = options.status;
     },
 

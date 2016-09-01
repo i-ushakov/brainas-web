@@ -24,6 +24,8 @@ var TaskPanel = Backbone.Model.extend({
         if (app.singedIn == true) {
             this.tasks.fetch({
                 success: function () {
+                    var typeOfSort = app.mainPanel.getTypeOfSort();
+                    self.tasks.sortByType(typeOfSort);
                 }
             });
         }

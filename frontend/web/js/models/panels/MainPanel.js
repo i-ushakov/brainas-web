@@ -7,7 +7,7 @@ var app = app || {};
 var MainPanel = Backbone.Model.extend({
 
     defaults : {
-        tasksControlPanel : null
+        tasksControlBoard : null
     },
 
     taskPanel: null,
@@ -21,5 +21,17 @@ var MainPanel = Backbone.Model.extend({
     toggleToTaskPanel: function() {
         this.taskPanel.loadTasks();
         this.trigger("taskPanel:selected");
+    },
+
+    getTypeOfSort: function() {
+        var tasksControlBoard = this.get('tasksControlBoard');
+        var typeOfSort = tasksControlBoard.getTypeOfSort();
+        return typeOfSort;
+    },
+
+    getStatusesFilter: function() {
+        var tasksControlBoard = this.get('tasksControlBoard');
+        var statusesFilter = tasksControlBoard.getStatusesFilter();
+        return statusesFilter;
     }
 });
