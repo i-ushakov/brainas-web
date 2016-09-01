@@ -49,9 +49,9 @@ app.getCurrentPositionError = function(error) {
 }
 
 $(function () {
-    app.MainPanel = new MainPanel();
-    app.MainPanelView = new MainPanelView({model: app.MainPanel});
-    app.MainPanel.toggleToTaskPanel();
+    app.mainPanel = new MainPanel();
+    app.MainPanelView = new MainPanelView({model: app.mainPanel});
+    app.mainPanel.toggleToTaskPanel();
 
     // check for Geolocation support
     if (navigator.geolocation) {

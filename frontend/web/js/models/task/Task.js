@@ -27,6 +27,8 @@ var Task = Backbone.Model.extend({
                 conditions.push(condition);
             }
         });
+        this.set('created_utc', Date.parse(task.created));
+        this.set('changed_utc', Date.parse(task.changed));
         this.set('conditions', conditions);
     },
 
@@ -72,7 +74,7 @@ var Task = Backbone.Model.extend({
             data: data,
             success: function(result) {
                 if (result.status == "OK") {
-                    app.MainPanel.taskPanel.tasks.remove(self.id);
+                    app.mainPanel.taskPanel.tasks.remove(self.id);
                     return true;
                 } else if (result.status == "FAILED" && result.type == 'must_be_signed_in'){ // if was logged out on Yii2 side
                     alert("The operation has not been successful! Please repeat your actions after page reloading");
