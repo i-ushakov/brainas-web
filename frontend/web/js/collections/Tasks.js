@@ -72,12 +72,11 @@ var Tasks = Backbone.Collection.extend({
         return task.get('changed_utc');
     },
 
-    copmoratorTaskTitle: function() {
+    copmoratorTaskTitle: function(task) {
         return task.get('message');
     },
 
     sortByType: function(typeOfSort) {
-        debugger;
         if (typeOfSort == "TIME_ADDED_NEWEST") {
             this.comparator = this.copmoratorTimeAddedNewest;
         } else if (typeOfSort == "TIME_ADDED_OLDEST") {
