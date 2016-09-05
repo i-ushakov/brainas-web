@@ -22,7 +22,7 @@ class SPAAsset extends AssetBundle
     public $js = [
         "js/libs/moment.min.js",
         "js/libs/bootstrap-datetimepicker.min.js",
-        "js/libs/bootstrap-dialog",
+        "js/libs/bootstrap-dialog.js",
         'js/libs/underscore.js',
         'js/libs/backbone.js',
         'js/settings.js',
