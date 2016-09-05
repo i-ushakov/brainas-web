@@ -73,7 +73,7 @@ var Tasks = Backbone.Collection.extend({
     },
 
     copmoratorTaskTitle: function(task) {
-        return task.get('message');
+        return -task.get('message');
     },
 
     sortByType: function(typeOfSort) {
