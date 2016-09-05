@@ -151,6 +151,15 @@ a.desc:after {
     position: absolute;
 }
 
+.task-tile-cont .add-new-task-btn,
+.add-new-task-tile,
+.task-tile-cont .task-tile-block,
+.task-tile-cont .task-tile-block .task-tile
+{
+    margin-left: 0px;
+    padding-left: 0px;
+}
+
 .add-new-task-tile {
     text-align: center;
     height: 250px;
@@ -178,7 +187,7 @@ a.desc:after {
 .delete-img-cont {
     position: absolute;
     top: 20px;
-    left: 250px;
+    left: 220px;
     cursor: pointer;
     opacity: 0.6;
 }
@@ -588,7 +597,21 @@ a.desc:after {
     font-size: 50px
 }
 
+/* Main Panel*/
+#main-panel.container {
+    padding-left: 0px;
+}
+
 /* Top panel */
+#top-control-panel.container {
+    padding-left: 0px;
+}
+
+/* Middle Panel */
+#middle-main-panel.container {
+    padding-left: 0px;
+}
+
 #board-of-controls {
     padding: 10px;
     border-top-left-radius: 0px;
@@ -656,4 +679,16 @@ a.desc:after {
 .bootstrap-dialog .modal-dialog .bootstrap-dialog-body .bootstrap-dialog-message{
     margin: 10px;
     text-align: center;
+}
+
+/* Logo */
+.brainas-logo-icon-top-right {
+    background-image: url('../images/ba_logo_150_mono.png');
+    background-repeat: no-repeat;
+    background-size: 40px 40px;
+    background-position: 15px 5px;
+}
+
+.brainas-logo-icon-top-right.navbar-brand {
+    padding-left: 65px;
 }

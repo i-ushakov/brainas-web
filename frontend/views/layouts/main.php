@@ -38,8 +38,9 @@ SPAAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => 'My Company',
+        'brandLabel' => 'Brain Assistant Project',
         'brandUrl' => Yii::$app->homeUrl,
+        'brandOptions' => ['class' => 'brainas-logo-icon-top-right'],
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],

@@ -13,6 +13,8 @@ var TaskTileView = Backbone.View.extend({
 
     addTaskButton: false,
 
+    className: 'task-tile-cont',
+
     events: {
         'click .task-tile': 'openTaskCard',
         'click .add-new-task-btn': 'addNewTaskHandler',
