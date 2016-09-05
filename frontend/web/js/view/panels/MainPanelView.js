@@ -6,6 +6,12 @@ var app = app || {};
 
 var MainPanelView = Backbone.View.extend({
 
+    events: {
+        'click #top-panel-categories-tab': 'showMessageAboutNextVersions',
+        'click #top-panel-settings-tab': 'showMessageAboutNextVersions',
+        'click #top-panel-users-tab': 'showMessageAboutNextVersions'
+    },
+
     el : '#main-panel',
 
     template: _.template($('#main-panel-template').html()),
@@ -40,5 +46,12 @@ var MainPanelView = Backbone.View.extend({
     showTaskPanel: function() {
         // TODO show control task panel in top
         this.taskPanelView.$el.show();
+    },
+
+    showMessageAboutNextVersions: function() {
+        BootstrapDialog.show({
+            title: '',
+            message: 'This section will be available in next versions'
+        });
     }
 });

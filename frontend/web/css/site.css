@@ -651,3 +651,9 @@ a.desc:after {
     line-height: 52px;
     text-align: center;
 }
+
+/* Bootstrap Dialog */
+.bootstrap-dialog .modal-dialog .bootstrap-dialog-body .bootstrap-dialog-message{
+    margin: 10px;
+    text-align: center;
+}

@@ -9,7 +9,6 @@ var TasksControlBoardView = Backbone.View.extend({
     events: {
         'change input[name=statuses_filter]': 'onStatusFilterChanged',
         'change select[name=type_of_sort]': 'onSortChanged',
-
     },
 
     template: _.template($('#tasks-control-board-template').html()),

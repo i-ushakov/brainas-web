@@ -15,9 +15,7 @@ class GoogleAsset extends AssetBundle
 {
     public $basePath = '@webroot';
     public $baseUrl = '@web';
-    public $css = [
-        "css/bootstrap-datetimepicker.min.css"
-    ];
+    public $css = [];
     public $js = [
         'https://maps.googleapis.com/maps/api/js?key=AIzaSyALoOSAt19qKApEaQxnDEuHxsn9f7Kn46E&libraries=places',
         'https://apis.google.com/js/platform.js?onload=start'

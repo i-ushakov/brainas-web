@@ -16,11 +16,13 @@ class SPAAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        "css/bootstrap-datetimepicker.min.css"
+        "css/bootstrap-datetimepicker.min.css",
+        "css/bootstrap-dialog.css"
     ];
     public $js = [
         "js/libs/moment.min.js",
         "js/libs/bootstrap-datetimepicker.min.js",
+        "js/libs/bootstrap-dialog",
         'js/libs/underscore.js',
         'js/libs/backbone.js',
         'js/settings.js',
@@ -46,5 +48,7 @@ class SPAAsset extends AssetBundle
         'js/app.js'
     ];
     public $depends = [
+        'yii\web\YiiAsset',
+        'yii\bootstrap\BootstrapPluginAsset'
     ];
 }
