@@ -187,9 +187,11 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionAbout()
-    {
-        return $this->render('about');
+    public function actionAbout() {
+        $aboutFilePdf = \Yii::getAlias('@webroot') . "/docs/about.pdf";
+        header('Content-type: application/pdf');
+        header('Content-Disposition: inline; filename=" ' . $aboutFilePdf . '"');
+        @readfile($aboutFilePdf);
     }
 
     /**
