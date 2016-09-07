@@ -1,0 +1,41 @@
+#contact-card-cont {}
+#contact-card {
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 8px;
+}
+
+#kit-ushakov-img-cont {
+    text-align: center;
+}
+#kit-ushakov-name-cont {
+    text-align: center;
+}
+#kit-ushakov-name {
+    padding-top: 12px;
+    font-size: 20px;
+    color: #0000cc;
+    font-style: italic;
+}
+#about-me-info-block,
+#contact-info-block {
+    padding: 8px;
+}
+
+#contact-info-block, #about-me-info-block {
+    margin-top: 10px;
+}
+#contact-info-block .row {
+    margin-bottom: 10px;
+}
+#kit_logo_cont {
+    position: absolute;
+    top: 210px;
+    left: 580px;
+}
+
+#kit_logo_cont img {
+    width: 80px;
+    height: 80px;
+}
