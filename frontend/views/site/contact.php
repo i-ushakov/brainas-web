@@ -57,9 +57,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                     <div id="kit_logo_cont"><img src="../images/kit_logo_150.jpg"></div>
                 </div>
+            </div>
         </div>
-    </div>
     <div class="col-md-1"></div>
+    </div>
 </div>
 
 
