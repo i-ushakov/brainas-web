@@ -76,7 +76,9 @@ class Task extends ActiveRecord {
     public function updateStatus() {
         $conditions = $this->conditions;
         if (empty($conditions)) {
-            $this->status = "DISABLED";
+            if ($this->status == 'WAITING') {
+                $this->status = "DISABLED";
+            }
         } else {
             $this->status = "WAITING";
         }

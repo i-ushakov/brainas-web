@@ -145,7 +145,6 @@ class TaskController extends Controller {
                 }
             }
 
-
             if (isset($taskForSave['message'])) {
                 $task->message = $taskForSave['message'];
             }
@@ -216,6 +215,11 @@ class TaskController extends Controller {
                         }
                     }
                 }
+            }
+
+
+            if (isset($taskForSave['status'])) {
+                $task->status = $taskForSave['status'];
             }
 
             if ($task->validate()) {

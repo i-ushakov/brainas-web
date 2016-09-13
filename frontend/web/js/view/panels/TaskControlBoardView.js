@@ -26,6 +26,9 @@ var TasksControlBoardView = Backbone.View.extend({
         if (statusesFilter.indexOf(this.model.STATUSES.WAITING) >= 0) {
             params.waiting = true;
         }
+        if (statusesFilter.indexOf(this.model.STATUSES.TODO) >= 0) {
+            params.todo = true;
+        }
         if (statusesFilter.indexOf(this.model.STATUSES.DISABLED) >= 0) {
             params.disabled = true;
         }
@@ -35,7 +38,7 @@ var TasksControlBoardView = Backbone.View.extend({
         if (statusesFilter.indexOf(this.model.STATUSES.CANCELED_STATUS) >= 0) {
             params.canceled = true;
         }
-        if (statusesFilter.length == 5) {
+        if (statusesFilter.length == 6) {
             params.all = true;
         }
         this.$el.html(this.template(params));

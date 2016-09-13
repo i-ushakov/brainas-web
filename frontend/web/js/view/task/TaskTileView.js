@@ -52,10 +52,11 @@ var TaskTileView = Backbone.View.extend({
     },
 
     addNewTaskHandler: function() {
-        var emptyTask = {};
-        emptyTask.message = null;
-        emptyTask.description = null;
-        new TaskCardView({model: new Task(emptyTask), createMode: true});
+        var newTaskData = {};
+        newTaskData.message = null;
+        newTaskData.description = null;
+        newTaskData.status = "TODO";
+        new TaskCardView({model: new Task(newTaskData), createMode: true});
     },
 
     removeTask: function() {

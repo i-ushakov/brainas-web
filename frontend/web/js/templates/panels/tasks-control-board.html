@@ -17,17 +17,23 @@
                     <% if (typeof waiting != 'undefined' && waiting == true) {%> checked <%}%> />
                 <span class="statuses-filter-lbl">Waiting</span>
                 <br/>
-                <input type="checkbox" name="statuses_filter" value="DISABLED" class="statuses-filter-checkbox"
-                    <% if (typeof disabled != 'undefined' && disabled == true) {%> checked <%}%> />
-                <span class="statuses-filter-lbl">Disabled</span>
+                <input type="checkbox" name="statuses_filter" value="TODO" class="statuses-filter-checkbox"
+                <% if (typeof todo != 'undefined' && waiting == true) {%> checked <%}%> />
+                <span class="statuses-filter-lbl">TODO</span>
+                <br/>
             </div>
             <div class="col-md-3">
+                <input type="checkbox" name="statuses_filter" value="DISABLED" class="statuses-filter-checkbox"
+                <% if (typeof disabled != 'undefined' && disabled == true) {%> checked <%}%> />
+                <span class="statuses-filter-lbl">Disabled</span>
                 <input type="checkbox" name="statuses_filter" value="DONE" class="statuses-filter-checkbox"
                     <% if (typeof done != 'undefined' && done == true) {%> checked <%}%> />
                 <span class="statuses-filter-lbl">Done</span>
                 <br/>
+            </div>
+            <div class="col-md-3">
                 <input type="checkbox" name="statuses_filter" value="CANCELED" class="statuses-filter-checkbox"
-                    <% if (typeof canceled != 'undefined' && canceled == true) {%> checked <%}%> />
+                <% if (typeof canceled != 'undefined' && canceled == true) {%> checked <%}%> />
                 <span class="statuses-filter-lbl">Canceled</span>
             </div>
             <div class="clear"></div>

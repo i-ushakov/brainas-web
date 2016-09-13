@@ -657,7 +657,11 @@ a.desc:after {
     color: white;
     opacity: 0.8;
 }
-
+.status-lbl-cont.todo {
+    background-color: #4cae4c;
+    color: white;
+    opacity: 0.8;
+}
 .status-lbl-cont.disabled,
 .status-lbl-cont.done,
 .status-lbl-cont.canceled {

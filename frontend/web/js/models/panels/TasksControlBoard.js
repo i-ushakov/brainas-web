@@ -10,6 +10,7 @@ var TasksControlBoard = Backbone.Model.extend({
     STATUSES : {
         ACTIVE: "ACTIVE",
         WAITING : "WAITING",
+        TODO : "TODO",
         DISABLED : "DISABLED",
         DONE : "DONE",
         CANCELED : "CANCELED",
@@ -23,7 +24,7 @@ var TasksControlBoard = Backbone.Model.extend({
     },
 
     defaults : {
-        statusesFilter : ["ACTIVE", "WAITING", "DISABLED"],
+        statusesFilter : ["ACTIVE", "WAITING", "TODO"],
         typeOfSort: 'TIME_ADDED_NEWEST'
     },
 
