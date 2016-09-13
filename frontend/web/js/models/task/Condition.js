@@ -39,7 +39,10 @@ var Condition = Backbone.Model.extend({
     validate: function(attributes) {
         this.validationErrors = [];
         var event = attributes.events[Object.keys(attributes.events)[0]];
-        if (!event.isValid()) {
+        if (typeof event === 'undefined') {
+            this.validationErrors.push("No events in condition");
+        }
+        else if (!event.isValid()) {
             this.validationErrors.push(event.validationErrors);
         }
         if(!_.isEmpty(this.validationErrors)) {
