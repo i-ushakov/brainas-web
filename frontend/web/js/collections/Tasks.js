@@ -11,7 +11,7 @@ var Tasks = Backbone.Collection.extend({
         var self = this;
         this.timer = setInterval(function() {
             self.fetch();
-        }, 1500000);
+        }, 15000);
 
         _.bindAll(this, 'parse');
     },
