@@ -41,6 +41,7 @@ class Condition extends ActiveRecord {
         $task = $this->task;
         if ($task != null) {
             $task->updateStatus();
+            $task->save();
         }
         parent::afterDelete();
     }
@@ -50,6 +51,7 @@ class Condition extends ActiveRecord {
         $task = $this->task;
         if ($task != null) {
             $task->updateStatus();
+            $task->save();
         }
         return parent::afterSave($insert, $changedAttributes);
     }

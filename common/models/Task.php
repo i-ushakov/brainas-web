@@ -43,6 +43,16 @@ class Task extends ActiveRecord {
         return $this->hasOne(ChangeOfTask::className(), ['task_id' => 'id']);
     }
 
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            $this->updateStatus();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function afterSave($insert, $changedAttributes) {
         parent::afterSave($insert, $changedAttributes);
         if($insert == true) {
@@ -75,13 +85,12 @@ class Task extends ActiveRecord {
 
     public function updateStatus() {
         $conditions = $this->conditions;
-        if (empty($conditions)) {
-            if ($this->status == 'WAITING') {
-                $this->status = "DISABLED";
-            }
-        } else {
+        if ($this->status == 'TODO' && !empty($conditions)) {
             $this->status = "WAITING";
         }
-        $this->save();
+        if($this->status == 'WAITING' && empty($conditions)) {
+            $this->status = "DISABLED";
+        }
+
     }
 }
