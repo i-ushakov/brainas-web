@@ -397,7 +397,7 @@ a.desc:after {
     text-align: center;
 }
 
-.add-gps-event {
+.btn-default.add-gps-event {
     font-weight: bold;
     padding-left: 20px;
     background-color: lightyellow;
@@ -408,7 +408,7 @@ a.desc:after {
     width: 120px;
 }
 
-.add-time-event {
+.btn-default.add-time-event {
     font-weight: bold;
     padding-left: 20px;
     background-color: #5bc0de;
