@@ -40,7 +40,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     message : $('#message_of_feedback').val()
                 },
                 success: function (result) {
-                    debugger;
                     if (result.status == 'success') {
                         $('#feedback-form .panel-body').html('Your message was successfully sent. Thank you for cooperation.')
                     } else {
