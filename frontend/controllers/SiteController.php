@@ -190,8 +190,8 @@ class SiteController extends Controller
     {
         $request = Yii::$app->request;
         if ($request->isPost  && \Yii::$app->user->isGuest) {
-            $subject = $request->post('subject');
-            $message = $request->post('message');
+            $subject = ($request->post('subject')); // TODO think about security
+            $message = $request->post('message'); // TODO think about security
             $message .= "\r\n\r\n" . "From user: " . Yii::$app->user->identity['username'];
             if(mail("kit.ushakoff@gmail.com", $subject, $message)) {
                 $result = array('status' => 'success');
@@ -201,6 +201,9 @@ class SiteController extends Controller
             \Yii::$app->response->format = 'json';
             echo json_encode($result);
         } else {
+            if (!\Yii::$app->user->isGuest) {
+                return $this->goHome();
+            }
             return $this->render('feedback');
         }
     }
