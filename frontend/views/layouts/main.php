@@ -49,6 +49,7 @@ SPAAsset::register($this);
         ['label' => 'Home', 'url' => ['/site/index']],
         ['label' => 'About', 'url' => ['/site/about']],
         ['label' => 'Contact', 'url' => ['/site/contact']],
+        ['label' => 'Feedback', 'url' => ['/site/feedback']],
     ];
     $menuItems[] = ['label' => '', 'url' => ['/site/login'], 'options'=> ['id'=>'navbar', 'class' => 'google-sign-btn'],];
     if (Yii::$app->user->isGuest) {

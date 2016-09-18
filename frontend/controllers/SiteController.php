@@ -182,6 +182,29 @@ class SiteController extends Controller
     }
 
     /**
+     * Displays feedback page.
+     *
+     * @return mixed
+     */
+    public function actionFeedback()
+    {
+        $request = Yii::$app->request;
+        if ($request->isPost  && !\Yii::$app->user->isGuest) {
+            $subject = $request->post('subject');
+            $message = $request->post('message');
+            $message .= "\r\n\r\n" . "From user: " . Yii::$app->user->identity['username'];
+            if(mail("kit.ushakoff@gmail.com", $subject, $message)) {
+                $result = array('status' => 'success');
+            } else {
+                $result = array('status' => 'failed');
+            }
+            \Yii::$app->response->format = 'json';
+            echo json_encode($result);
+        } else {
+            return $this->render('feedback');
+        }
+    }
+    /**
      * Signs user up.
      *
      * @return mixed
