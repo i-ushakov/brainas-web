@@ -109,7 +109,7 @@ class XMLResponseBuilder {
             '<description>' . $task->description . '</description>' .
             self::addPictureEntity($task->picture) .
             '<conditions>' . self::buildXmlOfConditions($task) . '</conditions>' .
-            '<status>WAITING</status>' .
+            '<status>' . $task->status . '</status>' .
             '</task>';
         return $xml;
     }
