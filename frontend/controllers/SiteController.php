@@ -189,7 +189,7 @@ class SiteController extends Controller
     public function actionFeedback()
     {
         $request = Yii::$app->request;
-        if ($request->isPost  && !\Yii::$app->user->isGuest) {
+        if ($request->isPost  && \Yii::$app->user->isGuest) {
             $subject = $request->post('subject');
             $message = $request->post('message');
             $message .= "\r\n\r\n" . "From user: " . Yii::$app->user->identity['username'];
