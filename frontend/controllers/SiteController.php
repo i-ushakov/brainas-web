@@ -4,6 +4,7 @@ namespace frontend\controllers;
 use Yii;
 use common\models\LoginForm;
 use common\models\User;
+use common\components\MailSender;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
@@ -189,22 +190,36 @@ class SiteController extends Controller
     public function actionFeedback()
     {
         $request = Yii::$app->request;
-        if ($request->isPost  && \Yii::$app->user->isGuest) {
-            $subject = ($request->post('subject')); // TODO think about security
-            $message = $request->post('message'); // TODO think about security
-            $message .= "\r\n\r\n" . "From user: " . Yii::$app->user->identity['username'];
-            if(mail("kit.ushakoff@gmail.com", $subject, $message)) {
-                $result = array('status' => 'success');
+        if (!Yii::$app->user->isGuest) {
+            $userEmail = Yii::$app->user->identity['username'];
+            if ($request->isPost) {
+                $params = $request->post();
+                if (!isset($params['subject'])) {
+                    $result = array(
+                        'status' => 'failed',
+                        'type' => 'no_subject'
+                    );
+                } else if (!isset($params['message']) || empty($params['message'])){
+                    $result = array(
+                        'status' => 'failed',
+                        'type' => 'no_message'
+                    );
+                } else if (MailSender::sendFeedbackEmail($userEmail, $params)) {
+                    $result = array('status' => 'success');
+                } else {
+                    $result = array(
+                        'status' => 'failed',
+                        'type' => 'sending_is_failed'
+                    );
+                }
+                Yii::$app->response->format = 'json';
+                echo json_encode($result);
             } else {
-                $result = array('status' => 'failed');
+                $this->view->params['userEmail'] = $userEmail;
+                return $this->render('feedback');
             }
-            \Yii::$app->response->format = 'json';
-            echo json_encode($result);
         } else {
-            if (!\Yii::$app->user->isGuest) {
-                return $this->goHome();
-            }
-            return $this->render('feedback');
+            return $this->goHome();
         }
     }
     /**

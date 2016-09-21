@@ -21,7 +21,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 <br/>
                 <textarea class="form-control" rows="10" id="message_of_feedback" placeholder="Message"></textarea>
                 <br/>
-                <button type="submit" class="btn btn-default" id="send_feedback_btn">Send feedback</button>
+                <div id="" class="input-group">
+                    <span class="input-group-addon" id="sizing-addon1">Your contact email:</span>
+                    <input type="email" class="form-control" id="contact_email" placeholder="yourcontact@mail.com" value="<?= $this->params['userEmail']?>">
+                </div>
+                <br/>
+                <div><button type="submit" class="btn btn-default" id="send_feedback_btn">Send feedback</button></div>
             </div>
         </div>
     <div class="col-md-1"></div>
@@ -37,13 +42,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 url: '/site/feedback',
                 data: {
                     subject : $('#subject_of_feedback').val(),
-                    message : $('#message_of_feedback').val()
+                    message : $('#message_of_feedback').val(),
+                    contactemail : $('#contact_email').val()
                 },
                 success: function (result) {
                     if (result.status == 'success') {
                         $('#feedback-form .panel-body').html('Your message was successfully sent. Thank you for cooperation.')
                     } else {
-                        $('#feedback-form .panel-body').html('Feedback service is temporarily unavailable :( Please try do this later.')
+                        $('#feedback-form .panel-body').html('Sending has failed.')
                     }
                 },
                 dataType: 'json'

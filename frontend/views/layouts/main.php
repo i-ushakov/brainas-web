@@ -49,12 +49,12 @@ SPAAsset::register($this);
         ['label' => 'Home', 'url' => ['/site/index']],
         ['label' => 'About', 'url' => ['/site/about']],
         ['label' => 'Contact', 'url' => ['/site/contact']],
-        ['label' => 'Feedback', 'url' => ['/site/feedback']],
     ];
     $menuItems[] = ['label' => '', 'url' => ['/site/login'], 'options'=> ['id'=>'navbar', 'class' => 'google-sign-btn'],];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Sign in with Google', 'url' => ['/'], 'options' => ['id' => 'signinButton', 'class' => 'google-signin-btn',]];
     } else {
+        $menuItems[] = ['label' => 'Feedback', 'url' => ['/site/feedback']];
         $menuItems[] = ['label' => ' Sign out', 'url' => ['/'], 'options' => ['id' => 'signoutButton', 'class' => '',]];
     }
     https://brainas.com/main/panel
