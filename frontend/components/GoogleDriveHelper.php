@@ -158,7 +158,12 @@ class GoogleDriveHelper {
         if ($datetime != null) {
             $params['q'] .= " and modifiedTime < '$datetime'";
         }
-        $response = $this->driveService->files->listFiles($params);
+        try {
+            $response = $this->driveService->files->listFiles($params);
+        } catch (\Google_Service_Exception $e) {
+            Yii::error("Google_Service_Exception when try to get list of files");
+            return null;
+        }
 
         $filesInFolder = array();
         foreach ($response->files as $file) {
@@ -180,9 +185,11 @@ class GoogleDriveHelper {
             }
         }
         $picturesInFolder = $this->getListOfFiles($user->pictureFolder->resource_id, date('Y-m-d\TH:i:s', strtotime('-1 hour')));
-        foreach($picturesInFolder as $pictureInFolder) {
-            if (!in_array($pictureInFolder->name, $activePictures) && strpos("task_picture_", $pictureInFolder->name) == 0) {
-                $this->removeFile($pictureInFolder->id);
+        if ($picturesInFolder != null) {
+            foreach ($picturesInFolder as $pictureInFolder) {
+                if (!in_array($pictureInFolder->name, $activePictures) && strpos("task_picture_", $pictureInFolder->name) == 0) {
+                    $this->removeFile($pictureInFolder->id);
+                }
             }
         }
     }
