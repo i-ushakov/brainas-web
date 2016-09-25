@@ -33,7 +33,6 @@ class ConnectionController extends Controller {
     public function beforeAction($action) {
         $this->enableCsrfValidation = false;
         Yii::$app->controller->enableCsrfValidation = false;
-        CustomLogger::log("TEST_BACKEND", 'info', "Kit", false);
         return parent::beforeAction($action);
     }
 

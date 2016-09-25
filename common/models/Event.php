@@ -34,7 +34,7 @@ class Event extends ActiveRecord {
         $params = json_decode($this->$attribute);
         if (empty($params)) {
             $this->addError($attribute, 'Corrupted params of events');
-            Yii::error("#PROBLEM: We have empty/null (event) params after json_decode() for event with id = " . $this->id, "Corrupted_data");
+            CustomLogger::log("We have empty/null (event) params after json_decode() for event with id = " . $this->id, 'error', null, false);
         }
     }
 }
