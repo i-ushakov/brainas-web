@@ -32,6 +32,7 @@ class TaskXMLHelper {
             foreach ($conditionXML->events->event as $e) {
                 self::addEventFromXML($e, $condition->id, $synchronizedObjects);
             }
+            Task::findOne(['id' => $taskId])->save();
             $synchronizedObjects['conditions'][(string)$conditionXML['localId']] = $condition->id;
         }
     }
