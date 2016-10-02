@@ -85,15 +85,14 @@ class Task extends ActiveRecord {
 
     public function updateStatus() {
         $conditions = $this->conditions;
-        Yii::warning("==Conditions==");
-        Yii::warning($this->conditions);
-        Yii::warning("==status== of task " . $this->id);
-        Yii::warning($this->status);
         if ($this->status == 'TODO' && !empty($conditions)) {
             $this->status = "WAITING";
         }
         if($this->status == 'WAITING' && empty($conditions)) {
             $this->status = "DISABLED";
+        }
+        if ($this->status == 'DISABLED' && empty($conditions)) {
+            $this->status = "WAITING";
         }
 
     }
