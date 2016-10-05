@@ -62,10 +62,13 @@ class GoogleAuthHelper {
         $client = GoogleAuthHelper::getGoogleClient();
         $client->setAccessToken($token);
         if ($client->isAccessTokenExpired()) {
+            Yii::warning("11111");
             if (isset($token['refresh_token'])) {
+                Yii::warning("222222");
                 $token = $client->refreshToken($token['refresh_token']);
                 $client->setAccessToken($token);
             } else {
+                Yii::warning("3333");
                 throw new InvalidArgumentException();
             }
         }
