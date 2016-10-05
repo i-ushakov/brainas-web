@@ -54,14 +54,14 @@ class ConnectionController extends Controller {
     public function actionGetTasks() {
         // get user id and access token
         $token = $this->getAccessTokenFromPost();
-        try {
+        //try {
             $authInfo = GoogleAuthHelper::verifyUserAccess($token);
-        } catch (\InvalidArgumentException $e) {
+        /*} catch (\InvalidArgumentException $e) {
             Yii::warning("catch InvalidArgumentException");
             CustomLogger::log("Catch InvalidArgumentException: ".  http_build_query($token), CustomLogger::ERROR);
             echo self::STATUS_INVALID_TOKEN;
             exit();
-        }
+        }*/
         $token = $authInfo['token'];
         $userId =  $authInfo['userId'];
         // retrive xml-document with device changes from file
