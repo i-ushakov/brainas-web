@@ -51,7 +51,11 @@ class GoogleAuthHelper {
         $data = $client->verifyIdToken();
         $userEmail = $data['email'];
         $userId = self::getUserIdByEmail($userEmail);
-        $token = self::actualizeRefreshToken($token, $userId);
+        Yii::warning("==========before==========");
+        Yii::warning($token);
+        $token = self::actualizeRefreshToken($token, $userId);\
+        Yii::warning("==========after==========");
+        Yii::warning($token);
 
         return $token;
     }
