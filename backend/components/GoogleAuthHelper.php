@@ -65,7 +65,10 @@ class GoogleAuthHelper {
             Yii::warning("11111");
             if (isset($token['refresh_token'])) {
                 Yii::warning("222222");
+                Yii:warning($token);
                 $token = $client->refreshToken($token['refresh_token']);
+                Yii::warning("===");
+                Yii::warning($token);
                 $client->setAccessToken($token);
             } else {
                 Yii::warning("3333");
