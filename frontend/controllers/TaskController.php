@@ -223,10 +223,14 @@ class TaskController extends Controller {
                 }
             }
 
+            Yii::warning("00000");
+            Yii::warning($task->status);
             if ($task->validate()) {
+                Yii::warning("555555");
+                Yii::warning($task->status);
                 $task->save();
                 $this->result['status'] = "OK";
-                Yii::warning("44444");
+                Yii::warning("666666");
                 Yii::warning($task->status);
                 $this->result['task'] = TaskConverter::prepareTaskForResponse($task);
             } else {
