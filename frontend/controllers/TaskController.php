@@ -121,8 +121,6 @@ class TaskController extends Controller {
         if ($this->checkThatUserIsNotAGuest()) {
             $post = Yii::$app->request->post();
             $taskForSave = Json::decode($post['task']);
-            Yii::warning("+++++");
-            Yii::warning($taskForSave['status']);
             $taskId = $taskForSave['id'];
 
             if (is_null($taskId)) {
@@ -217,13 +215,6 @@ class TaskController extends Controller {
                         }
                     }
                 }
-            }
-
-
-            Yii::warning("!!!!!!!!!!!!!");
-            Yii::warning($taskForSave['status']);
-            if (isset($taskForSave['status'])) {
-                $task->status = $taskForSave['status'];
             }
 
             if ($task->validate()) {
