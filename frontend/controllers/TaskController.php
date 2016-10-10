@@ -153,6 +153,10 @@ class TaskController extends Controller {
                 $task->description = $taskForSave['description'];
             }
 
+            if (isset($taskForSave['status'])) {
+                $task->status = $taskForSave['status'];
+            }
+
             if (isset($taskForSave['picture_name']) && isset($taskForSave['picture_file_id']))
             {
                if ((!isset($task->picture->file_id) || $taskForSave['picture_file_id'] != $task->picture->file_id)) {
