@@ -51,12 +51,7 @@ class GoogleAuthHelper {
         $data = $client->verifyIdToken();
         $userEmail = $data['email'];
         $userId = self::getUserIdByEmail($userEmail);
-        Yii::warning("==========before==========");
-        Yii::warning($token);
-        $token = self::actualizeRefreshToken($token, $userId);\
-        Yii::warning("==========after==========");
-        Yii::warning($token);
-
+        $token = self::actualizeRefreshToken($token, $userId);
         return $token;
     }
 
@@ -66,16 +61,10 @@ class GoogleAuthHelper {
         $client = GoogleAuthHelper::getGoogleClient();
         $client->setAccessToken($token);
         if ($client->isAccessTokenExpired()) {
-            Yii::warning("11111");
             if (isset($token['refresh_token'])) {
-                Yii::warning("222222");
-                Yii::warning($token);
                 $token = $client->refreshToken($token['refresh_token']);
-                Yii::warning("===");
-                Yii::warning($token);
                 $client->setAccessToken($token);
             } else {
-                Yii::warning("3333");
                 throw new InvalidArgumentException();
             }
         }

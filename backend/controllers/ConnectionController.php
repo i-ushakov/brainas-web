@@ -55,12 +55,8 @@ class ConnectionController extends Controller {
         // get user id and access token
         $token = $this->getAccessTokenFromPost();
         //try {
-        Yii::warning("=====");
-        Yii::warning($token);
-        Yii::warning("=====");
             $authInfo = GoogleAuthHelper::verifyUserAccess($token);
         /*} catch (\InvalidArgumentException $e) {
-            Yii::warning("catch InvalidArgumentException");
             CustomLogger::log("Catch InvalidArgumentException: ".  http_build_query($token), CustomLogger::ERROR);
             echo self::STATUS_INVALID_TOKEN;
             exit();
