@@ -157,6 +157,7 @@ class TaskController extends Controller {
                 Yii::warning("&&&&&&&&&");
                 Yii::warning($taskForSave['status']);
                 $task->status = $taskForSave['status'];
+                $task->save();
             }
 
             if (isset($taskForSave['picture_name']) && isset($taskForSave['picture_file_id']))
@@ -223,6 +224,11 @@ class TaskController extends Controller {
                 }
             }
 
+
+            $task = Task::find($taskId)
+                ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
+                ->with('picture')
+                ->one();
             Yii::warning("00000");
             Yii::warning($task->status);
             if ($task->validate()) {
