@@ -52,6 +52,7 @@ var TaskCardView = Backbone.View.extend({
             'saveNewPicture',
             'uploadPictureHandler',
             'cancelChangePicture',
+            'taskWasChangedHandler',
             'close');
 
         if (this.model === undefined) {
