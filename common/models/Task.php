@@ -87,10 +87,13 @@ class Task extends ActiveRecord {
         $conditions = $this->conditions;
         if ($this->status == 'TODO' && !empty($conditions)) {
             $this->status = "WAITING";
-        } else if ($this->status == 'DISABLED' && !empty($conditions)) {
+        }
+        if ($this->status == 'DISABLED' && !empty($conditions)) {
             $this->status = "WAITING";
-        } else if(empty($conditions)) {
+        }
+        if($this->status != 'TODO' && empty($conditions)) {
             $this->status = "DISABLED";
         }
+
     }
 }
