@@ -49,13 +49,9 @@ class Condition extends ActiveRecord {
 
     public function afterSave($insert, $changedAttributes) {
         $task = $this->task;
-        Yii::warning("=afterSave=");
-        Yii::warning($task);
         if ($task != null) {
-            Yii::warning("b===" . $task->status);
             $task->updateStatus();
             $task->save();
-            Yii::warning("a===" . $task->status);
         }
         return parent::afterSave($insert, $changedAttributes);
     }

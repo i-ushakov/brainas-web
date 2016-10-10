@@ -91,7 +91,7 @@ class Task extends ActiveRecord {
         if($this->status == 'WAITING' && empty($conditions)) {
             $this->status = "DISABLED";
         }
-        if ($this->status == 'DISABLED' && empty($conditions)) {
+        if ($this->status == 'DISABLED' && !empty($conditions)) {
             $this->status = "WAITING";
         }
 
