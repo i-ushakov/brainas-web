@@ -226,6 +226,8 @@ class TaskController extends Controller {
             if ($task->validate()) {
                 $task->save();
                 $this->result['status'] = "OK";
+                Yii::warning("44444");
+                Yii::warning($task->status);
                 $this->result['task'] = TaskConverter::prepareTaskForResponse($task);
             } else {
                 $errors = $task->errors;
