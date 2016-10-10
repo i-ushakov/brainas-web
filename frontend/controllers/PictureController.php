@@ -38,7 +38,6 @@ class PictureController extends Controller {
     }
 
     public function actionUpload() {
-        Yii::warning("== actionUpload ==");
         $result = array();
         $imgData = $_POST['imageData'];
 
@@ -198,7 +197,6 @@ class PictureController extends Controller {
     }
 
     private function getPictureFolder($client, $user) {
-        Yii::warning("== getPictureFolder ==");
         $pictureFolderId = $user->pictureFolder->resource_id;
         if (!isset($pictureFolderId) || !$this->isFolderExist($pictureFolderId, $client)) {
             $projectFolderId = $user->projectFolder->resource_id;
