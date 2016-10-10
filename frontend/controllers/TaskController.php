@@ -225,8 +225,8 @@ class TaskController extends Controller {
             }
 
 
-            $task = Task::find($taskId)
-                ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
+            $task = Task::find($task->id)
+                ->where(['id' => $task->id, 'user' => Yii::$app->user->id])
                 ->with('picture')
                 ->one();
             Yii::warning("00000");
