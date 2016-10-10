@@ -218,6 +218,8 @@ class TaskController extends Controller {
             }
 
 
+            Yii::warning("!!!!!!!!!!!!!");
+            Yii::warning($taskForSave['status']);
             if (isset($taskForSave['status'])) {
                 $task->status = $taskForSave['status'];
             }
