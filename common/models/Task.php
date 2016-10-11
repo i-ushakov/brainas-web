@@ -94,6 +94,5 @@ class Task extends ActiveRecord {
         if($this->status != 'TODO' && empty($conditions)) {
             $this->status = "DISABLED";
         }
-
     }
 }

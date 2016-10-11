@@ -30,6 +30,22 @@ class Event extends ActiveRecord {
         return $this->hasOne(EventType::className(), ['id' => 'type']);
     }
 
+    public function getCondition() {
+        return $this->hasOne(Condition::className(), ['id' => 'condition_id']);
+    }
+
+    public function afterSave($insert, $changedAttributes) {
+        $task = $this->condigtion->task;
+        Yii::warning("===111===");
+        Yii::warning($task);
+        if ($task != null && $task->status == "ACTIVE") {
+            Yii::warning("WAS ACTIVE");
+            $task->status = "WAITING";
+            $task->save();
+        }
+        return parent::afterSave($insert, $changedAttributes);
+    }
+
     public function validateParams($attribute, $p) {
         $params = json_decode($this->$attribute);
         if (empty($params)) {
