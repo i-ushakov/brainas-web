@@ -85,14 +85,9 @@ class TaskSyncHelper {
 
         $changedTasks = $this->syncDataFromDevice->changedTasks;
         foreach($changedTasks->changedTask as $changedTask) {
-            \Yii::warning("####changedTask====");
-            \Yii::warning($changedTask);
             $statusOfChanges = (String)$changedTask->change[0]->status;
-            \Yii::warning($statusOfChanges);
             $globalId = (string)$changedTask['globalId'];
-            \Yii::warning($globalId);
             $localId = (string)$changedTask['id'];
-            \Yii::warning($localId);
             if ($globalId == 0 && $statusOfChanges != "DELETED") {
                 $globalId = $this->addTaskFromDevice($changedTask, $synchronizedObjects);
                 $synchronizedTasks[$localId] = $globalId;
@@ -165,12 +160,8 @@ class TaskSyncHelper {
         $task = Task::findOne($taskId);
         $task->message = (string)$changedTask->message;
         $task->description = (string)$changedTask->description;
-        \Yii::warning("##Status from device##");
-        \Yii::warning((string)$changedTask->status);
         $task->status = (string)$changedTask->status;
         $task->save();
-        \Yii::warning("##Status after save new ##");
-        \Yii::warning($task->status);
         if (isset($changedTask->picture)) {
             $this->savePistureOfTask($changedTask->picture, $taskId);
         }
@@ -181,8 +172,6 @@ class TaskSyncHelper {
         }
         $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
         ChangeOfTask::loggingChangesForSync("Changed", $changeDatetime, $task);
-        \Yii::warning("##Status 3 ##");
-        \Yii::warning($task->status);
         return $task->id;
     }
 

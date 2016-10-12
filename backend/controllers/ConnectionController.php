@@ -111,8 +111,6 @@ class ConnectionController extends Controller {
 
     private function loadDeviceChangesFromXML() {
         $syncDataFromDevice = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
-        Yii::warning("++++++");
-        Yii::warning($syncDataFromDevice);
         return $syncDataFromDevice;
     }
 

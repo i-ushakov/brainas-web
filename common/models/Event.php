@@ -37,12 +37,7 @@ class Event extends ActiveRecord {
     public function afterSave($insert, $changedAttributes) {
         $task = $this->condition->task;
         if ($task != null && $task->status == "ACTIVE" && count($changedAttributes) > 0) {
-            Yii::warning("Fuck all!!!");
-            Yii::warning($task->status);
             $task->status = "WAITING";
-            Yii::warning($task->status);
-            Yii::warning("changedAttributes");
-            Yii::warning($changedAttributes);
             $task->save();
         }
         return parent::afterSave($insert, $changedAttributes);
@@ -51,7 +46,6 @@ class Event extends ActiveRecord {
     public function afterDelete() {
         $task = $this->condition->task;
         if ($task != null && $task->status == "ACTIVE") {
-            Yii::warning("WAS ACTIVE");
             $task->status = "WAITING";
             $task->save();
         }
