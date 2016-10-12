@@ -85,6 +85,8 @@ class TaskSyncHelper {
 
         $changedTasks = $this->syncDataFromDevice->changedTasks;
         foreach($changedTasks->changedTask as $changedTask) {
+            \Yii::warning("####changedTask====");
+            \Yii::warning($changedTask);
             $statusOfChanges = (String)$changedTask->change[0]->status;
             $globalId = (string)$changedTask['globalId'];
             $localId = (string)$changedTask['id'];
