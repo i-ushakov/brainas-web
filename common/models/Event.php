@@ -37,7 +37,12 @@ class Event extends ActiveRecord {
     public function afterSave($insert, $changedAttributes) {
         $task = $this->condition->task;
         if ($task != null && $task->status == "ACTIVE") {
+            Yii::warning("Fuck all!!!");
+            Yii::warning($task->status);
             $task->status = "WAITING";
+            Yii::warning($task->status);
+            Yii::warning("changedAttributes");
+            Yii::warning($changedAttributes);
             $task->save();
         }
         return parent::afterSave($insert, $changedAttributes);
