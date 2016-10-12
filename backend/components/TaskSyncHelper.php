@@ -88,8 +88,11 @@ class TaskSyncHelper {
             \Yii::warning("####changedTask====");
             \Yii::warning($changedTask);
             $statusOfChanges = (String)$changedTask->change[0]->status;
+            \Yii::warning($statusOfChanges);
             $globalId = (string)$changedTask['globalId'];
+            \Yii::warning($globalId);
             $localId = (string)$changedTask['id'];
+            \Yii::warning($localId);
             if ($globalId == 0 && $statusOfChanges != "DELETED") {
                 $globalId = $this->addTaskFromDevice($changedTask, $synchronizedObjects);
                 $synchronizedTasks[$localId] = $globalId;
