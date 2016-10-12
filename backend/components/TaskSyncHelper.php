@@ -181,6 +181,8 @@ class TaskSyncHelper {
         }
         $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
         ChangeOfTask::loggingChangesForSync("Changed", $changeDatetime, $task);
+        \Yii::warning("##Status 3 ##");
+        \Yii::warning($task->status);
         return $task->id;
     }
 
