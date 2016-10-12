@@ -36,7 +36,7 @@ class Event extends ActiveRecord {
 
     public function afterSave($insert, $changedAttributes) {
         $task = $this->condition->task;
-        if ($task != null && $task->status == "ACTIVE") {
+        if ($task != null && $task->status == "ACTIVE" && count($changedAttributes) > 0) {
             Yii::warning("Fuck all!!!");
             Yii::warning($task->status);
             $task->status = "WAITING";
