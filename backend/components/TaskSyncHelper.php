@@ -166,11 +166,11 @@ class TaskSyncHelper {
         $task->message = (string)$changedTask->message;
         $task->description = (string)$changedTask->description;
         \Yii::warning("##Status from device##");
-        \Yii::warning((string)$changedTask->description);
+        \Yii::warning((string)$changedTask->status);
         $task->status = (string)$changedTask->status;
         $task->save();
         \Yii::warning("##Status after save new ##");
-        \Yii::warning((string)$changedTask->description);
+        \Yii::warning($task->status);
         if (isset($changedTask->picture)) {
             $this->savePistureOfTask($changedTask->picture, $taskId);
         }
