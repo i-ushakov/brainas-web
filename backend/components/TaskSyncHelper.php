@@ -34,7 +34,7 @@ class TaskSyncHelper {
         $lastSyncTime = $this->getLastSyncTimeFromPost();
 
         //$this->processProjectFolders($this->syncDataFromDevice->);
-
+        \Yii::warning("#START#");
         // Get chnaged and deletet task
         // from time of last sync for this user
         $serverChanges = $this->getServerChanges($lastSyncTime);
@@ -45,7 +45,9 @@ class TaskSyncHelper {
         // Build xml-document with server-changes
         // and data about changes from device that were accepted
         $lastSyncTime = $this->getCurrentTime();
+
         $xmlResponse = XMLResponseBuilder::buildXMLResponse($serverChanges, $synchronizedObjects, $lastSyncTime, $this->token);
+        \Yii::warning("#END#");
 
         $this->deleteUnusedPictures();
         return $xmlResponse;
