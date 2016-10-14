@@ -43,19 +43,9 @@ class Task extends ActiveRecord {
         return $this->hasOne(ChangeOfTask::className(), ['task_id' => 'id']);
     }
 
-    public function afterSave($insert, $changedAttributes) {
-        parent::afterSave($insert, $changedAttributes);
-        $this->last_modify = date('Y-m-d H:i:s');
-        if($insert == true) {
-            $action = "Created";
-        } else {
-            $action = "Changed";
-        }
-        ChangeOfTask::loggingChangesForSync($action, null, $this);
-    }
-
     public function beforeSave($insert)
     {
+        $this->last_modify = date('Y-m-d H:i:s');
         if (parent::beforeSave($insert)) {
             $this->updateStatus();
             return true;
@@ -64,6 +54,15 @@ class Task extends ActiveRecord {
         }
     }
 
+    public function afterSave($insert, $changedAttributes) {
+        parent::afterSave($insert, $changedAttributes);
+        if($insert == true) {
+            $action = "Created";
+        } else {
+            $action = "Changed";
+        }
+        ChangeOfTask::loggingChangesForSync($action, null, $this);
+    }
 
 
     public function beforeDelete()
