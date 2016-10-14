@@ -122,7 +122,7 @@ class TaskSyncHelper {
                 ->where([
                     'and',
                     ['=', 'user_id', $this->userId],
-                    ['>', 'datetime', $lastSyncTime]
+                    ['>', 'server_update_time', $lastSyncTime]
                 ])
                 ->orderBy('datetime')
                 ->all();
