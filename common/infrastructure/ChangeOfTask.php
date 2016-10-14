@@ -40,6 +40,7 @@ class ChangeOfTask extends ActiveRecord {
         } else {
             $changedTask->datetime = $changeDatetime;
         }
+        $changedTask->server_update_time = date('Y-m-d H:i:s');
         $changedTask->action = $action;
         $changedTask->save();
     }
