@@ -86,6 +86,7 @@ class Task extends ActiveRecord {
     }
 
     public function updateStatus() {
+        Yii::warning("before ==".$this->status);
         $conditions = $this->conditions;
         if ($this->status == 'TODO' && !empty($conditions)) {
             $this->status = "WAITING";
@@ -96,5 +97,6 @@ class Task extends ActiveRecord {
         if(($this->status == 'WAITING' || $this->status == 'ACTIVE') && empty($conditions)) {
             $this->status = "DISABLED";
         }
+        Yii::warning("after ==".$this->status);
     }
 }
