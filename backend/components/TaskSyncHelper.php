@@ -158,31 +158,20 @@ class TaskSyncHelper {
     private function updateTaskFromDevice ($changedTask, &$synchronizedObjects) {
         $taskId = (string)$changedTask['globalId'];
         $_SESSION['tasksFromdDevice'][$taskId] = true; //TODO: Dirty Kludge!
-        \Yii::warning("===taskId" . $taskId);
         $task = Task::findOne($taskId);
         $task->message = (string)$changedTask->message;
         $task->description = (string)$changedTask->description;
         $task->status = (string)$changedTask->status;
         $task->save();
-        $task = Task::findOne($taskId);
-        \Yii::warning("===task->status1" . $task->status);
         if (isset($changedTask->picture)) {
             $this->savePistureOfTask($changedTask->picture, $taskId);
         }
-        $task = Task::findOne($taskId);
-        \Yii::warning("===task->status2" . $task->status);
         TaskXMLHelper::cleanDeletedConditions($changedTask->conditions->condition, $task->id);
-
-        $task = Task::findOne($taskId);
-        \Yii::warning("===task->status3" . $task->status);
         foreach ($changedTask->conditions->condition as $c) {
             TaskXMLHelper::addConditionFromXML($c, $task->id, $synchronizedObjects);
         }
-        $task = Task::findOne($taskId);
-        \Yii::warning("===task->status4" . $task->status);
         $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
         ChangeOfTask::loggingChangesForSync("Changed", $changeDatetime, $task);
-        \Yii::warning("===task->status5" . $task->status);
         return $task->id;
     }
 
