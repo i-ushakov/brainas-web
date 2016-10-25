@@ -163,13 +163,16 @@ class TaskSyncHelper {
         $task->description = (string)$changedTask->description;
         $task->status = (string)$changedTask->status;
         $task->save();
+        $task = Task::findOne($taskId);
         \Yii::warning("===task->status1" . $task->status);
         if (isset($changedTask->picture)) {
             $this->savePistureOfTask($changedTask->picture, $taskId);
         }
+        $task = Task::findOne($taskId);
         \Yii::warning("===task->status2" . $task->status);
         TaskXMLHelper::cleanDeletedConditions($changedTask->conditions->condition, $task->id);
 
+        $task = Task::findOne($taskId);
         \Yii::warning("===task->status3" . $task->status);
         foreach ($changedTask->conditions->condition as $c) {
             TaskXMLHelper::addConditionFromXML($c, $task->id, $synchronizedObjects);
