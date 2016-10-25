@@ -174,6 +174,7 @@ class TaskSyncHelper {
         foreach ($changedTask->conditions->condition as $c) {
             TaskXMLHelper::addConditionFromXML($c, $task->id, $synchronizedObjects);
         }
+        $task = Task::findOne($taskId);
         \Yii::warning("===task->status4" . $task->status);
         $changeDatetime = (String)$changedTask->change[0]->changeDatetime;
         ChangeOfTask::loggingChangesForSync("Changed", $changeDatetime, $task);
