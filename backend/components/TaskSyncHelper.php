@@ -157,6 +157,7 @@ class TaskSyncHelper {
 
     private function updateTaskFromDevice ($changedTask, &$synchronizedObjects) {
         $taskId = (string)$changedTask['globalId'];
+        $_SESSION['tasksFromdDevice'][$taskId] = true; //TODO: Dirty Kludge!
         \Yii::warning("===taskId" . $taskId);
         $task = Task::findOne($taskId);
         $task->message = (string)$changedTask->message;

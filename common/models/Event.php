@@ -36,7 +36,8 @@ class Event extends ActiveRecord {
 
     public function afterSave($insert, $changedAttributes) {
         $task = $this->condition->task;
-        if ($task != null && $task->status == "ACTIVE" && count($changedAttributes) > 0) {
+        //TODO: TODO: Dirty Kludge! I nner replace this logit out from this class, maybe in update method
+        if ($task != null && $task->status == "ACTIVE" && count($changedAttributes) > 0 && !isset($_SESSION['tasksFromdDevice'][$task->id])) {
             $task->status = "WAITING";
             $task->save();
         }
