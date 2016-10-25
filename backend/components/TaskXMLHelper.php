@@ -28,10 +28,16 @@ class TaskXMLHelper {
         }
 
         if ($condition != null) {
+            $task = Task::findOne($taskId);
+            \Yii::warning("===task->status31" . $task->status);
             self::cleanDeletedEvents($conditionXML->events->event, $conditionXML->id);
+            $task = Task::findOne($taskId);
+            \Yii::warning("===task->status32" . $task->status);
             foreach ($conditionXML->events->event as $e) {
                 self::addEventFromXML($e, $condition->id, $synchronizedObjects);
             }
+            $task = Task::findOne($taskId);
+            \Yii::warning("===task->status33" . $task->status);
             Task::findOne(['id' => $taskId])->save();
             $synchronizedObjects['conditions'][(string)$conditionXML['localId']] = $condition->id;
         }
