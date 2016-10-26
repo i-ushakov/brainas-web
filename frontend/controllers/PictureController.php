@@ -48,7 +48,7 @@ class PictureController extends Controller {
 
         $tmp_img = imagecreatefromstring($imgData);
         $resized_img = $this->fitImageToSize($tmp_img);
-        $imgData = $this->imageToBinaryData($resized_img, $type);
+        $imgData = $this->imageToBinaryData($resized_img, $mimeType);
 
         if ((!Yii::$app->user->isGuest)) {
             $user = \Yii::$app->user->identity;
@@ -294,9 +294,9 @@ class PictureController extends Controller {
         return imagecopyresampled($targetImage, $imageFile, 0, 0, $srcX, $srcY, $targetWidth, $targetHeight, $srcWidth, $srcHeight);
     }
 
-    private function imageToBinaryData($image, $type) {
+    private function imageToBinaryData($image, $mimeType) {
         ob_start();
-        switch ($type) {
+        switch ($mimeType) {
             case "image/jpeg":
             case "image/jpg":
                 imagejpeg($image);
