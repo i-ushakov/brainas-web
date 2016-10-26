@@ -107,7 +107,7 @@ class PictureController extends Controller {
                     if ($client != null) {
                         $pictureFolderId = $this->getPictureFolder($client, $user);
                         file_put_contents(self::TMP_PICTURTE . $user->id, $imageContent);
-                        $resizedImage = $this->fitImageToSize(self::TMP_PICTURTE . $user->id);
+                        $resizedImage = $this->fitImageToSize(fopen(self::TMP_PICTURTE . $user->id, "r"));
                         copy($resizedImage , self::TMP_PICTURTE . $user->id);
                         $meta_data = stream_get_meta_data($resizedImage);
                         $filename = $meta_data["uri"];
