@@ -48,7 +48,7 @@ class PictureController extends Controller {
 
         $tmp_img = imagecreatefromstring($imgData);
         $resized_img = $this->fitImageToSize($tmp_img);
-        $imgData = $this->imageToBinaryData($resized_img, $mimeType);
+        //$imgData = $this->imageToBinaryData($resized_img, $mimeType);
 
         if ((!Yii::$app->user->isGuest)) {
             $user = \Yii::$app->user->identity;
