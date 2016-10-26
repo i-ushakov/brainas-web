@@ -291,7 +291,8 @@ class PictureController extends Controller {
         }*/
 
         $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
-        return imagecopyresampled($targetImage, $imageFile, 0, 0, $srcX, $srcY, $targetWidth, $targetHeight, $srcWidth, $srcHeight);
+        imagecopyresampled($targetImage, $imageFile, 0, 0, $srcX, $srcY, $targetWidth, $targetHeight, $srcWidth, $srcHeight);
+        return  $targetImage;
     }
 
     private function imageToBinaryData($image, $mimeType) {
