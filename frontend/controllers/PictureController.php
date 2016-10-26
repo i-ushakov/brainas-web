@@ -110,18 +110,19 @@ class PictureController extends Controller {
                         file_put_contents(self::TMP_PICTURTE . $user->id, $imageContent);
                         $imageHandler= imagecreatefromstring($imageContent);
                         $resizedImage = $this->fitImageToSize($imageHandler);
-                        $imageHandler = imagecreatefromstring($resizedImage);
-                        $meta_data = stream_get_meta_data($imageHandler);
-                        $filename = $meta_data["uri"];
-                        copy($filename , self::TMP_PICTURTE . $user->id);
-                        unlink($filename);
-                        var_dump($filename);
                         $imageType = exif_imagetype(self::TMP_PICTURTE . $user->id);
                         if (isset($this->exif_imagetype_code_mimeTypes[$imageType])) {
                             $mimeType = $this->exif_imagetype_code_mimeTypes[$imageType];
                         } else {
                             $mimeType = null;
                         }
+                        $imageHandler = imagecreatefromstring($this->imageToBinaryData($resizedImage, $mimeType));
+                        $meta_data = stream_get_meta_data($imageHandler);
+                        $filename = $meta_data["uri"];
+                        copy($filename , self::TMP_PICTURTE . $user->id);
+                        unlink($filename);
+                        var_dump($filename);
+
                         if (isset($this->mimeTypes_Extensions[$mimeType])) {
                             $imageName = "task_picture_" . round(microtime(true) * 1000) . "." . $this->mimeTypes_Extensions[$mimeType];
                             $driveService = new \Google_Service_Drive($client);
