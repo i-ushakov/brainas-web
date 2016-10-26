@@ -116,12 +116,8 @@ class PictureController extends Controller {
                         } else {
                             $mimeType = null;
                         }
-                        $imageHandler = imagecreatefromstring($this->imageToBinaryData($resizedImage, $mimeType));
-                        $meta_data = stream_get_meta_data($imageHandler);
-                        $filename = $meta_data["uri"];
-                        copy($filename , self::TMP_PICTURTE . $user->id);
-                        unlink($filename);
-                        var_dump($filename);
+                        $resizedImageContent = $this->imageToBinaryData($resizedImage, $mimeType);
+                        file_put_contents(self::TMP_PICTURTE . $user->id, $resizedImageContent);
 
                         if (isset($this->mimeTypes_Extensions[$mimeType])) {
                             $imageName = "task_picture_" . round(microtime(true) * 1000) . "." . $this->mimeTypes_Extensions[$mimeType];
