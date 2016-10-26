@@ -117,7 +117,6 @@ class PictureController extends Controller {
                             $mimeType = null;
                         }
                         $resizedImageContent = $this->imageToBinaryData($resizedImage, $mimeType);
-                        var_dump($resizedImageContent);
 
                         if (isset($this->mimeTypes_Extensions[$mimeType])) {
                             $imageName = "task_picture_" . round(microtime(true) * 1000) . "." . $this->mimeTypes_Extensions[$mimeType];
