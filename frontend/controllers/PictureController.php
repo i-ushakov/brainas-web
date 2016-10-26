@@ -48,7 +48,7 @@ class PictureController extends Controller {
 
         $tmp_img = imagecreatefromstring($imgData);
         $resized_img = $this->fitImageToSize($tmp_img);
-        //$imgData = $this->imageToBinaryData($resized_img, $mimeType);
+        $imgData = $this->imageToBinaryData($resized_img, $mimeType);
 
         if ((!Yii::$app->user->isGuest)) {
             $user = \Yii::$app->user->identity;
@@ -313,7 +313,7 @@ class PictureController extends Controller {
                 break;
         }
         $image_string = ob_get_contents();
-        ob_end_flush();
+        ob_end_clean();
         return $image_string;
     }
 }
