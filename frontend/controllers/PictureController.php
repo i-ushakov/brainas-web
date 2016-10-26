@@ -117,6 +117,7 @@ class PictureController extends Controller {
                             $mimeType = null;
                         }
                         $resizedImageContent = $this->imageToBinaryData($resizedImage, $mimeType);
+                        var_dump($resizedImageContent);
                         file_put_contents(self::TMP_PICTURTE . $user->id, $resizedImageContent);
 
                         if (isset($this->mimeTypes_Extensions[$mimeType])) {
