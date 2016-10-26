@@ -280,7 +280,7 @@ class PictureController extends Controller {
         $targetWidth = $targetHeight = min($originalWidth, $originalHeight, $size);
 
         // This crops the image to fill the target size completely, not stretching it:
-        /*if ($ratio < 1) {
+        if ($ratio < 1) {
             $srcX = 0;
             $srcY = ($originalHeight / 2) - ($originalWidth / 2);
             $srcWidth = $srcHeight = $originalWidth;
@@ -288,7 +288,7 @@ class PictureController extends Controller {
             $srcY = 0;
             $srcX = ($originalWidth / 2) - ($originalHeight / 2);
             $srcWidth = $srcHeight = $originalHeight;
-        }*/
+        }
 
         $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
         imagecopyresampled($targetImage, $imageFile, 0, 0, $srcX, $srcY, $targetWidth, $targetHeight, $srcWidth, $srcHeight);
