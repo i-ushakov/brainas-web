@@ -108,7 +108,7 @@ class PictureController extends Controller {
                     if ($client != null) {
                         $pictureFolderId = $this->getPictureFolder($client, $user);
                         file_put_contents(self::TMP_PICTURTE . $user->id, $imageContent);
-                        $imageHandler= imagecreatefromstring($imageContent);
+                        $imageHandler = imagecreatefromstring($imageContent);
                         $resizedImage = $this->fitImageToSize($imageHandler);
                         $imageType = exif_imagetype(self::TMP_PICTURTE . $user->id);
                         if (isset($this->exif_imagetype_code_mimeTypes[$imageType])) {
@@ -118,7 +118,6 @@ class PictureController extends Controller {
                         }
                         $resizedImageContent = $this->imageToBinaryData($resizedImage, $mimeType);
                         var_dump($resizedImageContent);
-                        file_put_contents(self::TMP_PICTURTE . $user->id, $resizedImageContent);
 
                         if (isset($this->mimeTypes_Extensions[$mimeType])) {
                             $imageName = "task_picture_" . round(microtime(true) * 1000) . "." . $this->mimeTypes_Extensions[$mimeType];
@@ -128,7 +127,7 @@ class PictureController extends Controller {
                                 'mimeType' => $mimeType,
                                 'parents' => array($pictureFolderId)));
                             $file = $driveService->files->create($fileMetadata, array(
-                                'data' => $imageContent,
+                                'data' => $resizedImageContent,
                                 'mimeType' => $mimeType,
                                 'uploadType' => 'multipart',
                                 'fields' => 'id'));
