@@ -314,7 +314,6 @@ class PictureController extends Controller {
         }
         $image_string = ob_get_contents();
         ob_end_flush();
-        var_dump($mimeType);
         return $image_string;
     }
 }
