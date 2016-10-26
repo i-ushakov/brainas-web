@@ -107,8 +107,12 @@ class PictureController extends Controller {
                     if ($client != null) {
                         $pictureFolderId = $this->getPictureFolder($client, $user);
                         file_put_contents(self::TMP_PICTURTE . $user->id, $imageContent);
-                        file_put_contents(self::TMP_PICTURTE . $user->id, $imageContent);
-                        $this->fitImageToSize(self::TMP_PICTURTE . $user->id);
+                        $resizedImage = $this->fitImageToSize(self::TMP_PICTURTE . $user->id);
+                        copy($resizedImage , self::TMP_PICTURTE . $user->id);
+                        $meta_data = stream_get_meta_data($resizedImage);
+                        $filename = $meta_data["uri"];
+                        unlink($filename);
+                        var_dump($filename);
                         $imageType = exif_imagetype(self::TMP_PICTURTE . $user->id);
                         if (isset($this->exif_imagetype_code_mimeTypes[$imageType])) {
                             $mimeType = $this->exif_imagetype_code_mimeTypes[$imageType];
@@ -293,8 +297,9 @@ class PictureController extends Controller {
             $srcWidth = $srcHeight = $originalHeight;
         }*/
 
-        imagecopyresampled($imageFile, $imageFile, 0, 0, $srcX, $srcY, $targetWidth, $targetHeight, $srcWidth, $srcHeight);
-        return  $imageFile;
+        $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
+        imagecopyresampled($targetImage, $imageFile, 0, 0, $srcX, $srcY, $targetWidth, $targetHeight, $srcWidth, $srcHeight);
+        return  $targetImage;
     }
 
     private function imageToBinaryData($image, $mimeType) {
