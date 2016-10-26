@@ -16,7 +16,7 @@ use frontend\components\GoogleDriveHelper;
 
 
 class PictureController extends Controller {
-    const TMP_FOLDER = "/var/www/brainas.net/frontend/tmp/tmpPicture";
+    const TMP_PICTURTE = "/var/www/brainas.net/frontend/tmp/tmpPicture";
 
     public $mimeTypes_Extensions = [
         "image/jpeg" => 'jpg',
@@ -106,8 +106,10 @@ class PictureController extends Controller {
                     $client = GoogleIdentityHelper::getGoogleClientWithToken($user);
                     if ($client != null) {
                         $pictureFolderId = $this->getPictureFolder($client, $user);
-                        file_put_contents(self::TMP_FOLDER . $user->id, $imageContent);
-                        $imageType = exif_imagetype(self::TMP_FOLDER . $user->id);
+                        file_put_contents(self::TMP_PICTURTE . $user->id, $imageContent);
+                        file_put_contents(self::TMP_PICTURTE . $user->id, $imageContent);
+                        $this->fitImageToSize(self::TMP_PICTURTE . $user->id);
+                        $imageType = exif_imagetype(self::TMP_PICTURTE . $user->id);
                         if (isset($this->exif_imagetype_code_mimeTypes[$imageType])) {
                             $mimeType = $this->exif_imagetype_code_mimeTypes[$imageType];
                         } else {
@@ -291,9 +293,8 @@ class PictureController extends Controller {
             $srcWidth = $srcHeight = $originalHeight;
         }*/
 
-        $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
-        imagecopyresampled($targetImage, $imageFile, 0, 0, $srcX, $srcY, $targetWidth, $targetHeight, $srcWidth, $srcHeight);
-        return  $targetImage;
+        imagecopyresampled($imageFile, $imageFile, 0, 0, $srcX, $srcY, $targetWidth, $targetHeight, $srcWidth, $srcHeight);
+        return  $imageFile;
     }
 
     private function imageToBinaryData($image, $mimeType) {
