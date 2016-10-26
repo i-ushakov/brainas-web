@@ -313,7 +313,7 @@ class PictureController extends Controller {
         }
         $image_string = ob_get_contents();
         ob_end_flush();
-        var_dump($image_string);
+        var_dump($type);
         return $image_string;
     }
 }
