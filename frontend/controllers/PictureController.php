@@ -46,6 +46,10 @@ class PictureController extends Controller {
         list(, $imgData)      = explode(',', $imgData);
         $imgData = base64_decode($imgData);
 
+        $tmp_img = imagecreatefromstring($imgData);
+        $resized_img = $this->fitImageToSize($tmp_img);
+        $imgData = $this->imageToBinaryData($resized_img, $type);
+
         if ((!Yii::$app->user->isGuest)) {
             $user = \Yii::$app->user->identity;
 
@@ -253,5 +257,61 @@ class PictureController extends Controller {
             }
         }
         return false;
+    }
+
+    private function fitImageToSize($imageFile) {
+        $size = 512;
+        list($originalWidth, $originalHeight) = getimagesize($imageFile);
+        $ratio = $originalWidth / $originalHeight;
+
+        $targetWidth = $targetHeight = min($size, max($originalWidth, $originalHeight));
+
+        if ($ratio < 1) {
+            $targetWidth = $targetHeight * $ratio;
+        } else {
+            $targetHeight = $targetWidth / $ratio;
+        }
+
+        $srcWidth = $originalWidth;
+        $srcHeight = $originalHeight;
+        $srcX = $srcY = 0;
+
+        $targetWidth = $targetHeight = min($originalWidth, $originalHeight, $size);
+
+        // This crops the image to fill the target size completely, not stretching it:
+        /*if ($ratio < 1) {
+            $srcX = 0;
+            $srcY = ($originalHeight / 2) - ($originalWidth / 2);
+            $srcWidth = $srcHeight = $originalWidth;
+        } else {
+            $srcY = 0;
+            $srcX = ($originalWidth / 2) - ($originalHeight / 2);
+            $srcWidth = $srcHeight = $originalHeight;
+        }*/
+
+        $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
+        return imagecopyresampled($targetImage, $imageFile, 0, 0, $srcX, $srcY, $targetWidth, $targetHeight, $srcWidth, $srcHeight);
+    }
+
+    private function imageToBinaryData($image, $type) {
+        ob_start();
+        switch ($type) {
+            case "image/jpeg":
+            case "image/jpg":
+                imagejpeg($image);
+                break;
+            case "image/png":
+                imagepng($image);
+                break;
+            case "image/bmp":
+                imagewbmp($image);
+                break;
+            case "image/gif":
+                imagegif($image);
+                break;
+        }
+        $image_string = ob_get_contents();
+        ob_end_flush();
+        return $image_string;
     }
 }
