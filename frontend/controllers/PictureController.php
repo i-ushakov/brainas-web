@@ -261,7 +261,8 @@ class PictureController extends Controller {
 
     private function fitImageToSize($imageFile) {
         $size = 512;
-        list($originalWidth, $originalHeight) = getimagesize($imageFile);
+        $originalWidth  = imagesx($imageFile);
+        $originalHeight = imagesy($imageFile);
         $ratio = $originalWidth / $originalHeight;
 
         $targetWidth = $targetHeight = min($size, max($originalWidth, $originalHeight));
