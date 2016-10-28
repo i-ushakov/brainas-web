@@ -142,6 +142,7 @@ class TaskSyncHelper {
         $task->status = (string)$newTaskFromDevice->status;
         $task->user = $this->userId;
         if ($task->save()) {
+            $_SESSION['tasksFromdDevice'][$task->id] = true; //TODO: Dirty Kludge!
             foreach ($newTaskFromDevice->conditions->condition as $c) {
                 TaskXMLHelper::addConditionFromXML($c, $task->id, $synchronizedObjects);
             }
