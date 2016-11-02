@@ -37,15 +37,10 @@ class Event extends ActiveRecord {
     public function afterSave($insert, $changedAttributes) {
         $task = $this->condition->task;
         //TODO: TODO: Dirty Kludge! I nner replace this logit out from this class, maybe in update method
-        Yii::warning("=======task->id=======" . $task->id);
-        Yii::warning("=====status=========" . $task->status);
-        Yii::warning("=====count(changedAttributes)=========" . count($changedAttributes));
-        Yii::warning("=====_SESSION['tasksFromdDevice'][task->id]========" . $_SESSION['tasksFromdDevice'][$task->id]);
         if ($task != null && $task->status == "ACTIVE" && count($changedAttributes) > 0 && !isset($_SESSION['tasksFromdDevice'][$task->id])) {
             $task->status = "WAITING";
             $task->save();
         }
-        Yii::warning("=====status=========" . $task->status);
         return parent::afterSave($insert, $changedAttributes);
     }
 
