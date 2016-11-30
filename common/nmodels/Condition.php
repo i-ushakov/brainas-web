@@ -22,7 +22,7 @@ class Condition extends ActiveRecord {
     public function rules()
     {
         return [
-            [['type', 'params'], 'required'],
+            [['task_id','type', 'params'], 'required'],
             ['type', 'validateEventType']
         ];
     }

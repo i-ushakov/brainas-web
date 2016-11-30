@@ -20,19 +20,29 @@ class ConditionTest extends \Codeception\TestCase\Test {
         $condition = new common\nmodels\Condition();
         $condition->type = 1;
         $condition->params = '{"lat":55.595865,"lng":38.113754,"radius":100}';
+        $condition->task_id = 304;
         $this->assertTrue($condition->save());
         $this->tester->seeRecord('common\nmodels\Condition', array( 'type' => '1', 'params' => '{"lat":55.595865,"lng":38.113754,"radius":100}'));
    }
 
+    public function testSavingWithoutTaskId() {
+        $condition = new common\nmodels\Condition();
+        $condition->type = 1;
+        $condition->params = '{"lat":55.595865,"lng":38.113754,"radius":100}';
+        $this->assertFalse($condition->save());
+    }
+
    public function testSavingWithoutType() {
        $condition = new common\nmodels\Condition();
        $condition->params = '{"lat":55.595865,"lng":38.113754,"radius":100}';
+       $condition->task_id = 304;
        $this->assertFalse($condition->save());
    }
 
     public function testSavingWithoutParams() {
         $condition = new common\nmodels\Condition();
         $condition->type = 2;
+        $condition->task_id = 304;
         $this->assertFalse($condition->save());
     }
 
