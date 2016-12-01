@@ -13,7 +13,7 @@ use common\nmodels\Condition;
 use common\nmodels\ConditionXMLConverter;
 use common\components\BAException as BAException;
 
-class ConditionsConverterTest extends \Codeception\TestCase\Test {
+class ConditionXMLConverterTest extends \Codeception\TestCase\Test {
 
     /**
      * @var UnitTester
