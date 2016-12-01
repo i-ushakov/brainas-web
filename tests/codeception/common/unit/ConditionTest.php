@@ -59,7 +59,7 @@ class ConditionTest extends \Codeception\TestCase\Test {
        $condition->params = '{"lat":55.595865,"lng":38.113754,"radius":100}';
        $this->assertEquals(1, $condition->eventType->id);
        $this->assertNotEquals(2, $condition->eventType->id);
-       $this->assertEquals('GPS', $condition->eventType->name);
-       $this->assertNotEquals('GPS2', $condition->eventType->name);
+       $this->assertEquals('LOCATION', $condition->eventType->name);
+       $this->assertNotEquals('GPS', $condition->eventType->name);
    }
 }
