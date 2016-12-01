@@ -25,7 +25,11 @@ class ConditionXMLConverter {
 
         if (isset($xml['type'])) {
             $type = (String)$xml['type'];
-            $condition->type = EventType::getTypeIdByName($type);
+            try {
+                $condition->type = EventType::getTypeIdByName($type);
+            } catch (BAException $e) {
+                throw $e;
+            }
         }
 
         if (isset($xml['task-id'])) {
