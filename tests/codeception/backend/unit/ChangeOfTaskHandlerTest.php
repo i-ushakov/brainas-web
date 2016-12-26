@@ -89,9 +89,60 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
                 'updateTask' => Codeception\Util\Stub::exactly(1, function () { return true; })
             ), $this
         );
-            //new \backend\helpers\ChangeOfTaskHandler($changeParser, $taskConverter);
+
         $this->tester->haveInDatabase('tasks', array(
             'id' => '1425', 'message' => 'Test', 'user' => 1, 'status' => 'TODO', 'created' => '2016-10-04 16:13:09'));
+        $this->assertEquals(
+            1425,
+            $changeHandler->handle(new \SimpleXMLElement($this->changeOfTaskUpdatedXMLString)), "Return value of handled task must be 1425"
+        );
+    }
+
+    public function testHandleUpdatedNonexistentTask() {
+        $changeParser = Stub::make(
+            '\backend\helpers\ChangeOfTaskParser',
+            array(
+                'isANewTask' => Codeception\Util\Stub::exactly(1, function() {return false;}),
+                'getGlobalId' => Codeception\Util\Stub::atLeastOnce(function() {return 1425;}),
+                'getStatus' => Codeception\Util\Stub::never()
+            ),$this
+        );
+        $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\nmodels\ConditionXMLConverter());
+        $changeHandler = Stub::construct('\backend\helpers\ChangeOfTaskHandler',
+            array($changeParser, $taskConverter),
+            array(
+                'isChangeOfTaskActual' => Codeception\Util\Stub::never(),
+                'updateTask' => Codeception\Util\Stub::never()
+            ), $this
+        );
+
+        $this->assertEquals(
+            1425,
+            $changeHandler->handle(new \SimpleXMLElement($this->changeOfTaskUpdatedXMLString)), "Return value of handled task must be 1425"
+        );
+    }
+
+    public function testHandleDeletedTask() {
+        $changeParser = Stub::make(
+            '\backend\helpers\ChangeOfTaskParser',
+            array(
+                'isANewTask' => Codeception\Util\Stub::exactly(1, function() {return false;}),
+                'getGlobalId' => Codeception\Util\Stub::atLeastOnce(function() {return 1425;}),
+                'getStatus' => Codeception\Util\Stub::exactly(1, function() {return 'DELETED';})
+            ),$this
+        );
+        $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\nmodels\ConditionXMLConverter());
+        $changeHandler = Stub::construct('\backend\helpers\ChangeOfTaskHandler',
+            array($changeParser, $taskConverter),
+            array(
+                'isChangeOfTaskActual' => Codeception\Util\Stub::exactly(1, function () { return true; }),
+                'deleteTask' => Codeception\Util\Stub::exactly(1, function () { return true; })
+            ), $this
+        );
+
+        $this->tester->haveInDatabase('tasks', array(
+            'id' => '1425', 'message' => 'Test', 'user' => 1, 'status' => 'TODO', 'created' => '2016-10-04 16:13:09'));
+
         $this->assertEquals(
             1425,
             $changeHandler->handle(new \SimpleXMLElement($this->changeOfTaskUpdatedXMLString)), "Return value of handled task must be 1425"
