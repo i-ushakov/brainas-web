@@ -55,14 +55,16 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
         $changeParser = Stub::make(
             '\backend\helpers\ChangeOfTaskParser',
             array(
-                'isANewTask' => Codeception\Util\Stub::exactly(1, function() {return true;})
+                'isANewTask' => Codeception\Util\Stub::exactly(1, function() {return true;}),
+                //'getTimeOfChange' => Codeception\Util\Stub::exactly(1, function() {return "2016-09-15 18:08:09";})
             ),$this
         );
 
         $changeHandler = Stub::construct('\backend\helpers\ChangeOfTaskHandler',
-            array($changeParser, $taskConverter),
+            array($changeParser, $taskConverter, 1),
             array(
-                'addTask' => Codeception\Util\Stub::exactly(1, function () { return 9999; })
+                'addTask' => Codeception\Util\Stub::exactly(1, function () { return 9999; }),
+                'loggingChanges' => Codeception\Util\Stub::exactly(1, function () { return true; })
             ), $this
         );
 
@@ -83,10 +85,11 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
         );
         $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\nmodels\ConditionXMLConverter());
         $changeHandler = Stub::construct('\backend\helpers\ChangeOfTaskHandler',
-            array($changeParser, $taskConverter),
+            array($changeParser, $taskConverter, 1),
             array(
                 'isChangeOfTaskActual' => Codeception\Util\Stub::exactly(1, function () { return true; }),
-                'updateTask' => Codeception\Util\Stub::exactly(1, function () { return true; })
+                'updateTask' => Codeception\Util\Stub::exactly(1, function () { return 1425; }),
+                'loggingChanges' => Codeception\Util\Stub::exactly(1, function () {})
             ), $this
         );
 
@@ -109,7 +112,7 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
         );
         $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\nmodels\ConditionXMLConverter());
         $changeHandler = Stub::construct('\backend\helpers\ChangeOfTaskHandler',
-            array($changeParser, $taskConverter),
+            array($changeParser, $taskConverter, 1),
             array(
                 'isChangeOfTaskActual' => Codeception\Util\Stub::never(),
                 'updateTask' => Codeception\Util\Stub::never()
@@ -133,7 +136,7 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
         );
         $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\nmodels\ConditionXMLConverter());
         $changeHandler = Stub::construct('\backend\helpers\ChangeOfTaskHandler',
-            array($changeParser, $taskConverter),
+            array($changeParser, $taskConverter, 1),
             array(
                 'isChangeOfTaskActual' => Codeception\Util\Stub::exactly(1, function () { return true; }),
                 'deleteTask' => Codeception\Util\Stub::exactly(1, function () { return true; })
@@ -149,5 +152,68 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
         );
     }
 
-    //TODO addTask, getTimeOfTaskChange, isChangeOfTaskActual, updateTask
+    public function testAddTask() {
+        $changeParser = Stub::make(
+            '\backend\helpers\ChangeOfTaskParser',
+            array(
+                //'getTimeOfChange' => Codeception\Util\Stub::exactly(1, function() {return '111';})
+            ),$this
+        );
+        $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\nmodels\ConditionXMLConverter());
+        $changeHandler = new \backend\helpers\ChangeOfTaskHandler($changeParser, $taskConverter, 1);
+
+        $task = Stub::construct(
+            '\common\nmodels\Task',
+            array(),
+            array(
+                'id' => '777',
+                'message' => 'test',
+                'user' => 1
+            ),$this
+        );
+        $condition = Stub::construct(
+            '\common\nmodels\Condition',
+            array(),
+            array(
+                'id' => '1777',
+                'type' => 1,
+                'params' => '{json:params}'
+            ),$this
+        );
+        $picture = Stub::construct(
+            '\common\models\PictureOfTask',
+            array(),
+            array(
+                'name' => 'task_img_1234567890.jpg',
+                'drive_id' => 'DriveId:CAESABi0DSD-iK_fmFIoAA==',
+                'file_id' => '0B-nWSp4lPq2nb3NjbnIyaTZYSWc'
+            ),$this
+        );
+
+        $conditions = array($condition);
+        $taskWithConditions = array('task' => $task, 'conditions' => $conditions, 'picture' => $picture);
+        $changeHandler->addTask($taskWithConditions);
+        $this->tester->seeRecord('common\nmodels\Task', array( 'id' => '777', 'user' => 1));
+        $this->tester->seeRecord('common\nmodels\Condition', array('id' => '1777', 'task_id' => 777));
+        $this->tester->seeRecord('common\models\PictureOfTask', array('task_id' => 777, 'name' => 'task_img_1234567890.jpg'));
+    }
+
+
+    public function updateTask() {
+        // TODO
+    }
+
+    public function getTimeOfTaskChange() {
+        // TODO
+    }
+
+    public function isChangeOfTaskActual() {
+        // TODO
+    }
+
+
+    public function loggingChanges() {
+        // TODO
+    }
+
 }

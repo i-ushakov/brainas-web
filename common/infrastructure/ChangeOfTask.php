@@ -9,7 +9,7 @@
 namespace common\infrastructure;
 
 use yii\db\ActiveRecord;
-use common\models\Task;
+use common\nmodels\Task;
 
 class ChangeOfTask extends ActiveRecord {
 
