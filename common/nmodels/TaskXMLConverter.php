@@ -8,7 +8,7 @@
 
 namespace common\nmodels;
 
-use common\models\Task;
+use common\nmodels\Task;
 
 class TaskXMLConverter {
 
