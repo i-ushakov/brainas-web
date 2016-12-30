@@ -8,6 +8,8 @@
 
 namespace common\nmodels;
 
+use common\components\BAException;
+use common\models\PictureOfTask;
 use common\nmodels\Task;
 
 class TaskXMLConverter {
@@ -23,11 +25,18 @@ class TaskXMLConverter {
      *
      * Conver xml element to Task object without condition
      *
-     * @return array - Associative array('task'=>Task,'conditions'=>Condition[])
+     * @param \SimpleXMLElement $xml - xml obj with changeOfTask
+     *
+     * @return array - Associative array('task'=>Task,'conditions'=>Condition[], 'picture' => Picture)
+     *
+     * @throws BAException INCORRECT_SIMPLE_XML_OBJEST_ERRORCODE
      */
     public function fromXML(\SimpleXMLElement $xml) {
         if ($xml == null) {
             return null;
+        }
+        if ($xml->getName() != "task") {
+            throw new BAException("Incorrect simple  xml object",  BAException::INCORRECT_SIMPLE_XML_OBJEST_ERRORCODE);
         }
         $task = new Task;
 
@@ -58,6 +67,12 @@ class TaskXMLConverter {
             }
         }
 
-        return array('task'=>$task, 'conditions'=>$conditions);
+        $picture = null;
+        if (isset($xml->picture)) {
+            $picture = new PictureOfTask();
+            //$picture->
+        }
+
+        return array('task'=>$task, 'conditions'=>$conditions, 'picture' => $picture);
     }
 }
