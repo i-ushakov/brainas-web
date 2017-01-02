@@ -37,7 +37,8 @@ class ChangeOfTaskHandler {
                     if ($status == "DELETED") {
                         $this->deleteTask($taskId);
                     } elseif ($status == "UPDATED" || $status == "CREATED") {
-                        if($taskId = $this->updateTask($chnageOfTaskXML)) {
+                        $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
+                        if($taskId = $this->updateTask($taskWithConditions)) {
                             $this->loggingChanges($chnageOfTaskXML, "Changed");
                         } else {
                             return false;
@@ -67,7 +68,7 @@ class ChangeOfTaskHandler {
         return $task->id;
     }
 
-    public function updateTask($chnageOfTaskXML) {
+    public function updateTask($taskWithConditions) {
         return false;
     }
 

@@ -199,8 +199,53 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
     }
 
 
-    public function updateTask() {
-        // TODO
+    public function testUpdateTask() {
+        $changeParser = Stub::make(
+            '\backend\helpers\ChangeOfTaskParser',
+            array(
+                //'getTimeOfChange' => Codeception\Util\Stub::exactly(1, function() {return '111';})
+            ),$this
+        );
+        $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\nmodels\ConditionXMLConverter());
+        $changeHandler = new \backend\helpers\ChangeOfTaskHandler($changeParser, $taskConverter, 1);
+
+        $task = Stub::construct(
+            '\common\nmodels\Task',
+            array(),
+            array(
+                'id' => 777,
+                'message' => 'test_updated',
+                'user' => 1
+            ),$this
+        );
+        $condition = Stub::construct(
+            '\common\nmodels\Condition',
+            array(),
+            array(
+                'id' => '1777',
+                'type' => 1,
+                'params' => '{json:params}',
+                'task_id' => 777
+            ),$this
+        );
+        $picture = Stub::construct(
+            '\common\models\PictureOfTask',
+            array(),
+            array(
+                'task_id' => 777,
+                'name' => 'task_img_1234567890.jpg',
+                'drive_id' => 'DriveId:CAESABi0DSD-iK_fmFIoAA==',
+                'file_id' => '0B-nWSp4lPq2nb3NjbnIyaTZYSWc'
+            ),$this
+        );
+
+        $this->tester->haveInDatabase('tasks', array('id' => '777', 'user' => '1', 'message' => 'test'));
+        $conditions = array($condition);
+        $taskWithConditions = array('task' => $task, 'conditions' => $conditions, 'picture' => $picture);
+        $changeHandler->updateTask($taskWithConditions);
+        $this->tester->seeRecord('common\nmodels\Task', array( 'id' => '777', 'user' => 1, 'message' => 'test_updated'));
+        //$this->tester->seeRecord('common\nmodels\Condition', array('id' => '1777', 'task_id' => 777));
+        //$this->tester->seeRecord('common\models\PictureOfTask', array('task_id' => 777, 'name' => 'task_img_1234567890.jpg'));
     }
 
     public function getTimeOfTaskChange() {
