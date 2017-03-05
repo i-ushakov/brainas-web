@@ -15,15 +15,15 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=5.4.0",
-        "yiisoft/yii2": ">=2.0.6",
+        "yiisoft/yii2": ">=2.0.9",
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
         "yiisoft/yii2-authclient": "~2.0.0",
-        "google/apiclient" : "^2.0.0@RC"
+        "google/apiclient" : "^2.0.0@RC",
+        "bower-asset/jquery" : "2.2.*@stable | 2.1.*@stable | 1.11.*@stable | 1.12.*@stable"
     },
     "require-dev": {
         "codeception/codeception": "*",
-        "yiisoft/yii2-codeception": "*",
         "codeception/specify": "*",
         "codeception/verify": "*",
         "codeception/mockery-module" : "*",
