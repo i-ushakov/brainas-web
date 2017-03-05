@@ -15,7 +15,6 @@ use common\widgets\Alert;
 AppAsset::register($this);
 GoogleAsset::register($this);
 SPAAsset::register($this);
-
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -28,8 +27,8 @@ SPAAsset::register($this);
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <?require_once(Yii::$app->basePath . '/views/layouts/_google_identity_head.php');?>
-    <?require_once(Yii::$app->basePath . '/web/js/SPAParams.php');?>
+    <?php require_once(Yii::$app->basePath . '/views/layouts/_google_identity_head.php');?>
+    <?php require_once(Yii::$app->basePath . '/web/js/SPAParams.php');?>
 
 </head>
 <body>
@@ -84,8 +83,7 @@ SPAAsset::register($this);
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>
 </footer>
-
-<?require_once(Yii::$app->basePath . '/views/layouts/_templates.php');?>
+<?php require_once(Yii::$app->basePath . '/views/layouts/_templates.php');?>
 <?php $this->endBody() ?>
 </body>
 </html>
