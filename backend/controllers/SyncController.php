@@ -11,7 +11,7 @@ use yii\web\Controller;
 
 class SyncController extends Controller
 {
-    public function actionSyncTasks()
+    public function actionUploadTasks()
     {
         // TODO verifyUserAccess
         // $syncDataFromDevice = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
