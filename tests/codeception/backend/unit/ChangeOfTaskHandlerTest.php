@@ -93,7 +93,7 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
         );
 
         $this->tester->haveInDatabase('tasks', array(
-            'id' => '1425', 'message' => 'Test', 'user' => 1, 'status' => 'TODO', 'created' => '2016-10-04 16:13:09'));
+            'id' => '1425', 'message' => 'Test', 'user' => 1, 'status' => 'TODO', 'created' => '2016-10-04 16:13:09', 'last_modify' => '2016-10-04 16:13:09'));
         $this->assertEquals(
             1425,
             $changeHandler->handle(new \SimpleXMLElement($this->changeOfTaskUpdatedXMLString)), "Return value of handled task must be 1425"
@@ -143,7 +143,7 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
         );
 
         $this->tester->haveInDatabase('tasks', array(
-            'id' => '1425', 'message' => 'Test', 'user' => 1, 'status' => 'TODO', 'created' => '2016-10-04 16:13:09'));
+            'id' => '1425', 'message' => 'Test', 'user' => 1, 'status' => 'TODO', 'created' => '2016-10-04 16:13:09', 'last_modify' => '2016-10-04 16:13:09'));
 
         $this->assertEquals(
             1425,
@@ -220,7 +220,7 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
         $task = Stub::construct(
             '\common\nmodels\Task',
             array(),
-            array('id' => 779, 'message' => 'test_updated', 'user' => 1, 'last_modify' => '2017-01-02 20:07:44'
+            array('id' => 779, 'message' => 'test_updated', 'user' => 1, 'status' => 'ACTIVE', 'last_modify' => '2017-01-02 20:07:44'
             ),$this
         );
         $condition1 = Stub::construct(
