@@ -14,11 +14,12 @@ class SyncController extends Controller
     /*
      * Synchronization tasks from device with server
      */
-    public function actionUploadTasks()
+    public function actionSendTasks()
     {
         // TODO verifyUserAccess
         // $syncDataFromDevice = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
-        // TODO SyncTasksManager->sync($syncDataFromDevice);
+        // TODO $result = SyncTasksManager->getTasksFromDevice($syncDataFromDevice);
+        // TODO return $result;
     }
 
     /*

@@ -23,7 +23,7 @@ $I->haveInDatabase('conditions', array(
     'params' => '{"datetime":"18-03-2017 12:46:00","offset":180}'
 ));
 
-$I->sendPOST('/sync/upload-tasks', ['token' => 'value'], [ 'tasks_changes_xml' => codecept_data_dir('SyncControllerFeed/tasks_changes.xml')]);
+$I->sendPOST('/sync/send-tasks', ['token' => 'value'], [ 'tasks_changes_xml' => codecept_data_dir('SyncControllerFeed/tasks_changes.xml')]);
 
 $I->wantTo('check that task 1 was UPDATED');
 $I->seeInDatabase('tasks', array(
