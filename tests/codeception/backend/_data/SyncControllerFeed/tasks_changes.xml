@@ -3,15 +3,15 @@
     <existingTasks>{"11":"1"}</existingTasks>
     <changedTasks>
         <changeOfTask localId="1" globalId="11">
-            <task id="11">
+            <task id="1">
                 <message>Task 1 UPDATED(ACTIVE)</message>
                 <description/>
                 <status>ACTIVE</status>
                 <conditions>
-                    <condition id="111" type="TIME">
+                    <condition localId="11" globalId="111" type="TIME">
                         <params>{"offset":180,"datetime":"01-11-2017 13:34:08"}</params>
                     </condition>
-                    <condition id="112" type="LOCATION">
+                    <condition localId="12" globalId="0" type="LOCATION">
                         <params>{\"address\":\"ул. Фрунзе, 12, Zhukovskiy\",\"radius\":100,\"lng\":38.125353455544,\"lat\":55.59917167827}</params>
                     </condition>
                 </conditions>
