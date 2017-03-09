@@ -46,10 +46,10 @@ class TasksSyncManagerTest extends \Codeception\TestCase\Test
     {
         $changedTasksXML = ''.
             '<changedTasks></changedTasks>';
-        $changedTasksObj = new SimpleXMLElement($changedTasksXML);
+        $changedTasks = new SimpleXMLElement($changedTasksXML);
         $changeOfTaskHandlerProxy = $this->prepareTaskHandlerProxy();
         $tasksSyncManager = new TasksSyncManager($changeOfTaskHandlerProxy->getObject());
-        $tasksSyncManager->getTasksFromDevice($changedTasksObj);
+        $tasksSyncManager->getTasksFromDevice($changedTasks);
         $changeOfTaskHandlerProxy->verifyNeverInvoked('handle');
     }
 
@@ -59,10 +59,10 @@ class TasksSyncManagerTest extends \Codeception\TestCase\Test
             '<changedTasks>' .
                 '<changeOfTask localId="1" globalId="11"><someXmlData/></changeOfTask>' .
             '</changedTasks>';
-        $changedTasksObj = new SimpleXMLElement($changedTasksXML);
+        $changedTasks = new SimpleXMLElement($changedTasksXML);
         $changeOfTaskHandlerProxy = $this->prepareTaskHandlerProxy();
         $tasksSyncManager = new TasksSyncManager($changeOfTaskHandlerProxy->getObject());
-        $tasksSyncManager->getTasksFromDevice($changedTasksObj);
+        $tasksSyncManager->getTasksFromDevice($changedTasks);
         $changeOfTaskHandlerProxy->verifyInvokedOnce('handle',3);
     }
 
@@ -74,10 +74,10 @@ class TasksSyncManagerTest extends \Codeception\TestCase\Test
                     '<changeOfTask localId="2" globalId="12"><someXmlData/></changeOfTask>' .
                     '<changeOfTask localId="3" globalId="0"><someXmlData/></changeOfTask>' .
                 '</changedTasks>';
-        $changedTasksObj = new SimpleXMLElement($changedTasksXML);
+        $changedTasks = new SimpleXMLElement($changedTasksXML);
         $changeOfTaskHandlerProxy = $this->prepareTaskHandlerProxy();
         $tasksSyncManager = new TasksSyncManager($changeOfTaskHandlerProxy->getObject());
-        $tasksSyncManager->getTasksFromDevice($changedTasksObj);
+        $tasksSyncManager->getTasksFromDevice($changedTasks);
         $changeOfTaskHandlerProxy->verifyInvokedMultipleTimes('handle',3);
     }
 
@@ -85,8 +85,9 @@ class TasksSyncManagerTest extends \Codeception\TestCase\Test
     {
         $changeOfTaskParserMock = test::double(ChangeOfTaskParser::class, [])->construct();
         $taskXMLConverterMock = test::double(TaskXMLConverter::class, [])->make();
+        $userIdMock = 1;
         $changeOfTaskHandlerProxy = test::double(
-            new ChangeOfTaskHandler($changeOfTaskParserMock, $taskXMLConverterMock),
+            new ChangeOfTaskHandler($changeOfTaskParserMock, $taskXMLConverterMock, $userIdMock),
             ['handle' => null]
         );
 
