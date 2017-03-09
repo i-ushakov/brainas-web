@@ -7,6 +7,8 @@
  */
 
 namespace backend\components;
+
+use backend\helpers\ChangeOfTaskHandler;
 use common\components\BAException;
 
 /**
@@ -20,16 +22,22 @@ use common\components\BAException;
  */
 class TasksSyncManager
 {
-    const EMPTY_TASKS_XML = 'EMPTY PARAM ($tasksXML) was sent into synchronization method';
     const WRONG_ROOT_ELEMNT = 'Param ($tasksXML) with WRONG ROOT ELEMENT was sent into synchronization method';
 
-    public function getTasksFromDevice(\SimpleXMLElement $tasksXML)
+    protected $changeOfTaskHandler;
+
+    public function __construct(ChangeOfTaskHandler $changeOfTaskHandler)
     {
-        if (!isset($tasksXML)) {
-            throw new BAException(BAException::EMPTY_PARAM_EXCODE, self::EMPTY_TASKS_XML);
+        $this->changeOfTaskHandler = $changeOfTaskHandler;
+    }
+
+    public function getTasksFromDevice(\SimpleXMLElement $taskChangesXML)
+    {
+        if ($taskChangesXML->getName() != "changedTasks") {
+            throw new BAException(self::WRONG_ROOT_ELEMNT, BAException::INVALID_PARAM_EXCODE);
         }
-        if ($tasksXML->getName() != "tasks") {
-            throw new BAException(BAException::INVALID_PARAM_EXCODE, self::WRONG_ROOT_ELEMNT);
+        foreach($taskChangesXML->changeOfTask as $changeOfTaskXML) {
+            $this->changeOfTaskHandler->handle($changeOfTaskXML);
         }
 
     }
