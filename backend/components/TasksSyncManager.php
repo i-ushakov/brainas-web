@@ -8,7 +8,6 @@
 
 namespace backend\components;
 
-use backend\helpers\ChangeOfTaskHandler;
 use common\components\BAException;
 
 /**
