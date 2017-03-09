@@ -6,6 +6,8 @@
  * Time: 11:00 AM
  */
 
+use backend\components\ChangeOfTaskParser;
+
 class ChangeOfTaskParserTest extends \Codeception\TestCase\Test {
     /**
      * @var UnitTester
@@ -34,7 +36,7 @@ class ChangeOfTaskParserTest extends \Codeception\TestCase\Test {
 
 
     public function testIsANewTask() {
-        $parser = new \backend\helpers\ChangeOfTaskParser();
+        $parser = new ChangeOfTaskParser();
         $this->assertEquals(
             true,
             $parser->isANewTask(new \SimpleXMLElement($this->changeOfTaskNewXMLString)), "Task must be defined as a new"
@@ -50,7 +52,7 @@ class ChangeOfTaskParserTest extends \Codeception\TestCase\Test {
     }
 
     public function testWasDeletedTask() {
-        $parser = new \backend\helpers\ChangeOfTaskParser();
+        $parser = new ChangeOfTaskParser();
         $this->assertEquals(
             false,
             $parser->wasDeletedTask(new \SimpleXMLElement($this->changeOfTaskNewXMLString)), "Actualy the task was deleted"
