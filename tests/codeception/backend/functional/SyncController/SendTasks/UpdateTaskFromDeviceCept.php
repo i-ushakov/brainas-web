@@ -31,22 +31,12 @@ $I->seeResponseCodeIs(200);
 /*
     <?xml version="1.0" encoding="UTF-8"?>' .
     '<synchronizedObjects>' .
-    '<synchronizedTasks>' .
-        '<synchronizedTask>' .
-            '<localId>1</localId>' .
-            '<globalId>11</globalId>' .
-        '</synchronizedTask>' .
-    '</synchronizedTasks>' .
-    '<synchronizedConditions>' .
-        '<synchronizedCondition>' .
-            '<localId>11</localId>' .
-            '<globalId>111</globalId>' .
-        '</synchronizedCondition>' .
-        '<synchronizedCondition>' .
-            '<localId>12</localId>' .
-            '<globalId>???</globalId>' .
-        '</synchronizedCondition>' .
-    '</synchronizedConditions>' .
+        '<synchronizedTasks>' .
+            '<synchronizedTask>' .
+                '<localId>1</localId>' .
+                '<globalId>11</globalId>' .
+            '</synchronizedTask>' .
+        '</synchronizedTasks>' .
     '</synchronizedObjects>';
  */
 $I->wantTo('check that xml response is correct');
