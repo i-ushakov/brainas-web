@@ -14,7 +14,7 @@ class BAException extends \Exception {
     const EMPTY_PARAM_EXCODE = 1103;
     const INVALID_PARAM_EXCODE = 1104;
 
-    public function __construct($message, $code, \Exception $previous = null) {
+    public function __construct(string $message, int $code, \Exception $previous = null) {
         parent::__construct($message, $code, $previous);
     }
 }
