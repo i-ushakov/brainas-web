@@ -6,7 +6,7 @@
  * Time: 10:59 AM
  */
 
-namespace backend\helpers;
+namespace backend\components;
 
 use common\models\Condition;
 use common\nmodels\TaskXMLConverter;
