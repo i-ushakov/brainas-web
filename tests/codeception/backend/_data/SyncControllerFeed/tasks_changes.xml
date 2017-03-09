@@ -3,7 +3,7 @@
     <existingTasks>{"11":"1"}</existingTasks>
     <changedTasks>
         <changeOfTask localId="1" globalId="11">
-            <task id="1">
+            <task localId="1" globalId="11">
                 <message>Task 1 UPDATED(ACTIVE)</message>
                 <description/>
                 <status>ACTIVE</status>
