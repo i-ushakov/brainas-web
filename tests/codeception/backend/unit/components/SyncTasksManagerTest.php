@@ -5,12 +5,11 @@
  * Date: 3/5/2017
  * Time: 3:48 PM
  */
-use \backend\components\TasksSyncManager;
-use \backend\helpers\ChangeOfTaskHandler;
-use \backend\helpers\ChangeOfTaskParser;
+use backend\components\TasksSyncManager;
+use backend\components\ChangeOfTaskHandler;
+use backend\components\ChangeOfTaskParser;
 use common\nmodels\TaskXMLConverter;
-use common\nmodels\ConditionXMLConverter;
-use \common\components\BAException;
+use common\components\BAException;
 
 use AspectMock\Test as test;
 
