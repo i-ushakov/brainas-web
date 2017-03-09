@@ -51,7 +51,11 @@ $I->seeResponseCodeIs(200);
  */
 $I->wantTo('check that xml response is correct');
 $response = $I->grabResponse();
-$responseXML = new \SimpleXMLElement($response);
+try {
+    $responseXML = new \SimpleXMLElement($response);
+} catch (Exception $exception) {
+    $I->fail("response is not valid XML");
+}
 $I->assertEquals($responseXML->getName(), 'synchronizedObjects', 'Wrong root element name');
 
 $I->assertEquals(count($responseXML->synchronizedTasks), 1, 'Must have one synchronizedTasks element');
