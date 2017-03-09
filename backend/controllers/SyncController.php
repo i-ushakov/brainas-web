@@ -5,12 +5,19 @@
  * Date: 3/2/2017
  * Time: 5:08 PM
  */
-use Yii;
+
+namespace backend\controllers;
 
 use yii\web\Controller;
 
 class SyncController extends Controller
 {
+    public function beforeAction($action) {
+        $this->enableCsrfValidation = false;
+        \Yii::$app->controller->enableCsrfValidation = false;
+        return parent::beforeAction($action);
+    }
+
     /*
      * Synchronization tasks from device with server
      */
