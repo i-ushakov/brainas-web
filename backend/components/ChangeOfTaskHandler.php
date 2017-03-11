@@ -8,14 +8,16 @@
 
 namespace backend\components;
 
-use common\models\Condition;
 use common\nmodels\TaskXMLConverter;
 use common\nmodels\Task;
+use common\models\PictureOfTask;
+use frontend\components\GoogleDriveHelper;
 
 class ChangeOfTaskHandler {
     private $changeParser;
     private $converter;
     private $userId;
+    private $client;
 
     public function __construct(ChangeOfTaskParser $changeParser, TaskXMLConverter $taskConverter, $userId) {
         $this->changeParser = $changeParser;
@@ -25,10 +27,7 @@ class ChangeOfTaskHandler {
 
     public function handle(\SimpleXMLElement $chnageOfTaskXML) {
         if($this->changeParser->isANewTask($chnageOfTaskXML)) {
-            $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML);
-            $taskId = $this->addTask($taskWithConditions);
-            $this->loggingChanges($chnageOfTaskXML, "CREATE");
-            return $taskId;
+            return $this->handleNewTask($chnageOfTaskXML);
         } else {
             $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);
             $task = Task::findOne($taskId);
@@ -51,7 +50,15 @@ class ChangeOfTaskHandler {
         }
     }
 
-    public function addTask($taskWithConditions) {
+    public function handleNewTask(\SimpleXMLElement $chnageOfTaskXML)
+    {
+        $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML);
+        $taskId = $this->addTask($taskWithConditions);
+        $this->loggingChanges($chnageOfTaskXML, "CREATE");
+        return $taskId;
+    }
+
+    public function addTask(array $taskWithConditions) {
         $task = $taskWithConditions['task'];
         $conditions = $taskWithConditions['conditions'];
         $picture = $taskWithConditions['picture'];
@@ -155,4 +162,5 @@ class ChangeOfTaskHandler {
     public function cleanDeletedConditions() {
         return true;
     }
+
 }
