@@ -6,6 +6,8 @@
 class_name: UnitTester
 modules:
     enabled:
+    - Asserts
+    - \Helper\Unit
     - Db:
         dsn: 'mysql:host=localhost;dbname=ba;charset=utf8'
         user: 'root'
