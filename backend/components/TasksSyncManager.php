@@ -32,13 +32,17 @@ class TasksSyncManager
 
     public function getTasksFromDevice(\SimpleXMLElement $taskChangesXML)
     {
+        $synchronizedTasks = [];
         if ($taskChangesXML->getName() != "changedTasks") {
-            throw new BAException(self::WRONG_ROOT_ELEMNT, BAException::INVALID_PARAM_EXCODE);
+            throw new BAException(self::WRONG_ROOT_ELEMNT, BAException::WRONG_ROOT_XML_ELEMENT_NAME);
         }
         foreach($taskChangesXML->changeOfTask as $changeOfTaskXML) {
-            $this->changeOfTaskHandler->handle($changeOfTaskXML);
+            $globalId = $this->changeOfTaskHandler->handle($changeOfTaskXML);
+            if ($globalId != null) {
+                $synchronizedTasks[(int)$changeOfTaskXML['localId']] = $globalId;
+            }
         }
-
+        return $synchronizedTasks;
     }
 
     public function sendTasksToDevice()
