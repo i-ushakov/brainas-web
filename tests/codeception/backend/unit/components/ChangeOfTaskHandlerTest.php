@@ -9,6 +9,11 @@
 use Codeception\Util\Stub;
 use backend\components\ChangeOfTaskParser;
 use backend\components\ChangeOfTaskHandler;
+use common\nmodels\TaskXMLConverter;
+use common\nmodels\Task;
+use common\nmodels\Condition;
+
+use Mockery as m;
 
 class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
     /**
@@ -26,7 +31,9 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
 
     private $changeOfTaskUpdatedXMLString = "
             <changeOfTask localId=\"16\" globalId=\"1425\">
-                <task id=\"1425\">dummy element</task>
+                <task localId=\"16\" globalId=\"1425\">
+                    <someTaskStuff/>
+                </task>
                 <change><status>UPDATED</status><changeDatetime>2016-12-01 06:05:13</changeDatetime></change>
 		    </changeOfTask>";
 
@@ -39,12 +46,10 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
 
     }
 
-    public function testHandleNewTask() {
+    public function testHandle_NewTask() {
         $taskConverter = Stub::make(
             '\common\nmodels\TaskXMLConverter',
-            array(
-                'fromXML' => Codeception\Util\Stub::exactly(1, function() {})
-            ),$this
+            array(), $this
         );
 
         $changeParser = Stub::make(
@@ -55,18 +60,16 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
             ),$this
         );
 
+        $userId = 1;
+
         $changeHandler = Stub::construct(ChangeOfTaskHandler::class,
-            array($changeParser, $taskConverter, 1),
+            array($changeParser, $taskConverter, $userId),
             array(
-                'addTask' => Codeception\Util\Stub::exactly(1, function () { return 9999; }),
-                'loggingChanges' => Codeception\Util\Stub::exactly(1, function () { return true; })
+                'handleNewTask' => Codeception\Util\Stub::exactly(1, function () { return 100; })
             ), $this
         );
 
-        $this->assertEquals(
-            9999,
-            $changeHandler->handle(new \SimpleXMLElement($this->changeOfTaskNewXMLString)), "Return value of handled task must be 9999"
-        );
+        $changeHandler->handle(new \SimpleXMLElement($this->changeOfTaskNewXMLString));
     }
 
     public function testHandleUpdatedTask() {
@@ -147,6 +150,64 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
         );
     }
 
+    public function testHandleNewTask()
+    {
+        $taskXMLConverter = m::mock(TaskXMLConverter::class);
+        $taskXMLConverter->shouldReceive('fromXML')
+            ->times(1)
+            ->andReturn([
+                'task' =>  null,
+                'conditions' => [],
+                'picture' => null
+            ]);
+        $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
+        $userId = 1;
+
+        $changeOfTaskHandler = \Mockery::mock(
+            ChangeOfTaskHandler::class . '[addTask, loggingChanges]',
+            [$changeOfTaskParser, $taskXMLConverter, $userId]
+        );
+        $changeOfTaskHandler->shouldReceive('addTask')
+            ->times(1)
+            ->andReturn(100);
+        $changeOfTaskHandler->shouldReceive('loggingChanges')
+            ->times(1);
+
+        $changeOfTaskHandler->handleNewTask(new SimpleXMLElement("<chnageOfTaskXML/>"));
+    }
+
+    public function testAddTask_withoutPicture()
+    {
+        $taskXMLConverter = m::mock(TaskXMLConverter::class);
+        $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
+        $userId = 1;
+
+        $changeOfTaskHandler = \Mockery::mock(
+            ChangeOfTaskHandler::class . '[savePistureOfTask]',
+            [$changeOfTaskParser, $taskXMLConverter, $userId]
+        );
+        $changeOfTaskHandler->shouldReceive('savePistureOfTask')->never();
+
+        $task = m::mock(Task::class . '[save]');
+        $task->id = 77;
+        $task->shouldReceive('save')->times(1);
+
+        $condition = m::mock(Condition::class . '[save]');
+        $condition->shouldReceive('save')->times(1);
+
+        $taskWithConditions = [
+            'task' => $task,
+            'conditions' => [$condition],
+            'picture' => null
+        ];
+
+        $changeOfTaskHandler->addTask($taskWithConditions);
+
+        $this->assertEquals($userId, $task->user, "User id must be 1");
+        $this->assertEquals($task->id, $condition->task_id, "Task id must be 1");
+    }
+
+    /*
     public function testAddTask() {
         $changeParser = Stub::make(
             ChangeOfTaskParser::class,
@@ -196,6 +257,7 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
         $this->tester->seeRecord('common\nmodels\Condition', array('id' => '1777', 'task_id' => 777));
         //$this->tester->seeRecord('common\models\PictureOfTask', array('task_id' => 777, 'name' => 'task_img_1234567890.jpg'));
     }
+    */
 
 
     public function testUpdateTask() {
