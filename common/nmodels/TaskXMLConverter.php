@@ -13,6 +13,7 @@ use common\models\PictureOfTask;
 use common\nmodels\Task;
 
 class TaskXMLConverter {
+    const WRONG_ROOT_ELEMNT = "XML root element have to be <task>";
 
     private $conditionConverter;
 
@@ -36,7 +37,7 @@ class TaskXMLConverter {
             return null;
         }
         if ($xml->getName() != "task") {
-            throw new BAException("Incorrect simple  xml object",  BAException::INCORRECT_SIMPLE_XML_OBJEST_ERRORCODE);
+            throw new BAException(self::WRONG_ROOT_ELEMNT,  BAException::WRONG_ROOT_XML_ELEMENT_NAME);
         }
         $task = new Task;
 
