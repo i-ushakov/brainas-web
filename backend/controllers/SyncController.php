@@ -8,7 +8,9 @@
 
 namespace backend\controllers;
 
+use Yii;
 use yii\web\Controller;
+use backend\components\TasksSyncManager;
 
 class SyncController extends Controller
 {
@@ -23,10 +25,17 @@ class SyncController extends Controller
      */
     public function actionSendTasks()
     {
-        // TODO verifyUserAccess
-        // $syncDataFromDevice = simplexml_load_file($_FILES['all_changes_xml']['tmp_name']);
-        // TODO $result = SyncTasksManager->getTasksFromDevice($syncDataFromDevice);
-        // TODO return $result;
+        $userId = 2;// TODO verifyUserAccess
+
+        $syncDataFromDevice = simplexml_load_file($_FILES['tasks_changes_xml']['tmp_name']);
+        $changedTasksXml = $syncDataFromDevice->changedTasks;
+
+        $tasksSyncManager = Yii::$container->get(TasksSyncManager::class);
+        $tasksSyncManager->setUserId($userId);
+
+        $synchronizedTasks = $tasksSyncManager->handleTasksFromDevice($changedTasksXml);
+        $syncObjectsXml = $tasksSyncManager->prepareSyncObjectsXml($synchronizedTasks);
+        return $syncObjectsXml;
     }
 
     /*
