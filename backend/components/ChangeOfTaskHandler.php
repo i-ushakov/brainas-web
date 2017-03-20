@@ -8,24 +8,29 @@
 
 namespace backend\components;
 
+use common\components\BAException;
 use common\nmodels\TaskXMLConverter;
 use common\nmodels\Task;
 use common\models\PictureOfTask;
 use frontend\components\GoogleDriveHelper;
 
 class ChangeOfTaskHandler {
+    const USER_ID_MUST_TO_BE_SET_MSG = "User id must to be set";
     private $changeParser;
     private $converter;
-    private $userId;
+    private $userId = null;
     private $client;
 
-    public function __construct(ChangeOfTaskParser $changeParser, TaskXMLConverter $taskConverter, $userId) {
+    public function __construct(ChangeOfTaskParser $changeParser, TaskXMLConverter $taskConverter, $userId = null) {
         $this->changeParser = $changeParser;
         $this->converter = $taskConverter;
         $this->userId = $userId;
     }
 
     public function handle(\SimpleXMLElement $chnageOfTaskXML) {
+        if (is_null($this->userId)) {
+            throw new BAException(self::USER_ID_MUST_TO_BE_SET_MSG, BAException::PARAM_NOT_SET_EXCODE);
+        }
         if($this->changeParser->isANewTask($chnageOfTaskXML)) {
             return $this->handleNewTask($chnageOfTaskXML);
         } else {
@@ -50,9 +55,15 @@ class ChangeOfTaskHandler {
         }
     }
 
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+        return $this;
+    }
+
     public function handleNewTask(\SimpleXMLElement $chnageOfTaskXML)
     {
-        $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML);
+        $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
         $taskId = $this->addTask($taskWithConditions);
         $this->loggingChanges($chnageOfTaskXML, "CREATE");
         return $taskId;
@@ -62,7 +73,10 @@ class ChangeOfTaskHandler {
         $task = $taskWithConditions['task'];
         $conditions = $taskWithConditions['conditions'];
         $picture = $taskWithConditions['picture'];
+        $task->id = null;
         $task->user = $this->userId;
+        $task->last_modify = date('Y-m-d H:i:s', time());
+        $task->created = date('Y-m-d H:i:s', time());
         $task->save();
         foreach ($conditions as $condition) {
             $condition->task_id = $task->id;
