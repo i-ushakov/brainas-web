@@ -27,7 +27,7 @@ class TasksSyncManagerTest extends \Codeception\TestCase\Test
         m::close();
     }
 
-    public function testHandleTasksFromDeviceWithWrongParamEx()
+    public function testHandleTasksFromDevice_ThrowWrongParamEx()
     {
         $changedTasksXML = ''.
             '<wrongElement><someXmlData/></wrongElement>';
