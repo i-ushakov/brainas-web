@@ -27,34 +27,30 @@ class TasksSyncManagerTest extends \Codeception\TestCase\Test
         m::close();
     }
 
-    public function testGetTasksFromDeviceWrongParamEx()
+    public function testHandleTasksFromDeviceWithWrongParamEx()
     {
         $changedTasksXML = ''.
-            '<wrongElement>' .
-                '<changeOfTask localId="1" globalId="11"><someXmlData/></changeOfTask>' .
-                '<changeOfTask localId="2" globalId="12"><someXmlData/></changeOfTask>' .
-                '<changeOfTask localId="3" globalId="0"><someXmlData/></changeOfTask>' .
-            '</wrongElement>';
+            '<wrongElement><someXmlData/></wrongElement>';
         $changedTasksObj = new SimpleXMLElement($changedTasksXML);
         $changeOfTaskHandlerProxy = $this->prepareTaskHandlerProxy();
         $tasksSyncManager = new TasksSyncManager($changeOfTaskHandlerProxy->getObject());
         $this->tester->expectException(new BAException(TasksSyncManager::WRONG_ROOT_ELEMNT, BAException::WRONG_ROOT_XML_ELEMENT_NAME), function() use ($tasksSyncManager,$changedTasksObj){
-            $tasksSyncManager->getTasksFromDevice($changedTasksObj);
+            $tasksSyncManager->handleTasksFromDevice($changedTasksObj);
         });
     }
 
-    public function testGetTasksFromDevice0()
+    public function testHandleTasksFromDevice0()
     {
         $changedTasksXML = ''.
             '<changedTasks></changedTasks>';
         $changedTasks = new SimpleXMLElement($changedTasksXML);
         $changeOfTaskHandlerProxy = $this->prepareTaskHandlerProxy();
         $tasksSyncManager = new TasksSyncManager($changeOfTaskHandlerProxy->getObject());
-        $tasksSyncManager->getTasksFromDevice($changedTasks);
+        $tasksSyncManager->handleTasksFromDevice($changedTasks);
         $changeOfTaskHandlerProxy->verifyNeverInvoked('handle');
     }
 
-    public function testGetTasksFromDevice1()
+    public function testHandleTasksFromDevice1()
     {
         $changedTasksXML = ''.
             '<changedTasks>' .
@@ -63,12 +59,12 @@ class TasksSyncManagerTest extends \Codeception\TestCase\Test
         $changedTasks = new SimpleXMLElement($changedTasksXML);
         $changeOfTaskHandlerProxy = $this->prepareTaskHandlerProxy();
         $tasksSyncManager = new TasksSyncManager($changeOfTaskHandlerProxy->getObject());
-        $synchronizedTasks =  $tasksSyncManager->getTasksFromDevice($changedTasks);
+        $synchronizedTasks =  $tasksSyncManager->handleTasksFromDevice($changedTasks);
         $changeOfTaskHandlerProxy->verifyInvokedOnce('handle');
         $this->tester->assertEquals([1 => 11], $synchronizedTasks, "Wrong synchronized tasks array");
     }
 
-    public function testGetTasksFromDevice3()
+    public function testHandleTasksFromDevice3()
     {
         $changedTasksXML = ''.
                 '<changedTasks>' .
@@ -82,10 +78,32 @@ class TasksSyncManagerTest extends \Codeception\TestCase\Test
         $changeOfTaskHandler->shouldReceive('handle')->times(3)->andReturn(11, 12, 13);
 
         $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler);
-        $synchronizedTasks = $tasksSyncManager->getTasksFromDevice($changedTasks);
+        $synchronizedTasks = $tasksSyncManager->handleTasksFromDevice($changedTasks);
 
         $this->tester->assertEquals(
             [1 => 11, 2 => 12, 3 => 13], $synchronizedTasks, "Wrong synchronized tasks array");
+    }
+    public function testPrepareSyncObjectsXml()
+    {
+        $changeOfTaskHandler = m::mock(ChangeOfTaskHandler::class);
+        $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler);
+        $synchronizedTasks = [
+            1 => 11,
+            2 => 12
+        ];
+        $synchronizedObjsXml = '<?xml version="1.0" encoding="UTF-8"?>' .
+            '<synchronizedTasks>' .
+                '<synchronizedTask>' .
+                    '<localId>1</localId>' .
+                    '<globalId>11</globalId>' .
+                '</synchronizedTask>' .
+                '<synchronizedTask>' .
+                    '<localId>2</localId>' .
+                    '<globalId>12</globalId>' .
+                '</synchronizedTask>' .
+            '</synchronizedTasks>';
+        $result = $tasksSyncManager->prepareSyncObjectsXml($synchronizedTasks);
+        $this->tester->assertEquals($synchronizedObjsXml, $result, "Wrong xml with synchronized objects");
     }
 
     protected function prepareTaskHandlerProxy()
@@ -99,4 +117,6 @@ class TasksSyncManagerTest extends \Codeception\TestCase\Test
         );
         return $changeOfTaskHandlerProxy;
     }
+
+
 }
