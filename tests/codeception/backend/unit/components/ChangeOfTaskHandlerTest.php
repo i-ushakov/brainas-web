@@ -12,6 +12,7 @@ use backend\components\ChangeOfTaskHandler;
 use common\nmodels\TaskXMLConverter;
 use common\nmodels\Task;
 use common\nmodels\Condition;
+use common\components\BAException;
 
 use Mockery as m;
 
@@ -48,6 +49,23 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
 		    </changeOfTask>";
 
     protected function _before() {
+
+    }
+
+    public function testHandle_ThrowUserIdNotSetEx()
+    {
+        $taskXMLConverter = m::mock(TaskXMLConverter::class);
+        $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
+        $changeHandler = new ChangeOfTaskHandler($changeOfTaskParser, $taskXMLConverter);
+        $this->tester->expectException(
+            new BAException(
+                ChangeOfTaskHandler::USER_ID_MUST_TO_BE_SET_MSG,
+                BAException::PARAM_NOT_SET_EXCODE
+            ),
+            function() use ($changeHandler){
+                $changeHandler->handle(new \SimpleXMLElement("<changeOfTask></changeOfTask>"));
+            }
+        );
 
     }
 
