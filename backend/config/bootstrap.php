@@ -1,8 +1,8 @@
 <?php
 
 use yii\di\Instance;
-use backend\helpers\ChangeOfTaskParser;
-use backend\helpers\ChangeOfTaskHandler;
+use backend\components\ChangeOfTaskParser;
+use backend\components\ChangeOfTaskHandler;
 use common\nmodels\TaskXMLConverter;
 use common\nmodels\ConditionXMLConverter;
 
@@ -17,6 +17,6 @@ $container->setDefinitions([
     ],
     ChangeOfTaskHandler::class => [
         ['class' => ChangeOfTaskHandler::class],
-        [Instance::of(ChangeOfTaskParser::class), Instance::of(TaskXMLConverter::class), 1]
+        [Instance::of(ChangeOfTaskParser::class), Instance::of(TaskXMLConverter::class)]
     ]
 ]);
