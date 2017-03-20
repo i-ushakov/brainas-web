@@ -10,7 +10,7 @@ namespace common\components;
 
 class BAException extends \Exception {
     const WRONG_NAME_OF_EVENT_TYPE_ERRORCODE = 1101;
-// 1102
+    const PARAM_NOT_SET_EXCODE = 1102;
     const EMPTY_PARAM_EXCODE = 1103;
     const INVALID_PARAM_EXCODE = 1104;
     const WRONG_ROOT_XML_ELEMENT_NAME = 1105;
