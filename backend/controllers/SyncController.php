@@ -11,6 +11,7 @@ namespace backend\controllers;
 use Yii;
 use yii\web\Controller;
 use backend\components\TasksSyncManager;
+use backend\components\GoogleAuthHelper;
 
 class SyncController extends Controller
 {
@@ -25,7 +26,10 @@ class SyncController extends Controller
      */
     public function actionSendTasks()
     {
-        $userId = 2;// TODO verifyUserAccess
+        $token = $this->getAccessTokenFromPost();
+
+        $authInfo = GoogleAuthHelper::verifyUserAccess($token);
+        $userId = $authInfo['userId'];
 
         $syncDataFromDevice = simplexml_load_file($_FILES['tasks_changes_xml']['tmp_name']);
         $changedTasksXml = $syncDataFromDevice->changedTasks;
@@ -44,5 +48,15 @@ class SyncController extends Controller
     public function actionGetTasks()
     {
         //TODO
+    }
+
+    protected function getAccessTokenFromPost() {
+        $post = Yii::$app->request->post();
+        if(isset($post['accessToken'])) {
+            $accessToken = $post['accessToken'];
+        } else {
+            throw new HttpException(470 ,'Token wasn\'t sent');
+        }
+        return json_decode($accessToken, true);
     }
 }

@@ -11,7 +11,7 @@
 $I = new \FunctionalTester($scenario);
 
 $I->sendPOST('sync/send-tasks',
-    ['token' => 'value'],
+    ['accessToken' => Yii::$app->params['testAccessToken']],
     ['tasks_changes_xml' => codecept_data_dir('SyncControllerFeed/tasks_changes_add_tasks.xml')]
 );
 $I->seeResponseCodeIs(200);
@@ -46,6 +46,7 @@ $I->assertEquals(intval($synchronizedTask->localId), 1, 'Local id have to be 1')
 
 $I->wantTo('check that task 1 was UPDATED in database');
 $I->seeInDatabase('tasks', array(
+    'user' => 1,
     'message' => 'Task 1 ADDED(ACTIVE)',
-    'descriptio' => 'Task 1 Desc',
+    'description' => 'Task 1 Desc',
     'status' => 'ACTIVE'));
