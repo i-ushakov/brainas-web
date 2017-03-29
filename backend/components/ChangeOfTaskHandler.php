@@ -12,6 +12,7 @@ use common\components\BAException;
 use common\nmodels\TaskXMLConverter;
 use common\nmodels\Task;
 use common\models\PictureOfTask;
+use common\infrastructure\ChangeOfTask;
 use frontend\components\GoogleDriveHelper;
 
 class ChangeOfTaskHandler {
@@ -65,7 +66,7 @@ class ChangeOfTaskHandler {
     {
         $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
         $taskId = $this->addTask($taskWithConditions);
-        $this->loggingChanges($chnageOfTaskXML, "CREATE");
+        $this->loggingChanges($chnageOfTaskXML, "Created");
         return $taskId;
     }
 
@@ -150,9 +151,31 @@ class ChangeOfTaskHandler {
         }
     }
 
-    public function loggingChanges($changeOfTask, $type) {
-        //$changeDatetime = $this->changeParser->getTimeOfChange();
-        //ChangeOfTask::loggingChangesForSync("Created", $changeDatetime, $task);
+    public function loggingChanges($changeOfTaskXML, $action) {
+        $changeDatetime = $this->changeParser->getTimeOfChange($changeOfTaskXML);
+        $taskGlobalId = $this->changeParser->getGlobalId($changeOfTaskXML);
+
+        $changeOfTask = ChangeOfTask::find()
+            ->where(['user_id' => $this->userId, 'task_id' => $taskGlobalId])
+            ->orderBy('id')
+            ->one();
+        if (empty($changeOfTask)) {
+            $changeOfTask = new ChangeOfTask();
+            $changeOfTask->task_id = $taskGlobalId;
+            $changeOfTask->user_id = $this->userId;
+        }
+
+        if ($changeDatetime == null) {
+            $currentDatetime = new \DateTime();
+            $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
+            $changeOfTask->datetime = $currentDatetime->format('Y-m-d H:i:s');
+        } else {
+            $changeOfTask->datetime = $changeDatetime;
+        }
+        $changeOfTask->server_update_time = date('Y-m-d H:i:s');
+        $changeOfTask->action = $action;
+        $changeOfTask->save();
+
         return true;
     }
 

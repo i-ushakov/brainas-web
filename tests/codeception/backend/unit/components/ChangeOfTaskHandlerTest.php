@@ -13,6 +13,7 @@ use common\nmodels\TaskXMLConverter;
 use common\nmodels\Task;
 use common\nmodels\Condition;
 use common\components\BAException;
+use common\infrastructure\ChangeOfTask;
 
 use Mockery as m;
 
@@ -48,9 +49,6 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
                 <change><status>DELETED</status><changeDatetime>2016-12-01 06:05:13</changeDatetime></change>
 		    </changeOfTask>";
 
-    protected function _before() {
-
-    }
 
     public function testHandle_ThrowUserIdNotSetEx()
     {
@@ -362,8 +360,80 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
     }
 
 
-    public function loggingChanges() {
-        // TODO
+    public function testLoggingChanges_created()
+    {
+        $taskXMLConverter = m::mock(TaskXMLConverter::class);
+
+        $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
+        $changeOfTaskParser->shouldReceive('getTimeOfChange')->once()->andReturn('2017-03-27 09:58:47');
+        $changeOfTaskParser->shouldReceive('getGlobalId')->once()->andReturn(100);
+
+        $userId = 1;
+
+        $changeOfTaskHandler = \Mockery::mock(
+            ChangeOfTaskHandler::class . '[savePistureOfTask]',
+            [$changeOfTaskParser, $taskXMLConverter, $userId]
+        );
+
+        $chnageOfTaskXML = new SimpleXMLElement("<chnageOfTask/>");
+        $type = "Created";
+
+        $changeOfTaskHandler->loggingChanges($chnageOfTaskXML, $type);
+
+        $this->tester->seeRecord(ChangeOfTask::class, [
+            'user_id' => 1,
+            'task_id' => 100,
+            'datetime' => '2017-03-27 09:58:47',
+            'action' => 'Created'
+        ]);
+    }
+
+    public function testLoggingChanges_changed()
+    {
+        $taskXMLConverter = m::mock(TaskXMLConverter::class);
+
+        $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
+        $changeOfTaskParser->shouldReceive('getTimeOfChange')->once()->andReturn('2017-03-27 10:00:00');
+        $changeOfTaskParser->shouldReceive('getGlobalId')->once()->andReturn(100);
+
+        $userId = 1;
+
+        $changeOfTaskHandler = \Mockery::mock(
+            ChangeOfTaskHandler::class . '[savePistureOfTask]',
+            [$changeOfTaskParser, $taskXMLConverter, $userId]
+        );
+
+        $chnageOfTaskXML = new SimpleXMLElement("<chnageOfTask/>");
+        $type = "Changed";
+
+        // have in database
+        $changeOfTask = new ChangeOfTask(
+            [
+                'id' => 1,
+                'user_id' => 1,
+                'task_id' => 100,
+                'action' => 'Created',
+                'datetime' => '2017-03-27 08:48:47',
+                'server_update_time' => '2017-03-27 08:59:47'
+            ]);
+        $changeOfTask->save();
+
+        $changeOfTaskHandler->loggingChanges($chnageOfTaskXML, $type);
+
+        $this->tester->dontSeeRecord(ChangeOfTask::class, [
+            'user_id' => 1,
+            'task_id' => 100,
+            'action' => 'Created'
+        ]);
+
+        $this->tester->seeRecord(ChangeOfTask::class, [
+            'user_id' => 1,
+            'task_id' => 100,
+            'datetime' => '2017-03-27 10:00:00',
+            'action' => 'Changed'
+        ]);
+
+        $changeOfTask->delete();
     }
 
     public function testSavePistureOfTask() {
