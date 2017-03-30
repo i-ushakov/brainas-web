@@ -139,7 +139,7 @@ class ChangeOfTaskHandler {
         }
     }
 
-    public function getTimeOfTaskChange($taskId) {
+    public function getTimeOfLastLoggedChanges($taskId) {
         $changeOfTask = ChangeOfTask::find()
             ->where(['user_id' => $this->userId, 'task_id' => $taskId])
             ->orderBy('id')
