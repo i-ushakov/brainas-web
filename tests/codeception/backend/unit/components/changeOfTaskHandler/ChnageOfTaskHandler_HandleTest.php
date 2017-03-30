@@ -40,4 +40,22 @@ class ChangeOfTaskHandler_HandleTest extends \Codeception\TestCase\Test
             }
         );
     }
+
+    public function testNewTask() {
+        $taskXMLConverter = m::mock(TaskXMLConverter::class);
+        $changeParser = m::mock(ChangeOfTaskParser::class . '[isANewTask]');
+        $changeParser->shouldReceive('isANewTask')
+            ->once()->andReturn(true);
+        $userId = 1;
+
+        $changeHandler = \Mockery::mock(
+            ChangeOfTaskHandler::class . '[handleNewTask]',
+            [$changeParser, $taskXMLConverter, $userId]
+        );
+
+        $changeHandler->shouldReceive('handleNewTask')
+            ->times(1);
+
+        $changeHandler->handle(new \SimpleXMLElement("<changeOfTask localId=\"16\" globalId=\"0\"></changeOfTask>"));
+    }
 }

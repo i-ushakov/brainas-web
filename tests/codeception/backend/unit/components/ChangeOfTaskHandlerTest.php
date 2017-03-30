@@ -27,13 +27,6 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
         m::close();
     }
 
-    private $changeOfTaskNewXMLString = "
-            <changeOfTask localId=\"16\" globalId=\"0\">
-                <task localId=\"16\" globalId=\"0\">
-			        <someTaskStuff/>
-		        </task>
-                <change><status>CREATED</status><changeDatetime>2016-12-01 06:05:13</changeDatetime></change>
-		    </changeOfTask>";
 
     private $changeOfTaskUpdatedXMLString = "
             <changeOfTask localId=\"16\" globalId=\"1425\">
@@ -47,35 +40,6 @@ class ChangeOfTaskHandlerTest extends \Codeception\TestCase\Test {
                 <task id=\"1425\">dummy element</task>
                 <change><status>DELETED</status><changeDatetime>2016-12-01 06:05:13</changeDatetime></change>
 		    </changeOfTask>";
-
-
-
-
-    public function testHandle_NewTask() {
-        $taskConverter = Stub::make(
-            '\common\nmodels\TaskXMLConverter',
-            array(), $this
-        );
-
-        $changeParser = Stub::make(
-            ChangeOfTaskParser::class,
-            array(
-                'isANewTask' => Codeception\Util\Stub::exactly(1, function() {return true;}),
-                //'getTimeOfChange' => Codeception\Util\Stub::exactly(1, function() {return "2016-09-15 18:08:09";})
-            ),$this
-        );
-
-        $userId = 1;
-
-        $changeHandler = Stub::construct(ChangeOfTaskHandler::class,
-            array($changeParser, $taskConverter, $userId),
-            array(
-                'handleNewTask' => Codeception\Util\Stub::exactly(1, function () { return 100; })
-            ), $this
-        );
-
-        $changeHandler->handle(new \SimpleXMLElement($this->changeOfTaskNewXMLString));
-    }
 
     public function testHandleUpdatedTask() {
         $changeParser = Stub::make(
