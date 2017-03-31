@@ -17,6 +17,7 @@ use frontend\components\GoogleDriveHelper;
 
 class ChangeOfTaskHandler {
     const USER_ID_MUST_TO_BE_SET_MSG = "User id must to be set";
+    const TASK_ID_MUST_TO_BE_KNOWN_MSG = "Task id must to be known";
     private $changeParser;
     private $converter;
     private $userId = null;
@@ -66,7 +67,7 @@ class ChangeOfTaskHandler {
     {
         $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
         $taskId = $this->addTask($taskWithConditions);
-        $this->loggingChanges($chnageOfTaskXML, "Created");
+        $this->loggingChanges($chnageOfTaskXML, "Created", $taskId);
         return $taskId;
     }
 
@@ -151,17 +152,23 @@ class ChangeOfTaskHandler {
         }
     }
 
-    public function loggingChanges($changeOfTaskXML, $action) {
+    public function loggingChanges($changeOfTaskXML, $action, $taskId = null) {
         $changeDatetime = $this->changeParser->getTimeOfChange($changeOfTaskXML);
-        $taskGlobalId = $this->changeParser->getGlobalId($changeOfTaskXML);
+        if (is_null($taskId)) {
+            $taskId = $this->changeParser->getGlobalId($changeOfTaskXML);
+        }
+
+        if (is_null($taskId)) {
+            throw new BAException(self::TASK_ID_MUST_TO_BE_KNOWN_MSG, BAException::PARAM_NOT_SET_EXCODE);
+        }
 
         $changeOfTask = ChangeOfTask::find()
-            ->where(['user_id' => $this->userId, 'task_id' => $taskGlobalId])
+            ->where(['user_id' => $this->userId, 'task_id' => $taskId])
             ->orderBy('id')
             ->one();
         if (empty($changeOfTask)) {
             $changeOfTask = new ChangeOfTask();
-            $changeOfTask->task_id = $taskGlobalId;
+            $changeOfTask->task_id = $taskId;
             $changeOfTask->user_id = $this->userId;
         }
 

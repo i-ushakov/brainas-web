@@ -76,6 +76,7 @@ class ChangeOfTaskParserTest extends \Codeception\TestCase\Test {
         $globalId = $parser->getGlobalId($xml);
         $this->assertEquals(10, $globalId, "Wrong global Id");
     }
+
     public function testGetTimeOfChange()
     {
         $xml = new SimpleXMLElement('' .

@@ -10,6 +10,7 @@ use backend\components\ChangeOfTaskParser;
 use backend\components\ChangeOfTaskHandler;
 use common\nmodels\TaskXMLConverter;
 use common\infrastructure\ChangeOfTask;
+use common\components\BAException;
 
 use Mockery as m;
 
@@ -31,9 +32,10 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
 
         $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
         $changeOfTaskParser->shouldReceive('getTimeOfChange')->once()->andReturn('2017-03-27 09:58:47');
-        $changeOfTaskParser->shouldReceive('getGlobalId')->once()->andReturn(100);
+        $changeOfTaskParser->shouldReceive('getGlobalId')->never();
 
         $userId = 1;
+        $taskId = 100;
 
         $changeOfTaskHandler = \Mockery::mock(
             ChangeOfTaskHandler::class . '[savePistureOfTask]',
@@ -43,7 +45,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         $chnageOfTaskXML = new SimpleXMLElement("<chnageOfTask/>");
         $type = "Created";
 
-        $changeOfTaskHandler->loggingChanges($chnageOfTaskXML, $type);
+        $changeOfTaskHandler->loggingChanges($chnageOfTaskXML, $type, $taskId);
 
         $this->tester->seeRecord(ChangeOfTask::class, [
             'user_id' => 1,
@@ -99,5 +101,34 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         ]);
 
         $changeOfTask->delete();
+    }
+
+    public function testThrowExceptionThatTaskIdMustToBeKnow()
+    {
+        $converter = m::mock(TaskXMLConverter::class);
+
+        $parser = m::mock(ChangeOfTaskParser::class);
+        $parser->shouldReceive('getTimeOfChange')->once()->andReturn('2017-03-27 09:58:47');
+        $parser->shouldReceive('getGlobalId')->once()->andReturn(null);
+
+        $userId = 1;
+
+        $handler = \Mockery::mock(
+            ChangeOfTaskHandler::class . '[]',
+            [$parser, $converter, $userId]
+        );
+
+        $chnageXML = new SimpleXMLElement("<chnageOfTask/>");
+        $type = "Created";
+
+        $this->tester->expectException(
+            new BAException(
+                ChangeOfTaskHandler::TASK_ID_MUST_TO_BE_KNOWN_MSG,
+                BAException::PARAM_NOT_SET_EXCODE
+            ),
+            function() use ($handler, $chnageXML, $type){
+                $handler->loggingChanges($chnageXML, $type);
+            }
+        );
     }
 }
