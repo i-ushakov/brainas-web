@@ -69,13 +69,7 @@ class ChangeOfTaskParserTest extends \Codeception\TestCase\Test {
         );
     }
 
-    public function testGetGlobalId()
-    {
-        $xml = new SimpleXMLElement('<changeOfTask localId="1" globalId="10"></changeOfTask>');
-        $parser = new ChangeOfTaskParser();
-        $globalId = $parser->getGlobalId($xml);
-        $this->assertEquals(10, $globalId, "Wrong global Id");
-    }
+
 
     public function testGetTimeOfChange()
     {

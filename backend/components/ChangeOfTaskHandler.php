@@ -158,7 +158,7 @@ class ChangeOfTaskHandler {
             $taskId = $this->changeParser->getGlobalId($changeOfTaskXML);
         }
 
-        if (is_null($taskId)) {
+        if ($taskId == 0) {
             throw new BAException(self::TASK_ID_MUST_TO_BE_KNOWN_MSG, BAException::PARAM_NOT_SET_EXCODE);
         }
 

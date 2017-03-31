@@ -109,7 +109,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
 
         $parser = m::mock(ChangeOfTaskParser::class);
         $parser->shouldReceive('getTimeOfChange')->once()->andReturn('2017-03-27 09:58:47');
-        $parser->shouldReceive('getGlobalId')->once()->andReturn(null);
+        $parser->shouldReceive('getGlobalId')->once()->andReturn(0);
 
         $userId = 1;
 

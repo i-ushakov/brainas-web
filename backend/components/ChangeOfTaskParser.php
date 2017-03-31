@@ -32,6 +32,9 @@ class ChangeOfTaskParser {
 
     public function getGlobalId(\SimpleXMLElement $xml) {
         $globalId = (string)$xml['globalId'];
+        if ($globalId == '') {
+            $globalId = 0;
+        }
         return $globalId;
     }
 
