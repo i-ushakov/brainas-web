@@ -8,6 +8,7 @@
 
 namespace common\models;
 
+use common\components\BAException;
 use yii\db\ActiveRecord;
 
 class EventType extends ActiveRecord {
@@ -17,9 +18,13 @@ class EventType extends ActiveRecord {
     }
 
     public static function  getTypeIdByName($typeName) {
-        $typeId = self::find()
+        $eventType = self::find()
             ->where(['name' => $typeName])
-            ->one()->id;
-        return $typeId;
+            ->one();
+        if ($eventType == null) {
+            throw new BAException("Wrong name of event type", BAException::WRONG_NAME_OF_EVENT_TYPE_ERRORCODE);
+        }
+
+        return  $eventType->id;;
     }
 }

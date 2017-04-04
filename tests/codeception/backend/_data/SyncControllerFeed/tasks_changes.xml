@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<changes>
+    <existingTasks>{"11":"1"}</existingTasks>
+    <changedTasks>
+        <changeOfTask localId="1" globalId="11">
+            <task localId="1" globalId="11">
+                <message>Task 1 UPDATED(ACTIVE)</message>
+                <description/>
+                <status>ACTIVE</status>
+                <conditions>
+                    <condition localId="11" globalId="111" type="TIME">
+                        <params>{"offset":180,"datetime":"01-11-2017 13:34:08"}</params>
+                    </condition>
+                    <condition localId="12" globalId="0" type="LOCATION">
+                        <params>{\"address\":\"ул. Фрунзе, 12, Zhukovskiy\",\"radius\":100,\"lng\":38.125353455544,\"lat\":55.59917167827}</params>
+                    </condition>
+                </conditions>
+            </task>
+            <change><status>CREATED</status><changeDatetime>2016-12-01 06:05:13</changeDatetime></change>
+        </changeOfTask>
+    </changedTasks>
+</changes>

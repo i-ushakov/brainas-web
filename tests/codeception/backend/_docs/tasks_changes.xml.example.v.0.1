@@ -1,0 +1,74 @@
+/*
+ *
+ * Here are examples of synchronization request from device to server
+ * BA version 0.1
+ *
+ */
+
+// UPDATED task with conditions
+<?xml version="1.0" encoding="UTF-8"?>
+<changes>
+    <existingTasks>{"1442":"55","1444":"57","1446":"59","1459":"72","1464":"76"}</existingTasks>
+    <changedTasks>
+        <changedTask id="76" globalId="1464">
+            <message>bay a tualet paper</message>
+            <description/>
+            <status>WAITING</status>
+            <conditions>
+                <condition localId="1083" globalId="726">
+                    <events>
+                        <event localId="1372" globalId="0">
+                            <type>GPS</type>
+                            <params>{"lat":55.5991236,"lng":38.1258632,"radius":200,"address":"ulitsa Frunze, 12, Zhukovskiy"}</params>
+                        </event>
+                    </events>
+                </condition>
+                <condition localId="1084" globalId="0">
+                    <events>
+                        <event localId="1373" globalId="0">
+                            <type>TIME</type>
+                            <params>{"datetime":"18-03-2017 13:46:00","offset":180}</params>
+                        </event>
+                    </events>
+                </condition>
+            </conditions>
+            <change>
+                <status>UPDATED</status>
+                <changeDatetime>2017-03-03 10:46:28</changeDatetime>
+            </change>
+        </changedTask>
+    </changedTasks>
+</changes>
+
+// CREATED task
+<?xml version="1.0" encoding="UTF-8"?>
+<changes>
+    <existingTasks>{"1442":"55","1444":"57","1446":"59","1459":"72","1464":"76"}</existingTasks>
+    <changedTasks>
+        <changedTask id="77" globalId="0">
+            <message>ееее</message>
+            <description/>
+            <status>TODO</status>
+            <conditions/>
+            <change>
+                <status>CREATED</status>
+                <changeDatetime>2017-03-03 11:24:01</changeDatetime>
+            </change>
+        </changedTask>
+    </changedTasks>
+</changes>
+
+// DELETED task
+<?xml version="1.0" encoding="UTF-8"?>
+<changes>
+    <existingTasks>{"1442":"55","1444":"57","1446":"59","1459":"72","1464":"76"}</existingTasks>
+    <changedTasks>
+        <changedTask globalId="1470" id="77">
+            <change>
+                <status>DELETED</status>
+                <changeDatetime>2017-03-03 11:25:00</changeDatetime>
+            </change>
+        </changedTask>
+    </changedTasks>
+</changes>
+
