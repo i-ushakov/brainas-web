@@ -24,7 +24,7 @@ class ChangeOfTaskHandler_IsActualChange_Test extends \Codeception\TestCase\Test
         m::close();
     }
 
-    public function testLoggingCreationOfTask()
+    public function testActualChange()
     {
         $converter = m::mock(TaskXMLConverter::class);
 
