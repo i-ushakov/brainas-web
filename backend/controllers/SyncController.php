@@ -29,6 +29,12 @@ class SyncController extends Controller
     {
         $token = $this->getAccessTokenFromPost();
 
+        if (is_null($token)) {
+            $xmlResp = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" .
+                "<errors><error>Token wasn't given</error></errors>";
+            return $xmlResp;
+        }
+
         $authInfo = GoogleAuthHelper::verifyUserAccess($token);
         $token = $authInfo['token'];
         $userEmail =  $authInfo['userEmail'];
@@ -77,7 +83,7 @@ class SyncController extends Controller
         if(isset($post['accessToken'])) {
             $accessToken = $post['accessToken'];
         } else {
-            throw new HttpException(470 ,'Token wasn\'t sent');
+            return null;
         }
         return json_decode($accessToken, true);
     }
