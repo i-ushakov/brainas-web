@@ -10,6 +10,7 @@
 
 $I = new \FunctionalTester($scenario);
 
+
 $I->sendPOST('sync/send-tasks',
     ['accessToken' => Yii::$app->params['testAccessToken']],
     ['tasks_changes_xml' => codecept_data_dir('SyncControllerFeed/tasks_changes_add_tasks.xml')]

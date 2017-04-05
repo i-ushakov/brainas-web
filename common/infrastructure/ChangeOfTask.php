@@ -13,6 +13,10 @@ use common\models\Task;
 
 class ChangeOfTask extends ActiveRecord {
 
+    const STATUS_CREATED = "CREATED";
+    const STATUS_UPDATED = "UPDATED";
+    const STATUS_DELETED = "DELETED";
+
     public static function tableName()
     {
         return 'sync_changed_tasks';
