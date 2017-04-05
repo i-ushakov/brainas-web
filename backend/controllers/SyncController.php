@@ -15,10 +15,32 @@ use backend\components\GoogleAuthHelper;
 
 class SyncController extends Controller
 {
-    public function beforeAction($action) {
+    public function beforeAction($action)
+    {
         $this->enableCsrfValidation = false;
         \Yii::$app->controller->enableCsrfValidation = false;
         return parent::beforeAction($action);
+    }
+
+    /*
+     * Refresh user's access token
+     */
+    public function actionRefreshToken()
+    {
+        $token = $this->getAccessTokenFromPost();
+
+        $authInfo = GoogleAuthHelper::verifyUserAccess($token);
+        $token = $authInfo['token'];
+        $userEmail =  $authInfo['userEmail'];
+
+        $xmlResp = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" .
+            "<credentials>" .
+                "<accessToken> " . json_encode($token) . "</accessToken>" .
+                "<userEmail>$userEmail</userEmail>" .
+            "</credentials>";
+
+        return $xmlResp;
+
     }
 
     /*
