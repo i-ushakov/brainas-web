@@ -59,7 +59,7 @@ class ChangeOfTaskHandler {
         $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);
         $task = Task::findOne($taskId);
         if ($task != null) {
-            if ($this->isChangeOfTaskActual($chnageOfTaskXML)) {
+            if ($this->isActualChange($chnageOfTaskXML)) {
                 $status = $this->changeParser->getStatus($chnageOfTaskXML);
                 if ($status == ChangeOfTask::STATUS_DELETED) {
                     $this->deleteTask($taskId);
@@ -136,11 +136,11 @@ class ChangeOfTaskHandler {
         return false;
     }
 
-    public function isChangeOfTaskActual(\SimpleXMLElement $chnageOfTaskXML) {
+    public function isActualChange(\SimpleXMLElement $chnageOfTaskXML) {
         $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);
-        $serverChangeTime = $this->getTimeOfTaskChanges($taskId);
-        $clientChangeTime = $this->changeParser->getTimeOfChange($chnageOfTaskXML);
-        if (strtotime($serverChangeTime) < strtotime($clientChangeTime)) {
+        $serverTime = $this->getServerTimeOfChanges($taskId);
+        $clientTime = $this->changeParser->getClientTimeOfChanges($chnageOfTaskXML);
+        if (strtotime($serverTime) < strtotime($clientTime)) {
             return true;
         }
     }
@@ -158,7 +158,7 @@ class ChangeOfTaskHandler {
     }
 
     public function loggingChanges($changeOfTaskXML, $action, $taskId = null) {
-        $changeDatetime = $this->changeParser->getTimeOfChange($changeOfTaskXML);
+        $changeDatetime = $this->changeParser->getClientTimeOfChanges($changeOfTaskXML);
         if (is_null($taskId)) {
             $taskId = $this->changeParser->getGlobalId($changeOfTaskXML);
         }
@@ -206,6 +206,18 @@ class ChangeOfTaskHandler {
             $picture->file_id = GoogleDriveHelper::getInstance($this->client)->getFileIdByName($pictureForSave->name);
         }
         $picture->save();
+    }
+
+    public function getServerTimeOfChanges($taskid) {
+        $changedTask = ChangeOfTask::find()
+            ->where(['user_id' => $this->userId, 'task_id' => $taskid])
+            ->orderBy('id')
+            ->one();
+        if (!is_null($changedTask)) {
+            return $changedTask->datetime;
+        } else {
+            return null;
+        }
     }
 
     public function cleanDeletedConditions() {
