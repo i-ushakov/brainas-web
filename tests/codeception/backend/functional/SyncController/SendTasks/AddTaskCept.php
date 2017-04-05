@@ -29,10 +29,6 @@ $I->seeResponseCodeIs(200);
 $I->wantTo('check that xml response is correct');
 try {
     $response = $I->grabResponse();
-    ob_start();
-    var_dump($response);
-    $result = ob_get_clean();
-    file_put_contents("t11.txt", $result);
     $responseXML = new \SimpleXMLElement($response);
 } catch (Exception $exception) {
     $I->fail("Response is not valid XML");
