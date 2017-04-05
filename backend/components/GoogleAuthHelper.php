@@ -76,6 +76,7 @@ class GoogleAuthHelper {
 
         $token = self::actualizeRefreshToken($token, $userId);
         $authInfo['userId'] = $userId;
+        $authInfo['userEmail'] = $data['email'];
         $authInfo['token'] = $token;
         return $authInfo;
     }
