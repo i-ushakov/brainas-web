@@ -78,7 +78,7 @@ class ChangeOfTaskParserTest extends \Codeception\TestCase\Test {
                 '<change><status>CREATED</status><changeDatetime>2016-12-01 06:05:13</changeDatetime></change>' .
             '</changeOfTask>');
         $parser = new ChangeOfTaskParser();
-        $timeOfChange = $parser->getTimeOfChange($xml);
+        $timeOfChange = $parser->getClientTimeOfChanges($xml);
         $this->assertEquals("2016-12-01 06:05:13", $timeOfChange);
     }
 }

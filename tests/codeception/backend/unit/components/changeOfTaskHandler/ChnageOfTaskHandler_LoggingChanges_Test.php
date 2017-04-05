@@ -31,7 +31,8 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         $taskXMLConverter = m::mock(TaskXMLConverter::class);
 
         $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
-        $changeOfTaskParser->shouldReceive('getTimeOfChange')->once()->andReturn('2017-03-27 09:58:47');
+        $changeOfTaskParser->shouldReceive('getClientTimeOfChanges')->once()
+            ->andReturn('2017-03-27 09:58:47');
         $changeOfTaskParser->shouldReceive('getGlobalId')->never();
 
         $userId = 1;
@@ -60,7 +61,8 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         $taskXMLConverter = m::mock(TaskXMLConverter::class);
 
         $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
-        $changeOfTaskParser->shouldReceive('getTimeOfChange')->once()->andReturn('2017-03-27 10:00:00');
+        $changeOfTaskParser->shouldReceive('getClientTimeOfChanges')->once()
+            ->andReturn('2017-03-27 10:00:00');
         $changeOfTaskParser->shouldReceive('getGlobalId')->once()->andReturn(100);
 
         $userId = 1;
@@ -108,7 +110,8 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         $converter = m::mock(TaskXMLConverter::class);
 
         $parser = m::mock(ChangeOfTaskParser::class);
-        $parser->shouldReceive('getTimeOfChange')->once()->andReturn('2017-03-27 09:58:47');
+        $parser->shouldReceive('getClientTimeOfChanges')->once()
+            ->andReturn('2017-03-27 09:58:47');
         $parser->shouldReceive('getGlobalId')->once()->andReturn(0);
 
         $userId = 1;

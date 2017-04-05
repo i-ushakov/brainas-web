@@ -41,10 +41,10 @@ class ChangeOfTaskHandler_HandleExistTask_Test extends \Codeception\TestCase\Tes
         $userId = 1;
 
         $changeOfTaskHandler = \Mockery::mock(
-            ChangeOfTaskHandler::class . '[isChangeOfTaskActual, updateTask, loggingChanges]',
+            ChangeOfTaskHandler::class . '[isActualChange, updateTask, loggingChanges]',
             [$parser, $converter, $userId]
         );
-        $changeOfTaskHandler->shouldReceive('isChangeOfTaskActual')->once()->andReturn(true);
+        $changeOfTaskHandler->shouldReceive('isActualChange')->once()->andReturn(true);
         $changeOfTaskHandler->shouldReceive('updateTask')->once()->andReturn(101);
         $changeOfTaskHandler->shouldReceive('loggingChanges')->once()
             ->with(SimpleXMLElement::class, ChangeOfTask::STATUS_UPDATED);

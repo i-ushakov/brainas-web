@@ -8,8 +8,6 @@
 
 namespace backend\components;
 
-use common\nmodels\TaskXMLConverter;
-
 class ChangeOfTaskParser {
     public function isANewTask(\SimpleXMLElement $xml) {
         $statusOfChanges = (String)$xml->change[0]->status;
@@ -38,7 +36,7 @@ class ChangeOfTaskParser {
         return $globalId;
     }
 
-    public function getTimeOfChange(\SimpleXMLElement $xml) {
+    public function getClientTimeOfChanges(\SimpleXMLElement $xml) {
         return (String)$xml->change[0]->changeDatetime;
     }
 
