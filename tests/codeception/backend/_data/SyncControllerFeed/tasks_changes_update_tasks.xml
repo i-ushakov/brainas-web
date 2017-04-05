@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<changes>
+    <changedTasks>
+        <changeOfTask localId="1" globalId="101">
+            <task localId="1" globalId="101">
+                <message>Task 101 UPDATED(ACTIVE)</message>
+                <description>Task 101 Desc</description>
+                <status>ACTIVE</status>
+            </task>
+            <change><status>CREATED</status><changeDatetime>2017-03-01 07:07:17</changeDatetime></change>
+        </changeOfTask>
+    </changedTasks>
+</changes>

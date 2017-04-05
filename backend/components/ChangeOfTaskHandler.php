@@ -36,24 +36,7 @@ class ChangeOfTaskHandler {
         if($this->changeParser->isANewTask($chnageOfTaskXML)) {
             return $this->handleNewTask($chnageOfTaskXML);
         } else {
-            $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);
-            $task = Task::findOne($taskId);
-            if ($task != null) {
-                if ($this->isChangeOfTaskActual($chnageOfTaskXML)) {
-                    $status = $this->changeParser->getStatus($chnageOfTaskXML);
-                    if ($status == "DELETED") {
-                        $this->deleteTask($taskId);
-                    } elseif ($status == "UPDATED" || $status == "CREATED") {
-                        $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
-                        if($taskId = $this->updateTask($taskWithConditions)) {
-                            $this->loggingChanges($chnageOfTaskXML, "Changed");
-                        } else {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return $taskId;
+            return $this->handleExistTask($chnageOfTaskXML);
         }
     }
 
@@ -68,6 +51,28 @@ class ChangeOfTaskHandler {
         $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
         $taskId = $this->addTask($taskWithConditions);
         $this->loggingChanges($chnageOfTaskXML, "Created", $taskId);
+        return $taskId;
+    }
+
+    public function handleExistTask(\SimpleXMLElement $chnageOfTaskXML)
+    {
+        $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);
+        $task = Task::findOne($taskId);
+        if ($task != null) {
+            if ($this->isChangeOfTaskActual($chnageOfTaskXML)) {
+                $status = $this->changeParser->getStatus($chnageOfTaskXML);
+                if ($status == ChangeOfTask::STATUS_DELETED) {
+                    $this->deleteTask($taskId);
+                } elseif ($status == ChangeOfTask::STATUS_UPDATED || $status == ChangeOfTask::STATUS_CREATED) {
+                    $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
+                    if($taskId = $this->updateTask($taskWithConditions)) {
+                        $this->loggingChanges($chnageOfTaskXML, ChangeOfTask::STATUS_UPDATED);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        }
         return $taskId;
     }
 

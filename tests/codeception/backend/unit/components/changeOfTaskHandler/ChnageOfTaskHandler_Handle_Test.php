@@ -60,39 +60,20 @@ class ChangeOfTaskHandler_Handle_Test extends \Codeception\TestCase\Test
         $changeHandler->handle(new \SimpleXMLElement("<changeOfTask localId=\"16\" globalId=\"0\"></changeOfTask>"));
     }
 
-    // TODO this test looks as functional, but have to be only unit
     public function testUpdateExistTask()
     {
-        $changeParser = Stub::make(
-            ChangeOfTaskParser::class,
-            array(
-                'isANewTask' => Codeception\Util\Stub::exactly(1, function() {return false;}),
-                'getGlobalId' => Codeception\Util\Stub::atLeastOnce(function() {return 1425;}),
-                'getStatus' => Codeception\Util\Stub::exactly(1, function() {return 'UPDATED';})
-            ),$this
-        );
-        $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\nmodels\ConditionXMLConverter());
+        $parser = m::mock(ChangeOfTaskParser::class);
+        $parser->shouldReceive('isANewTask')->once()->andReturn(false);
+        $converter = m::mock(TaskXMLConverter::class);
         $userId = 1;
-        $changeHandler = Stub::construct(ChangeOfTaskHandler::class,
-            array($changeParser, $taskConverter, $userId),
-            array(
-                'isChangeOfTaskActual' => Codeception\Util\Stub::exactly(1, function () { return true; }),
-                'updateTask' => Codeception\Util\Stub::exactly(1, function () { return 1425; }),
-                'loggingChanges' => Codeception\Util\Stub::exactly(1, function () {})
-            ), $this
-        );
 
-        $this->tester->haveInDatabase('tasks', array(
-            'id' => '1425', 'message' => 'Test', 'user' => 1, 'status' => 'TODO', 'created' => '2016-10-04 16:13:09', 'last_modify' => '2016-10-04 16:13:09'));
-        $this->assertEquals(
-            1425,
-            $changeHandler->handle(new \SimpleXMLElement("<changeOfTask localId=\"16\" globalId=\"1425\">
-                <task localId=\"16\" globalId=\"1425\">
-                    <someTaskStuff/>
-                </task>
-                <change><status>UPDATED</status><changeDatetime>2016-12-01 06:05:13</changeDatetime></change>
-		    </changeOfTask>")), "Return value of handled task must be 1425"
+        $changeHandler = \Mockery::mock(
+            ChangeOfTaskHandler::class . '[handleExistTask]',
+            [$parser, $converter, $userId]
         );
+        $changeHandler->shouldReceive('handleExistTask')->once();
+
+        $changeHandler->handle(new \SimpleXMLElement("<changeOfTask localId=\"11\" globalId=\"101\"></changeOfTask>"));
     }
 
     public function testUpdateNonexistentTask()
