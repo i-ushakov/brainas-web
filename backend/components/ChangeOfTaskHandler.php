@@ -33,6 +33,7 @@ class ChangeOfTaskHandler {
         if (is_null($this->userId)) {
             throw new BAException(self::USER_ID_MUST_TO_BE_SET_MSG, BAException::PARAM_NOT_SET_EXCODE);
         }
+
         if($this->changeParser->isANewTask($chnageOfTaskXML)) {
             return $this->handleNewTask($chnageOfTaskXML);
         } else {
@@ -56,9 +57,10 @@ class ChangeOfTaskHandler {
 
     public function handleExistTask(\SimpleXMLElement $chnageOfTaskXML)
     {
-        $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);
+        $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);;
         $task = Task::findOne($taskId);
-        if ($task != null) {
+
+        if (!is_null($task)) {
             if ($this->isActualChange($chnageOfTaskXML)) {
                 $status = $this->changeParser->getStatus($chnageOfTaskXML);
                 if ($status == ChangeOfTask::STATUS_DELETED) {
@@ -67,8 +69,9 @@ class ChangeOfTaskHandler {
                     $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
                     if($taskId = $this->updateTask($taskWithConditions)) {
                         $this->loggingChanges($chnageOfTaskXML, ChangeOfTask::STATUS_UPDATED);
+                        return $taskId;
                     } else {
-                        return false;
+                        return null;
                     }
                 }
             }
@@ -100,14 +103,12 @@ class ChangeOfTaskHandler {
         $updatedTask = $taskWithConditions['task'];
         $updatedPicture = $taskWithConditions['picture'];
         $updatedConditions = $taskWithConditions['conditions'];
-
         $task = Task::findOne(['id' => $updatedTask->id, 'user' => $this->userId]);
-
         if (!isset($task)) {
             return null;
         }
         $task->message = $updatedTask->message;
-        $task->user = $updatedTask->user;
+        $task->user = $this->userId;
         $task->description = $updatedTask->description;
         $task->last_modify = date('Y-m-d H:i:s', time());
         $task->status = $updatedTask->status;
@@ -128,7 +129,6 @@ class ChangeOfTaskHandler {
             $condition->params = $updatedCondition->params;
             $condition->save();
         }*/
-
         return $task->id;
     }
 
