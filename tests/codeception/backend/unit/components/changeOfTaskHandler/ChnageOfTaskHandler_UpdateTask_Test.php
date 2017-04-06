@@ -38,16 +38,17 @@ class ChangeOfTaskHandler_UpdateTask_Test extends \Codeception\TestCase\Test
         );
         $changeOfTaskHandler->shouldReceive('cleanDeletedConditions')->once();
 
-        $task = new Task();
-        $task->id = 88;
-        $task->user = 1;
-        $task->message = "Task 88 (UPDATED)";
-        $task->status = "ACTIVE";
+        $taskFromDevice = new Task([
+            'id' => 88,
+            'user' => 1,
+            'message' => 'Task 88 (UPDATED)',
+            'status' => 'ACTIVE',
+        ]);
 
         $condition = m::mock(Condition::class);
 
         $taskWithConditions = [
-            'task' => $task,
+            'task' => $taskFromDevice,
             'conditions' => [$condition],
             'picture' => null
         ];
@@ -72,6 +73,44 @@ class ChangeOfTaskHandler_UpdateTask_Test extends \Codeception\TestCase\Test
 
     public function testCheckSecureIssueUserIdSubstitution()
     {
+        $taskXMLConverter = m::mock(TaskXMLConverter::class);
+        $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
+        $userId = 2;
 
+        $changeOfTaskHandler = \Mockery::mock(
+            ChangeOfTaskHandler::class . '[cleanDeletedConditions]',
+            [$changeOfTaskParser, $taskXMLConverter, $userId]
+        );
+        $changeOfTaskHandler->shouldReceive('cleanDeletedConditions')->never();
+
+        $taskFromDevice = new Task([
+            'id' => 88,
+            'user' => 2, // Wrong user if (maybe russian hackers)
+            'message' => 'Task 88 (UPDATED)',
+            'status' => 'ACTIVE',
+        ]);
+
+        $condition = m::mock(Condition::class);
+
+        $taskWithConditions = [
+            'task' => $taskFromDevice,
+            'conditions' => [$condition],
+            'picture' => null
+        ];
+
+        $existsTask = new Task([
+            'id' => 88,
+            'user' => 1,
+            'message' => 'Task 88',
+            'status' => 'TODO',
+        ]);
+        $existsTask->save();
+
+        $taskId = $changeOfTaskHandler->updateTask($taskWithConditions);
+
+        $this->assertEquals(null, $taskId);
+        $updatedTask = Task::findOne(['id' => 88]);
+        $this->tester->assertEquals("Task 88", $updatedTask->message);
+        $this->tester->assertEquals("TODO", $updatedTask->status);
     }
 }
