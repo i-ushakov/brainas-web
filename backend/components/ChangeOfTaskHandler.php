@@ -108,7 +108,6 @@ class ChangeOfTaskHandler {
             return null;
         }
         $task->message = $updatedTask->message;
-        $task->user = $this->userId;
         $task->description = $updatedTask->description;
         $task->last_modify = date('Y-m-d H:i:s', time());
         $task->status = $updatedTask->status;
