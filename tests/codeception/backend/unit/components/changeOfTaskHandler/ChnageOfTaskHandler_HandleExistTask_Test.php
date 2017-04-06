@@ -57,6 +57,7 @@ class ChangeOfTaskHandler_HandleExistTask_Test extends \Codeception\TestCase\Tes
             'created' => '2016-10-04 16:13:09',
             'last_modify' => '2016-10-04 16:13:09'));
 
-        $changeOfTaskHandler->handleExistTask(new SimpleXMLElement("<chnageOfTaskXML/>"));
+        $taskId = $changeOfTaskHandler->handleExistTask(new SimpleXMLElement("<chnageOfTaskXML/>"));
+        $this->tester->assertEquals(101,$taskId);
     }
 }
