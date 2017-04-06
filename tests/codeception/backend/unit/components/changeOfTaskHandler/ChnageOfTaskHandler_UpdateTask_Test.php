@@ -109,7 +109,7 @@ class ChangeOfTaskHandler_UpdateTask_Test extends \Codeception\TestCase\Test
         $taskId = $changeOfTaskHandler->updateTask($taskWithConditions);
 
         $this->assertEquals(null, $taskId);
-        $updatedTask = Task::findOne(['id' => 88]);
+        $updatedTask = Task::findOne(['id' => 88, 'user' => 1]);
         $this->tester->assertEquals("Task 88", $updatedTask->message);
         $this->tester->assertEquals("TODO", $updatedTask->status);
     }
