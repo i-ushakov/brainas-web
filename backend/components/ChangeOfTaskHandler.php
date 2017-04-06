@@ -101,7 +101,7 @@ class ChangeOfTaskHandler {
         $updatedPicture = $taskWithConditions['picture'];
         $updatedConditions = $taskWithConditions['conditions'];
 
-        $task = Task::findOne($updatedTask->id);
+        $task = Task::findOne(['id' => $updatedTask->id, 'user' => $this->userId]);
 
         if (!isset($task)) {
             return null;
@@ -109,16 +109,16 @@ class ChangeOfTaskHandler {
         $task->message = $updatedTask->message;
         $task->user = $updatedTask->user;
         $task->description = $updatedTask->description;
-        $task->last_modify = $updatedTask->last_modify;
+        $task->last_modify = date('Y-m-d H:i:s', time());
         $task->status = $updatedTask->status;
         $task->save();
 
-        if ($updatedPicture != null) {
+        if (!is_null($updatedPicture)) {
             $this->savePistureOfTask($updatedPicture, $updatedTask->id);
         }
 
         $this->cleanDeletedConditions($updatedConditions, $updatedTask->id);
-        foreach ($updatedConditions as $updatedCondition) {
+        /*foreach ($updatedConditions as $updatedCondition) {
             $condition = \common\nmodels\Condition::findOne($updatedCondition->id);
             if (!isset($condition)) {
                 $condition = new \common\nmodels\Condition();
@@ -127,7 +127,7 @@ class ChangeOfTaskHandler {
             $condition->type = $updatedCondition->type;
             $condition->params = $updatedCondition->params;
             $condition->save();
-        }
+        }*/
 
         return $task->id;
     }
