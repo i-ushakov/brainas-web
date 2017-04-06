@@ -44,7 +44,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         );
 
         $chnageOfTaskXML = new SimpleXMLElement("<chnageOfTask/>");
-        $type = "Created";
+        $type = "CREATED";
 
         $changeOfTaskHandler->loggingChanges($chnageOfTaskXML, $type, $taskId);
 
@@ -52,7 +52,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
             'user_id' => 1,
             'task_id' => 100,
             'datetime' => '2017-03-27 09:58:47',
-            'action' => 'Created'
+            'action' => 'CREATED'
         ]);
     }
 
@@ -73,7 +73,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         );
 
         $chnageOfTaskXML = new SimpleXMLElement("<chnageOfTask/>");
-        $type = "Changed";
+        $type = "UPDATED";
 
         // have in database
         $changeOfTask = new ChangeOfTask(
@@ -81,7 +81,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
                 'id' => 1,
                 'user_id' => 1,
                 'task_id' => 100,
-                'action' => 'Created',
+                'action' => 'CREATED',
                 'datetime' => '2017-03-27 08:48:47',
                 'server_update_time' => '2017-03-27 08:59:47'
             ]);
@@ -92,14 +92,14 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         $this->tester->dontSeeRecord(ChangeOfTask::class, [
             'user_id' => 1,
             'task_id' => 100,
-            'action' => 'Created'
+            'action' => 'CREATED'
         ]);
 
         $this->tester->seeRecord(ChangeOfTask::class, [
             'user_id' => 1,
             'task_id' => 100,
             'datetime' => '2017-03-27 10:00:00',
-            'action' => 'Changed'
+            'action' => 'UPDATED'
         ]);
 
         $changeOfTask->delete();
@@ -122,7 +122,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         );
 
         $chnageXML = new SimpleXMLElement("<chnageOfTask/>");
-        $type = "Created";
+        $type = "CREATED";
 
         $this->tester->expectException(
             new BAException(
