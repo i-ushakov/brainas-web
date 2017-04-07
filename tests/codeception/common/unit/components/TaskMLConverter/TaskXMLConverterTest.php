@@ -11,7 +11,6 @@ use Mockery as m;
 use \common\components\TaskXMLConverter;
 use \common\components\ConditionXMLConverter;
 use \common\nmodels\Task;
-use \common\components\BAException;
 
 class TaskXMLConverterTest extends \Codeception\TestCase\Test {
     /**
@@ -33,22 +32,6 @@ class TaskXMLConverterTest extends \Codeception\TestCase\Test {
                     </condition>
                 </conditions>
 		    </task>";
-
-    public function testFromXML_InavlidRootElException()
-    {
-        $taskXMLStr = "<taskEl localId=\"1\" globalId=\"11\"></taskEl>";
-        $taskXML = new SimpleXMLElement($taskXMLStr);
-
-        $cConverterMock = m::mock(ConditionXMLConverter::class);
-        $taskXMLConverter = new TaskXMLConverter($cConverterMock);
-
-        $this->tester->expectException(
-            new BAException(TaskXMLConverter::WRONG_ROOT_ELEMNT, BAException::WRONG_ROOT_XML_ELEMENT_NAME),
-            function() use ($taskXMLConverter, $taskXML){
-                $taskXMLConverter->fromXML($taskXML);
-            }
-        );
-    }
 
     public function testFromXML_TaskWithoutPicture()
     {
