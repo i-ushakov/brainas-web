@@ -8,7 +8,7 @@
 use backend\components\TasksSyncManager;
 use backend\components\ChangeOfTaskHandler;
 use backend\components\ChangeOfTaskParser;
-use common\nmodels\TaskXMLConverter;
+use common\components\TaskXMLConverter;
 use common\components\BAException;
 
 use AspectMock\Test as test;

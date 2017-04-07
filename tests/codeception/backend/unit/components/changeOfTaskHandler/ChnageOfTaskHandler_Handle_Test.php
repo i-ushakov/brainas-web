@@ -8,7 +8,8 @@
 
 use backend\components\ChangeOfTaskParser;
 use backend\components\ChangeOfTaskHandler;
-use common\nmodels\TaskXMLConverter;
+use common\components\TaskXMLConverter;
+use common\components\ConditionXMLConverter;
 use common\components\BAException;
 
 use Mockery as m;
@@ -86,7 +87,7 @@ class ChangeOfTaskHandler_Handle_Test extends \Codeception\TestCase\Test
                 'getStatus' => Codeception\Util\Stub::never()
             ),$this
         );
-        $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\nmodels\ConditionXMLConverter());
+        $taskConverter = new TaskXMLConverter(new ConditionXMLConverter());
         $userId = 1;
         $changeHandler = Stub::construct(ChangeOfTaskHandler::class,
             array($changeParser, $taskConverter, $userId),
@@ -113,7 +114,7 @@ class ChangeOfTaskHandler_Handle_Test extends \Codeception\TestCase\Test
                 'getStatus' => Codeception\Util\Stub::exactly(1, function() {return 'DELETED';})
             ),$this
         );
-        $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\nmodels\ConditionXMLConverter());
+        $taskConverter = new TaskXMLConverter(new ConditionXMLConverter());
         $userId = 1;
         $changeHandler = Stub::construct(ChangeOfTaskHandler::class,
             array($changeParser, $taskConverter, $userId),

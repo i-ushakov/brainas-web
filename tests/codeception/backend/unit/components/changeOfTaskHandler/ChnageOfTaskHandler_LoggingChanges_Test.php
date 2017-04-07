@@ -8,7 +8,7 @@
 
 use backend\components\ChangeOfTaskParser;
 use backend\components\ChangeOfTaskHandler;
-use common\nmodels\TaskXMLConverter;
+use common\components\TaskXMLConverter;
 use common\infrastructure\ChangeOfTask;
 use common\components\BAException;
 

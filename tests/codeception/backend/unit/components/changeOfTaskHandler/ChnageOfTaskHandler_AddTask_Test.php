@@ -8,7 +8,7 @@
 
 use backend\components\ChangeOfTaskParser;
 use backend\components\ChangeOfTaskHandler;
-use common\nmodels\TaskXMLConverter;
+use common\components\TaskXMLConverter;
 use common\nmodels\Task;
 use common\nmodels\Condition;
 
@@ -65,7 +65,7 @@ class ChangeOfTaskHandler_AddTask_Test extends \Codeception\TestCase\Test
                //'getTimeOfChange' => Codeception\Util\Stub::exactly(1, function() {return '111';})
            ),$this
        );
-       $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\nmodels\ConditionXMLConverter());
+       $taskConverter = new \common\nmodels\TaskXMLConverter(new \common\components\ConditionXMLConverter());
        $changeHandler = Stub::construct(ChangeOfTaskHandler::class,
            array($changeParser, $taskConverter, 1),
            array(

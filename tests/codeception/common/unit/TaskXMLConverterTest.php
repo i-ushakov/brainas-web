@@ -8,8 +8,8 @@
 
 use Codeception\Util\Stub;
 use Mockery as m;
-use \common\nmodels\TaskXMLConverter;
-use \common\nmodels\ConditionXMLConverter;
+use \common\components\TaskXMLConverter;
+use \common\components\ConditionXMLConverter;
 use \common\nmodels\Task;
 use \common\components\BAException;
 
@@ -80,14 +80,14 @@ class TaskXMLConverterTest extends \Codeception\TestCase\Test {
 
     public function testFromXML() {
         $taskXMLElement = new \SimpleXMLElement($this->taskXMLString);
-        $conditionConverter = Stub::construct('\common\nmodels\ConditionXMLConverter',
+        $conditionConverter = Stub::construct('\common\components\ConditionXMLConverter',
             array(),
             array(
                 'fromXML' => Codeception\Util\Stub::exactly(1, function () {return new \common\nmodels\Condition();})
             ), $this
         );
-        //$conditionConverter = new \common\nmodels\ConditionXMLConverter();
-        $taskConverter = new \common\nmodels\TaskXMLConverter($conditionConverter);
+        //$conditionConverter = new \common\components\ConditionXMLConverter();
+        $taskConverter = new TaskXMLConverter($conditionConverter);
         $res = $taskConverter->fromXML($taskXMLElement);
         $task = $res['task'];
         $this->assertNotNull($task, "Task must not be a null");
@@ -105,8 +105,8 @@ class TaskXMLConverterTest extends \Codeception\TestCase\Test {
 
     public function testFromXMLWithIncorrectXmlObj() {
         $taskXMLElement = new \SimpleXMLElement("<chandgedTask>" . $this->taskXMLString . "</chandgedTask>");
-        $conditionConverter = new \common\nmodels\ConditionXMLConverter();
-        $taskConverter = new \common\nmodels\TaskXMLConverter($conditionConverter);
+        $conditionConverter = new ConditionXMLConverter();
+        $taskConverter = new TaskXMLConverter($conditionConverter);
         $this->tester->expectException('\common\components\BAException', function() use ($taskConverter, $taskXMLElement) {
                 $taskConverter->fromXML($taskXMLElement);
             }
@@ -116,12 +116,12 @@ class TaskXMLConverterTest extends \Codeception\TestCase\Test {
     public function testConvertCondition() {
         $taskXMLElement = new \SimpleXMLElement($this->taskXMLString);
         $conditionConverter = Stub::make(
-            '\common\nmodels\ConditionXMLConverter',
+            '\common\components\ConditionXMLConverter',
             array(
                 'fromXML' => Codeception\Util\Stub::exactly(1, function() {return new common\nmodels\Condition();})
             ),$this
         );
-        $taskConverter = new \common\nmodels\TaskXMLConverter($conditionConverter);
+        $taskConverter = new TaskXMLConverter($conditionConverter);
         $taskConverter->fromXML($taskXMLElement);
     }
 
@@ -136,12 +136,12 @@ class TaskXMLConverterTest extends \Codeception\TestCase\Test {
         $secondCondition->addAttribute('type', 'LOCATION');
 
         $conditionConverter = Stub::make(
-            '\common\nmodels\ConditionXMLConverter',
+            '\common\components\ConditionXMLConverter',
             array(
                 'fromXML' => Codeception\Util\Stub::exactly(2, function() {return new common\nmodels\Condition();})
             ),$this
         );
-        $taskConverter = new \common\nmodels\TaskXMLConverter($conditionConverter);
+        $taskConverter = new TaskXMLConverter($conditionConverter);
         $taskConverter->fromXML($taskXMLElement);
     }
 }

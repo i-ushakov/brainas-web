@@ -6,7 +6,7 @@
  * Time: 8:42 AM
  */
 
-namespace common\nmodels;
+namespace common\components;
 
 use common\components\BAException;
 use common\models\PictureOfTask;

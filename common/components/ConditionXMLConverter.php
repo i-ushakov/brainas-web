@@ -6,7 +6,7 @@
  * Time: 5:37 PM
  */
 
-namespace common\nmodels;
+namespace common\components;
 
 use common\models\EventType;
 use common\nmodels\Condition;

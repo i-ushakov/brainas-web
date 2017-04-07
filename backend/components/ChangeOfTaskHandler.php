@@ -9,7 +9,7 @@
 namespace backend\components;
 
 use common\components\BAException;
-use common\nmodels\TaskXMLConverter;
+use common\components\TaskXMLConverter;
 use common\nmodels\Task;
 use common\models\PictureOfTask;
 use common\infrastructure\ChangeOfTask;
