@@ -6,7 +6,7 @@
  * Time: 8:42 AM
  */
 
-namespace common\nmodels;
+namespace common\components;
 
 use common\components\BAException;
 use common\models\PictureOfTask;
@@ -41,8 +41,8 @@ class TaskXMLConverter {
         }
         $task = new Task;
 
-        if (isset($xml['id']) && $xml['id'] != 0) {
-            $task->id = intval($xml['id']);
+        if (isset($xml['globalId']) && intval($xml['globalId']) != 0) {
+            $task->id = intval($xml['globalId']);
         } else {
             $task->id = 0;
         }

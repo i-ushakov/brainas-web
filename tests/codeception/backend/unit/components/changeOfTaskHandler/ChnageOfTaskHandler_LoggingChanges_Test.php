@@ -8,7 +8,7 @@
 
 use backend\components\ChangeOfTaskParser;
 use backend\components\ChangeOfTaskHandler;
-use common\nmodels\TaskXMLConverter;
+use common\components\TaskXMLConverter;
 use common\infrastructure\ChangeOfTask;
 use common\components\BAException;
 
@@ -31,7 +31,8 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         $taskXMLConverter = m::mock(TaskXMLConverter::class);
 
         $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
-        $changeOfTaskParser->shouldReceive('getTimeOfChange')->once()->andReturn('2017-03-27 09:58:47');
+        $changeOfTaskParser->shouldReceive('getClientTimeOfChanges')->once()
+            ->andReturn('2017-03-27 09:58:47');
         $changeOfTaskParser->shouldReceive('getGlobalId')->never();
 
         $userId = 1;
@@ -43,7 +44,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         );
 
         $chnageOfTaskXML = new SimpleXMLElement("<chnageOfTask/>");
-        $type = "Created";
+        $type = "CREATED";
 
         $changeOfTaskHandler->loggingChanges($chnageOfTaskXML, $type, $taskId);
 
@@ -51,7 +52,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
             'user_id' => 1,
             'task_id' => 100,
             'datetime' => '2017-03-27 09:58:47',
-            'action' => 'Created'
+            'action' => 'CREATED'
         ]);
     }
 
@@ -60,7 +61,8 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         $taskXMLConverter = m::mock(TaskXMLConverter::class);
 
         $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
-        $changeOfTaskParser->shouldReceive('getTimeOfChange')->once()->andReturn('2017-03-27 10:00:00');
+        $changeOfTaskParser->shouldReceive('getClientTimeOfChanges')->once()
+            ->andReturn('2017-03-27 10:00:00');
         $changeOfTaskParser->shouldReceive('getGlobalId')->once()->andReturn(100);
 
         $userId = 1;
@@ -71,7 +73,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         );
 
         $chnageOfTaskXML = new SimpleXMLElement("<chnageOfTask/>");
-        $type = "Changed";
+        $type = "UPDATED";
 
         // have in database
         $changeOfTask = new ChangeOfTask(
@@ -79,7 +81,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
                 'id' => 1,
                 'user_id' => 1,
                 'task_id' => 100,
-                'action' => 'Created',
+                'action' => 'CREATED',
                 'datetime' => '2017-03-27 08:48:47',
                 'server_update_time' => '2017-03-27 08:59:47'
             ]);
@@ -90,14 +92,14 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         $this->tester->dontSeeRecord(ChangeOfTask::class, [
             'user_id' => 1,
             'task_id' => 100,
-            'action' => 'Created'
+            'action' => 'CREATED'
         ]);
 
         $this->tester->seeRecord(ChangeOfTask::class, [
             'user_id' => 1,
             'task_id' => 100,
             'datetime' => '2017-03-27 10:00:00',
-            'action' => 'Changed'
+            'action' => 'UPDATED'
         ]);
 
         $changeOfTask->delete();
@@ -108,7 +110,8 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         $converter = m::mock(TaskXMLConverter::class);
 
         $parser = m::mock(ChangeOfTaskParser::class);
-        $parser->shouldReceive('getTimeOfChange')->once()->andReturn('2017-03-27 09:58:47');
+        $parser->shouldReceive('getClientTimeOfChanges')->once()
+            ->andReturn('2017-03-27 09:58:47');
         $parser->shouldReceive('getGlobalId')->once()->andReturn(0);
 
         $userId = 1;
@@ -119,7 +122,7 @@ class ChangeOfTaskHandler_LoggingChanges_Test extends \Codeception\TestCase\Test
         );
 
         $chnageXML = new SimpleXMLElement("<chnageOfTask/>");
-        $type = "Created";
+        $type = "CREATED";
 
         $this->tester->expectException(
             new BAException(

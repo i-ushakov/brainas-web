@@ -10,11 +10,29 @@
 
 $I = new \FunctionalTester($scenario);
 
+$I->haveInDatabase('tasks', array(
+    'id' => 101,
+    'user' => 1,
+    'message' => 'Task 101',
+    'description' => 'No desc',
+    'status' => 'TODO',
+    'created' => '2017-02-04 00:00:00',
+    'last_modify' => '2017-02-04 00:00:00'));
+
+$I->haveInDatabase('sync_changed_tasks', array(
+    'id' => 11,
+    'user_id' => 1,
+    'task_id' => 101,
+    'datetime' => '2017-02-04 00:00:00',
+    'server_update_time' => '2017-02-04 00:00:00'));
+
+
 
 $I->sendPOST('sync/send-tasks',
     ['accessToken' => Yii::$app->params['testAccessToken']],
-    ['tasks_changes_xml' => codecept_data_dir('SyncControllerFeed/tasks_changes_add_tasks.xml')]
+    ['tasks_changes_xml' => codecept_data_dir('SyncControllerFeed/tasks_changes_update_tasks.xml')]
 );
+
 $I->seeResponseCodeIs(200);
 
 /*
@@ -22,7 +40,7 @@ $I->seeResponseCodeIs(200);
     '<synchronizedTasks>' .
         '<synchronizedTask>' .
             '<localId>1</localId>' .
-            '<globalId>?</globalId>' .
+            '<globalId>101</globalId>' .
         '</synchronizedTask>' .
     '</synchronizedTasks>';
  */
@@ -41,9 +59,11 @@ $I->assertEquals(count($responseXML->synchronizedTask), 1, 'Must have one synchr
 $synchronizedTask = $responseXML->synchronizedTask[0];
 $I->assertEquals(intval($synchronizedTask->localId), 1, 'Local id have to be 1');
 
-$I->wantTo('check that task 1 was UPDATED in database');
-$I->seeInDatabase('tasks', array(
-    'user' => 1,
-    'message' => 'Task 1 ADDED(ACTIVE)',
-    'description' => 'Task 1 Desc',
-    'status' => 'ACTIVE'));
+$I->wantTo('check that Task 101 was UPDATED in database');
+
+$I->seeInDatabase('tasks', [
+    'id' => 101,
+    'message' => 'Task 101 UPDATED(ACTIVE)',
+    'status' => 'ACTIVE',
+    'description' => 'Task 101 Desc'
+]);

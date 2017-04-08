@@ -3,8 +3,8 @@
 use yii\di\Instance;
 use backend\components\ChangeOfTaskParser;
 use backend\components\ChangeOfTaskHandler;
-use common\nmodels\TaskXMLConverter;
-use common\nmodels\ConditionXMLConverter;
+use common\components\TaskXMLConverter;
+use common\components\ConditionXMLConverter;
 
 $container = Yii::$container;
 

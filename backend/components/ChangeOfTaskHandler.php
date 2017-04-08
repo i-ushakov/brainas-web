@@ -9,7 +9,7 @@
 namespace backend\components;
 
 use common\components\BAException;
-use common\nmodels\TaskXMLConverter;
+use common\components\TaskXMLConverter;
 use common\nmodels\Task;
 use common\models\PictureOfTask;
 use common\infrastructure\ChangeOfTask;
@@ -33,27 +33,11 @@ class ChangeOfTaskHandler {
         if (is_null($this->userId)) {
             throw new BAException(self::USER_ID_MUST_TO_BE_SET_MSG, BAException::PARAM_NOT_SET_EXCODE);
         }
+
         if($this->changeParser->isANewTask($chnageOfTaskXML)) {
             return $this->handleNewTask($chnageOfTaskXML);
         } else {
-            $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);
-            $task = Task::findOne($taskId);
-            if ($task != null) {
-                if ($this->isChangeOfTaskActual($chnageOfTaskXML)) {
-                    $status = $this->changeParser->getStatus($chnageOfTaskXML);
-                    if ($status == "DELETED") {
-                        $this->deleteTask($taskId);
-                    } elseif ($status == "UPDATED" || $status == "CREATED") {
-                        $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
-                        if($taskId = $this->updateTask($taskWithConditions)) {
-                            $this->loggingChanges($chnageOfTaskXML, "Changed");
-                        } else {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return $taskId;
+            return $this->handleExistTask($chnageOfTaskXML);
         }
     }
 
@@ -68,6 +52,30 @@ class ChangeOfTaskHandler {
         $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
         $taskId = $this->addTask($taskWithConditions);
         $this->loggingChanges($chnageOfTaskXML, "Created", $taskId);
+        return $taskId;
+    }
+
+    public function handleExistTask(\SimpleXMLElement $chnageOfTaskXML)
+    {
+        $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);;
+        $task = Task::findOne($taskId);
+
+        if (!is_null($task)) {
+            if ($this->isActualChange($chnageOfTaskXML)) {
+                $status = $this->changeParser->getStatus($chnageOfTaskXML);
+                if ($status == ChangeOfTask::STATUS_DELETED) {
+                    $this->deleteTask($taskId);
+                } elseif ($status == ChangeOfTask::STATUS_UPDATED || $status == ChangeOfTask::STATUS_CREATED) {
+                    $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
+                    if($taskId = $this->updateTask($taskWithConditions)) {
+                        $this->loggingChanges($chnageOfTaskXML, ChangeOfTask::STATUS_UPDATED);
+                        return $taskId;
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        }
         return $taskId;
     }
 
@@ -95,25 +103,22 @@ class ChangeOfTaskHandler {
         $updatedTask = $taskWithConditions['task'];
         $updatedPicture = $taskWithConditions['picture'];
         $updatedConditions = $taskWithConditions['conditions'];
-
-        $task = Task::findOne($updatedTask->id);
-
+        $task = Task::findOne(['id' => $updatedTask->id, 'user' => $this->userId]);
         if (!isset($task)) {
             return null;
         }
         $task->message = $updatedTask->message;
-        $task->user = $updatedTask->user;
         $task->description = $updatedTask->description;
-        $task->last_modify = $updatedTask->last_modify;
+        $task->last_modify = date('Y-m-d H:i:s', time());
         $task->status = $updatedTask->status;
         $task->save();
 
-        if ($updatedPicture != null) {
+        if (!is_null($updatedPicture)) {
             $this->savePistureOfTask($updatedPicture, $updatedTask->id);
         }
 
         $this->cleanDeletedConditions($updatedConditions, $updatedTask->id);
-        foreach ($updatedConditions as $updatedCondition) {
+        /*foreach ($updatedConditions as $updatedCondition) {
             $condition = \common\nmodels\Condition::findOne($updatedCondition->id);
             if (!isset($condition)) {
                 $condition = new \common\nmodels\Condition();
@@ -122,8 +127,7 @@ class ChangeOfTaskHandler {
             $condition->type = $updatedCondition->type;
             $condition->params = $updatedCondition->params;
             $condition->save();
-        }
-
+        }*/
         return $task->id;
     }
 
@@ -131,11 +135,11 @@ class ChangeOfTaskHandler {
         return false;
     }
 
-    public function isChangeOfTaskActual(\SimpleXMLElement $chnageOfTaskXML) {
+    public function isActualChange(\SimpleXMLElement $chnageOfTaskXML) {
         $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);
-        $serverChangeTime = $this->getTimeOfTaskChanges($taskId);
-        $clientChangeTime = $this->changeParser->getTimeOfChange($chnageOfTaskXML);
-        if (strtotime($serverChangeTime) < strtotime($clientChangeTime)) {
+        $serverTime = $this->getServerTimeOfChanges($taskId);
+        $clientTime = $this->changeParser->getClientTimeOfChanges($chnageOfTaskXML);
+        if (strtotime($serverTime) < strtotime($clientTime)) {
             return true;
         }
     }
@@ -153,7 +157,7 @@ class ChangeOfTaskHandler {
     }
 
     public function loggingChanges($changeOfTaskXML, $action, $taskId = null) {
-        $changeDatetime = $this->changeParser->getTimeOfChange($changeOfTaskXML);
+        $changeDatetime = $this->changeParser->getClientTimeOfChanges($changeOfTaskXML);
         if (is_null($taskId)) {
             $taskId = $this->changeParser->getGlobalId($changeOfTaskXML);
         }
@@ -201,6 +205,18 @@ class ChangeOfTaskHandler {
             $picture->file_id = GoogleDriveHelper::getInstance($this->client)->getFileIdByName($pictureForSave->name);
         }
         $picture->save();
+    }
+
+    public function getServerTimeOfChanges($taskid) {
+        $changedTask = ChangeOfTask::find()
+            ->where(['user_id' => $this->userId, 'task_id' => $taskid])
+            ->orderBy('id')
+            ->one();
+        if (!is_null($changedTask)) {
+            return $changedTask->datetime;
+        } else {
+            return null;
+        }
     }
 
     public function cleanDeletedConditions() {

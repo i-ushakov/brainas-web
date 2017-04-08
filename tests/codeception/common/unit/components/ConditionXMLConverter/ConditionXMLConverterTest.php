@@ -8,10 +8,7 @@
 
 namespace tests\codeception\common\unit;
 
-
-use common\nmodels\Condition;
-use common\nmodels\ConditionXMLConverter;
-use common\components\BAException as BAException;
+use common\components\ConditionXMLConverter;
 
 class ConditionXMLConverterTest extends \Codeception\TestCase\Test {
 
