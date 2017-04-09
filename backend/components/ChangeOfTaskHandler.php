@@ -58,7 +58,7 @@ class ChangeOfTaskHandler {
     public function handleExistTask(\SimpleXMLElement $chnageOfTaskXML)
     {
         $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);;
-        $task = Task::findOne($taskId);
+        $task = Task::findOne(['id' => $taskId, 'user' => $this->userId]);
 
         if (!is_null($task)) {
             if ($this->isActualChange($chnageOfTaskXML)) {
@@ -76,7 +76,7 @@ class ChangeOfTaskHandler {
                 }
             }
         }
-        return $taskId;
+        return null;
     }
 
     public function addTask(array $taskWithConditions) {

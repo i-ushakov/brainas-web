@@ -61,7 +61,8 @@ class ChangeOfTaskHandler_HandleExistTask_Test extends \Codeception\TestCase\Tes
         $this->tester->assertEquals(101,$taskId);
     }
 
-    public function testDeleteExistTask(){
+    public function testDeleteExistTask()
+    {
         $converter = m::mock(TaskXMLConverter::class);
         $parser = m::mock(ChangeOfTaskParser::class);
         $parser->shouldReceive('getGlobalId')->once()->andReturn(102);
@@ -85,5 +86,37 @@ class ChangeOfTaskHandler_HandleExistTask_Test extends \Codeception\TestCase\Tes
 
         $taskId = $changeOfTaskHandler->handleExistTask(new SimpleXMLElement("<chnageOfTaskXML/>"));
         $this->tester->assertEquals(102,$taskId);
+    }
+
+    public function testCheckSecureIssueUserIdSubstitution()
+    {
+        $converter = m::mock(TaskXMLConverter::class);
+        $converter->shouldReceive('fromXML')->never();
+
+        $parser = m::mock(ChangeOfTaskParser::class);
+        $parser->shouldReceive('getGlobalId')->once()->andReturn(101);
+        $parser->shouldReceive('getStatus')->never();
+
+        $userId = 1;
+        $userIdBondedWithTask = 2;
+
+        $changeOfTaskHandler = \Mockery::mock(
+            ChangeOfTaskHandler::class . '[isActualChange, updateTask, loggingChanges]',
+            [$parser, $converter, $userId]
+        );
+        $changeOfTaskHandler->shouldReceive('isActualChange')->never();
+        $changeOfTaskHandler->shouldReceive('updateTask')->never();
+        $changeOfTaskHandler->shouldReceive('loggingChanges')->never();
+
+        $this->tester->haveInDatabase('tasks', array(
+            'id' => '101',
+            'message' => 'Task 101',
+            'user' => $userIdBondedWithTask,
+            'status' => 'TODO',
+            'created' => '2016-10-04 16:13:09',
+            'last_modify' => '2016-10-04 16:13:09'));
+
+        $taskId = $changeOfTaskHandler->handleExistTask(new SimpleXMLElement("<chnageOfTaskXML/>"));
+        $this->tester->assertEquals(null, $taskId);
     }
 }

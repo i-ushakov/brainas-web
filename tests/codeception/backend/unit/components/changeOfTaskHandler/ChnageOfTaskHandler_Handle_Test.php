@@ -99,7 +99,7 @@ class ChangeOfTaskHandler_Handle_Test extends \Codeception\TestCase\Test
 
         $this->tester->dontSeeInDatabase('tasks', ['id' => '1425']);
         $this->assertEquals(
-            1425,
+            null,
             $changeHandler->handle(new \SimpleXMLElement("<changeOfTask />")), "Return value of handled task must be 1425"
         );
     }
