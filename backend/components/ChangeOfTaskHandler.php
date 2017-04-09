@@ -64,7 +64,7 @@ class ChangeOfTaskHandler {
             if ($this->isActualChange($chnageOfTaskXML)) {
                 $status = $this->changeParser->getStatus($chnageOfTaskXML);
                 if ($status == ChangeOfTask::STATUS_DELETED) {
-                    $this->deleteTask($taskId);
+                    return $this->deleteTask($taskId);
                 } elseif ($status == ChangeOfTask::STATUS_UPDATED || $status == ChangeOfTask::STATUS_CREATED) {
                     $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
                     if($taskId = $this->updateTask($taskWithConditions)) {
@@ -132,7 +132,11 @@ class ChangeOfTaskHandler {
     }
 
     public function deleteTask($taskId) {
-        return false;
+        $task = Task::findOne($taskId);
+        if (isset($task)) {
+            $task->delete();
+        }
+        return $taskId;
     }
 
     public function isActualChange(\SimpleXMLElement $chnageOfTaskXML) {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<changes>
+    <changedTasks>
+        <changeOfTask localId="1" globalId="101">
+            <change><status>DELETED</status><changeDatetime>2017-03-01 00:00:00</changeDatetime></change>
+        </changeOfTask>
+    </changedTasks>
+</changes>

@@ -8,9 +8,9 @@
 
 namespace common\nmodels;
 
-use Yii;
 use yii\db\ActiveRecord;
 use common\infrastructure\ChangeOfTask;
+use common\models\PictureOfTask;
 
 class Task extends ActiveRecord {
 
@@ -72,6 +72,4 @@ class Task extends ActiveRecord {
         parent::afterDelete();
         ChangeOfTask::removeFromChangeLog($this->id);
     }
-
-
 }
