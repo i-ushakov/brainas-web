@@ -50,6 +50,9 @@ class ChangeOfTask extends ActiveRecord {
     }
 
     static public function removeFromChangeLog($taskId) {
-        ChangeOfTask::find()->where(['task_id' => $taskId])->one()->delete();
+        $changeOfTask = ChangeOfTask::find()->where(['task_id' => $taskId])->one();
+        if (!is_null($changeOfTask)) {
+            $changeOfTask->delete();
+        }
     }
 }
