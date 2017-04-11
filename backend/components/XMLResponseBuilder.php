@@ -102,9 +102,9 @@ class XMLResponseBuilder {
         return $xmlResponse;
     }
 
-    private static function buildXmlOfTask($task, $datetime) {
+    public static function buildXmlOfTask($task, $datetime) {
         $xml = '' .
-            '<task global-id="' . $task->id . '" time-changes="' . $datetime . '">' .
+            '<task globalId="' . $task->id . '" time-changes="' . $datetime . '">' .
             '<message>' . $task->message . '</message>' .
             '<description>' . $task->description . '</description>' .
             self::addPictureEntity($task->picture) .
