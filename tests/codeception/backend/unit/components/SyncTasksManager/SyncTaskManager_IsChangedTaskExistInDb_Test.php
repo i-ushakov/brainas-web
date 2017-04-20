@@ -26,17 +26,22 @@ class SyncTaskManager_IsChangedTaskExistInDb_Test extends \Codeception\TestCase\
         m::close();
     }
 
-    public function test() {
+    public function isChangedTaskExistInDb() {
         $changeOfTaskHandler = \Mockery::mock(ChangeOfTaskHandler::class);
         $changeOfTaskHandler->shouldReceive('setUserId');
 
+        /* @var $responseBuilder XMLResponseBuilder */
+        $responseBuilder =  new XMLResponseBuilder();
+
         /* @var $tasksSyncManager TasksSyncManager*/
-        $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler);
+        $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler, $responseBuilder);
         $tasksSyncManager->setUserId(1);
 
+        // testing ...
         $change = m::mock(ChangeOfTask::class . "[getTask]");
         $change->shouldReceive('getTask')->andReturn(new Task());
 
+        // assertions:
         $this->tester->assertTrue($tasksSyncManager->isChangedTaskExistInDb($change));
     }
 }

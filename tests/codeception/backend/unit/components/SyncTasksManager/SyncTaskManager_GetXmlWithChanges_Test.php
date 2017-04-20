@@ -8,9 +8,9 @@
 
 use \backend\components\TasksSyncManager;
 use \backend\components\ChangeOfTaskHandler;
+use \backend\components\XMLResponseBuilder;
 
 use Mockery as m;
-use Codeception\Util\Stub;
 
 class SyncTaskManager_GetXmlWithChanges_Test extends \Codeception\TestCase\Test
 {
@@ -24,17 +24,23 @@ class SyncTaskManager_GetXmlWithChanges_Test extends \Codeception\TestCase\Test
         m::close();
     }
 
-    public function testGetUpdates() {
-        $changeOfTaskHandler = \Mockery::mock(ChangeOfTaskHandler::class);
+    public function testGetXmlWithChanges() {
+        /* @var $changeOfTaskHandler Mockery */
+        $changeOfTaskHandler = m::mock(ChangeOfTaskHandler::class);
 
-        $tasksSyncManager = \Mockery::mock(
-            TasksSyncManager::class . '[getChangesOfTasks, prepareXmlWithTasksChanges]',
-            [$changeOfTaskHandler]
-        );
-        $tasksSyncManager->shouldReceive('getChangesOfTasks')->once();
-        $tasksSyncManager->shouldReceive('prepareXmlWithTasksChanges')->once();
+        /* @var $responseBuilder Mockery */
+        $responseBuilder =  m::mock(XMLResponseBuilder::class);
+        $serverChanges = ['created' => [], 'updated' => []];
+        $responseBuilder->shouldReceive('prepareXmlWithTasksChanges')->once()->with($serverChanges);
 
-        $existsTasksFromDevice= new SimpleXMLElement("<xml/>");
+        /* @var $tasksSyncManager Mockery */
+        $tasksSyncManager = m::mock(
+            TasksSyncManager::class . '[getChangesOfTasks]',
+            [$changeOfTaskHandler, $responseBuilder]);
+        $tasksSyncManager->shouldReceive('getChangesOfTasks')->once()->andReturn($serverChanges);
+
+        // testing...
+        $existsTasksFromDevice = new SimpleXMLElement("<xml/>");
         $lastSyncTime = '2017-02-04 00:00:00';
         $tasksSyncManager->getXmlWithChanges($existsTasksFromDevice, $lastSyncTime);
     }

@@ -8,6 +8,7 @@
 
 use backend\components\ChangeOfTaskHandler;
 use backend\components\TasksSyncManager;
+use backend\components\XMLResponseBuilder;
 use common\infrastructure\ChangeOfTask;
 use common\components\BAException;
 
@@ -29,12 +30,18 @@ class SyncTaskManager_RetriveChangesOfTaskFromDB_Test extends \Codeception\TestC
 
     public function testRetriveTwoChanges()
     {
+        /* var $changeOfTaskHandler Mockery */
         $changeOfTaskHandler = \Mockery::mock(ChangeOfTaskHandler::class);
         $changeOfTaskHandler->shouldReceive('setUserId');
 
-        $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler);
+        /* var $xmlResponseBuilder XMLResponseBuilder */
+        $xmlResponseBuilder = new XMLResponseBuilder();
+
+        /* var $tasksSyncManager TasksSyncManager */
+        $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler, $xmlResponseBuilder);
         $tasksSyncManager->setUserId(1);
 
+        // preparing of DB
         $currentDate = date('Y-m-d H:i:s', time());
         $minuteAgo = date('Y-m-d H:i:s', strtotime("$currentDate -1 minute"));
         $twoMinutesAgo = date('Y-m-d H:i:s', strtotime("$currentDate -2 minute"));
@@ -66,16 +73,22 @@ class SyncTaskManager_RetriveChangesOfTaskFromDB_Test extends \Codeception\TestC
             'datetime' => $twoMinutesAgo,
             'server_update_time' => $twoMinutesAgo));
 
+        // testing ...
         $changesOfTasks = $tasksSyncManager->retrieveChangesOfTasksFromDB($lastSyncTime);
 
+        // assertions:
         $this->tester->assertEquals(2, count($changesOfTasks), 'We must have two changesOfTasks');
     }
 
     public function testThrowNoUserIdException()
     {
+        /* var $changeOfTaskHandler Mockery */
         $changeOfTaskHandler = \Mockery::mock(ChangeOfTaskHandler::class);
 
-        $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler);
+        /* var $xmlResponseBuilder XMLResponseBuilder */
+        $xmlResponseBuilder = new XMLResponseBuilder();
+
+        $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler, $xmlResponseBuilder);
 
         $this->tester->expectException(
             new BAException(
