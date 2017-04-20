@@ -26,18 +26,20 @@ class TasksSyncManager
     const WRONG_ROOT_ELEMNT = 'Param ($tasksXML) with WRONG ROOT ELEMENT was sent into synchronization method';
     const USER_ID_MUST_TO_BE_SET_MSG = "User id must to be set";
 
-    protected $changeOfTaskHandler;
+    protected $changeHandler;
+    protected $responseBuilder;
     protected $userId = null;
 
-    public function __construct(ChangeOfTaskHandler $changeOfTaskHandler)
+    public function __construct(ChangeOfTaskHandler $changeOfTaskHandler, XMLResponseBuilder $responseBuilder)
     {
-        $this->changeOfTaskHandler = $changeOfTaskHandler;
+        $this->changeHandler = $changeOfTaskHandler;
+        $this->responseBuilder = $responseBuilder;
     }
 
     public function setUserId($userId)
     {
         $this->userId = $userId;
-        $this->changeOfTaskHandler->setUserId($userId);
+        $this->changeHandler->setUserId($userId);
     }
 
     public function handleTasksFromDevice(\SimpleXMLElement $taskChangesXML)
@@ -48,7 +50,7 @@ class TasksSyncManager
         }
 
         foreach($taskChangesXML->changeOfTask as $changeOfTaskXML) {
-            $globalId = $this->changeOfTaskHandler->handle($changeOfTaskXML);
+            $globalId = $this->changeHandler->handle($changeOfTaskXML);
             if ($globalId != null) {
                 $synchronizedTasks[(int)$changeOfTaskXML['localId']] = $globalId;
             }
@@ -62,7 +64,7 @@ class TasksSyncManager
         $serverChanges = $this->getChangesOfTasks($lastSyncTime);
         //$existingTasksOnDevice = TaskXMLHelper::retrieveExistingTasksFromXML($this->syncDataFromDevice);
         //$serverChanges['deleted'] = TaskHelper::getTasksRemovedOnServer($existingTasksOnDevice, $this->userId);
-        return $this->prepareXmlWithTasksChanges($serverChanges);
+        return $this->responseBuilder->prepareXmlWithTasksChanges($serverChanges);
     }
 
     public function getChangesOfTasks($lastSyncTime) {
@@ -124,25 +126,6 @@ class TasksSyncManager
 
         $xml .= '</synchronizedTasks>';
         return $xml;
-    }
-
-
-    public function prepareXmlWithTasksChanges($tasks) {
-        file_put_contents("test006.txt", count($tasks));
-        $xmlResponse = "";
-        $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
-
-        $xmlResponse .= '<tasks>';
-
-        // Created tasks
-        $xmlResponse .= '<created>';
-        foreach ($tasks['created'] as $id => $serverChange) {
-            $xmlResponse .= XMLResponseBuilder::buildXmlOfTask($serverChange['object'],  $serverChange['datetime']);
-        }
-        $xmlResponse .= '</created>';
-        $xmlResponse .= '</tasks>';
-
-        return $xmlResponse;
     }
 
     /*

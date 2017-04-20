@@ -149,4 +149,21 @@ class XMLResponseBuilder {
         }
         return $xmlPart;
     }
+
+    public function prepareXmlWithTasksChanges($tasks) {
+        $xmlResponse = "";
+        $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
+
+        $xmlResponse .= '<tasks>';
+
+        // Created tasks
+        $xmlResponse .= '<created>';
+        foreach ($tasks['created'] as $id => $serverChange) {
+            $xmlResponse .= XMLResponseBuilder::buildXmlOfTask($serverChange['object'],  $serverChange['datetime']);
+        }
+        $xmlResponse .= '</created>';
+        $xmlResponse .= '</tasks>';
+
+        return $xmlResponse;
+    }
 }
