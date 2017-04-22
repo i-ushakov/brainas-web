@@ -23,6 +23,12 @@ class SyncTaskManager_RetriveChangesOfTaskFromDB_Test extends \Codeception\TestC
      */
     protected $tester;
 
+    public function _before()
+    {
+        $DBCleaner = new DBCleaner(Yii::$app->db);
+        $DBCleaner->clean();
+    }
+
     protected function tearDown()
     {
         m::close();
@@ -30,7 +36,7 @@ class SyncTaskManager_RetriveChangesOfTaskFromDB_Test extends \Codeception\TestC
 
     public function testRetriveTwoChanges()
     {
-        /* var $changeOfTaskHandler Mockery */
+        /* var $ChangeOfTaskHandler Mockery */
         $changeOfTaskHandler = \Mockery::mock(ChangeOfTaskHandler::class);
         $changeOfTaskHandler->shouldReceive('setUserId');
 
@@ -82,7 +88,7 @@ class SyncTaskManager_RetriveChangesOfTaskFromDB_Test extends \Codeception\TestC
 
     public function testThrowNoUserIdException()
     {
-        /* var $changeOfTaskHandler Mockery */
+        /* var $ChangeOfTaskHandler Mockery */
         $changeOfTaskHandler = \Mockery::mock(ChangeOfTaskHandler::class);
 
         /* var $xmlResponseBuilder XMLResponseBuilder */
