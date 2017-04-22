@@ -66,8 +66,7 @@ class SyncController extends Controller
         $tasksSyncManager = Yii::$container->get(TasksSyncManager::class);
         $tasksSyncManager->setUserId($userId);
 
-        $synchronizedTasks = $tasksSyncManager->handleTasksFromDevice($changedTasksXml);
-        $syncObjectsXml = $tasksSyncManager->prepareSyncObjectsXml($synchronizedTasks);
+        $syncObjectsXml = $tasksSyncManager->handleTasksFromDevice($changedTasksXml);
         return $syncObjectsXml;
     }
 

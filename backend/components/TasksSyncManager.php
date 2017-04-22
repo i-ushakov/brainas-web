@@ -56,7 +56,7 @@ class TasksSyncManager
             }
         }
 
-        return $synchronizedTasks;
+        return $this->responseBuilder->prepareSyncObjectsXml($synchronizedTasks);
     }
 
     public function getXmlWithChanges($existsTasksFromDevice, $lastSyncTime)
@@ -108,24 +108,6 @@ class TasksSyncManager
                 ->all();
         }
         return $changesOfTasks;
-    }
-
-    public function prepareSyncObjectsXml($synchronizedTasks)
-    {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<synchronizedTasks>';
-
-        if (count($synchronizedTasks) > 0) {
-            foreach ($synchronizedTasks as $localId => $globalId) {
-                $xml .= "<synchronizedTask>" .
-                        "<localId>$localId</localId>" .
-                        "<globalId>$globalId</globalId>" .
-                    "</synchronizedTask>";
-            }
-        }
-
-        $xml .= '</synchronizedTasks>';
-        return $xml;
     }
 
     /*

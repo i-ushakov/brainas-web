@@ -8,8 +8,6 @@
  */
 namespace backend\components;
 
-use \common\models\Task;
-
 class XMLResponseBuilder {
 
     static function buildXMLResponse($serverChanges, $synchronizedObjects, $lastSyncTime, $token) {
@@ -102,7 +100,7 @@ class XMLResponseBuilder {
         return $xmlResponse;
     }
 
-    public static function buildXmlOfTask($task, $datetime) {
+    public function buildXmlOfTask($task, $datetime) {
         $xml = '' .
             '<task globalId="' . $task->id . '" time-changes="' . $datetime . '">' .
             '<message>' . $task->message . '</message>' .
@@ -150,7 +148,7 @@ class XMLResponseBuilder {
         return $xmlPart;
     }
 
-    public function prepareXmlWithTasksChanges($tasks) {
+    public function prepareXmlWithTasksChanges($changedTasks) {
         $xmlResponse = "";
         $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
 
@@ -158,12 +156,45 @@ class XMLResponseBuilder {
 
         // Created tasks
         $xmlResponse .= '<created>';
-        foreach ($tasks['created'] as $id => $serverChange) {
+        foreach ($changedTasks['created'] as $id => $serverChange) {
             $xmlResponse .= XMLResponseBuilder::buildXmlOfTask($serverChange['object'],  $serverChange['datetime']);
         }
         $xmlResponse .= '</created>';
+
+        // Updated tasks
+        $xmlResponse .= '<updated>';
+        foreach ($changedTasks['updated'] as $id => $changedTask) {
+            if (isset($serverChange['object']) && !empty($changedTask['object'])) {
+                $xmlResponse .= self::buildXmlOfTask($changedTask['object'], $changedTask['datetime']);
+            } else {
+                \Yii::info(
+                    "We have a server change without object with datetime = " . $changedTask['datetime'] .
+                    " for task with id = " . $id, "MyLog"
+                );
+            }
+        }
+        $xmlResponse .= '</updated>';
+
         $xmlResponse .= '</tasks>';
 
         return $xmlResponse;
+    }
+
+    public function prepareSyncObjectsXml($synchronizedTasks)
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<synchronizedTasks>';
+
+        if (count($synchronizedTasks) > 0) {
+            foreach ($synchronizedTasks as $localId => $globalId) {
+                $xml .= "<synchronizedTask>" .
+                    "<localId>$localId</localId>" .
+                    "<globalId>$globalId</globalId>" .
+                    "</synchronizedTask>";
+            }
+        }
+
+        $xml .= '</synchronizedTasks>';
+        return $xml;
     }
 }
