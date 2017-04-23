@@ -69,7 +69,7 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
         $xmlWithTasksChanges = '<?xml version="1.0" encoding="UTF-8"?>' .
             '<tasks>' .
                 '<created>' .
-                    '<task globalId="11" time-changes="2017-04-13 20:00:16">' .
+                    '<task globalId="11" timeOfChange="2017-04-13 20:00:16">' .
                         '<message>Task 11</message>' .
                         '<description>No desc</description>' .
                         '<conditions></conditions>' .
@@ -77,7 +77,7 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
                     '</task>' .
                 '</created>' .
                 '<updated>' .
-                    '<task globalId="12" time-changes="2017-04-13 22:00:00">' .
+                    '<task globalId="12" timeOfChange="2017-04-13 22:00:00">' .
                         '<message>Task 12</message>' .
                         '<description>No desc</description>' .
                         '<conditions></conditions>' .
