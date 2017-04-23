@@ -78,22 +78,16 @@ class GetUpdatesFromLastSyncCest
 
         $task1 = $created->task[0];
         $I->assertEquals(104, (int)$task1['globalId'], 'Wrong globalId');
-        $I->assertEquals(104, (int)$task1['globalId'], 'Wrong globalId');
+        $I->assertEquals("2017-02-04 00:00:00", $task1['timeOfChange'], 'Wrong timeOfChange');
 
+        $I->assertEquals("Task 104", $task1->message, 'Wrong message');
+        $I->assertEquals("No desc", $task1->description, 'Wrong description');
+        $I->assertEquals("TODO", $task1->status, 'Wrong status');
+        $I->assertEquals("TODO", $task1->status, 'Wrong status');
 
-//$synchronizedTask = $responseXML->synchronizedTask[0];
-//$I->assertEquals(intval($synchronizedTask->localId), 1, 'Local id have to be 1');
-
-//$I->wantTo('check that task 1 was UPDATED in database');
-        /*$I->seeInDatabase('tasks', array(
-            'user' => 1,
-            'message' => 'Task 1 ADDED(ACTIVE)',
-            'description' => 'Task 1 Desc',
-            'status' => 'ACTIVE'));*/
-
-
-
-//new DBCleaner(\Codeception\Configuration::config()['config']['components']['db']);
+        $conditions1 = $task1->conditions;
+        $I->assertEquals(count($conditions1), 1, 'Must have 1 condiitons element');
+        $I->assertEquals(count($conditions1->condition), 0, 'Must have 0 condiiton elements');
     }
 
 }
