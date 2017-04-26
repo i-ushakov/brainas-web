@@ -156,15 +156,15 @@ class XMLResponseBuilder {
 
         // Created tasks
         $xmlResponse .= '<created>';
-        foreach ($changedTasks['created'] as $id => $serverChange) {
-            $xmlResponse .= XMLResponseBuilder::buildXmlOfTask($serverChange['object'],  $serverChange['datetime']);
+        foreach ($changedTasks['created'] as $id => $changedTask) {
+            $xmlResponse .= XMLResponseBuilder::buildXmlOfTask($changedTask['object'],  $changedTask['datetime']);
         }
         $xmlResponse .= '</created>';
 
         // Updated tasks
         $xmlResponse .= '<updated>';
         foreach ($changedTasks['updated'] as $id => $changedTask) {
-            if (isset($serverChange['object']) && !empty($changedTask['object'])) {
+            if (isset($changedTask['object']) && !empty($changedTask['object'])) {
                 $xmlResponse .= self::buildXmlOfTask($changedTask['object'], $changedTask['datetime']);
             } else {
                 \Yii::info(

@@ -26,7 +26,7 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
         m::close();
     }
 
-    public function testPrepareXmlWithTasksChanges()
+    public function testPrepareXmlWithCreatedAndUpdated()
     {
         /* var $xmlResponseBuilder XMLResponseBuilder */
         $xmlResponseBuilder = new XMLResponseBuilder();
@@ -76,6 +76,48 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
                         '<status>TODO</status>' .
                     '</task>' .
                 '</created>' .
+                '<updated>' .
+                    '<task globalId="12" timeOfChange="2017-04-13 22:00:00">' .
+                        '<message>Task 12</message>' .
+                        '<description>No desc</description>' .
+                        '<conditions></conditions>' .
+                        '<status>ACTIVE</status>' .
+                    '</task>' .
+                '</updated>'  .
+            '</tasks>';
+        $this->tester->assertEquals($xmlWithTasksChanges, $result, "Wrong xml with synchronized objects");
+    }
+
+    public function testPrepareXmlWithOnlyUpdated()
+    {
+        /* var $xmlResponseBuilder XMLResponseBuilder */
+        $xmlResponseBuilder = new XMLResponseBuilder();
+
+        $changedTasks = [
+            'created' => [],
+            'updated' => [
+                12 => [
+                    'action' => ChangeOfTask::STATUS_UPDATED,
+                    'datetime' => '2017-04-13 22:00:00',
+                    'object' => new Task([
+                        'id' => 12,
+                        'user' => 1,
+                        'message' => 'Task 12',
+                        'description' => 'No desc',
+                        'status' => 'ACTIVE',
+                        'created' => '2017-04-13 20:00:16',
+                        'last_modify' => '2017-04-13 22:00:00'])
+                ]
+            ]
+        ];
+
+        // testing ...
+        $result = $xmlResponseBuilder->prepareXmlWithTasksChanges($changedTasks);
+
+        // assetions :
+        $xmlWithTasksChanges = '<?xml version="1.0" encoding="UTF-8"?>' .
+            '<tasks>' .
+                '<created></created>' .
                 '<updated>' .
                     '<task globalId="12" timeOfChange="2017-04-13 22:00:00">' .
                         '<message>Task 12</message>' .
