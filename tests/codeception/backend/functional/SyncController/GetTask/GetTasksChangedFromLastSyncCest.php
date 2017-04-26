@@ -20,6 +20,26 @@ class GetTasksChangedFromLastSyncCest
     public function tryToTest(\FunctionalTester $I)
     {
 
+        // Task 50 was changed befor last sync
+        $I->haveInDatabase('tasks', array(
+            'id' => 50,
+            'user' => 1,
+            'message' => 'Task 50',
+            'description' => 'No desc 50',
+            'status' => 'TODO',
+            'created' => '2016-02-04 00:00:00',
+            'last_modify' => '2017-01-02 00:00:00'));
+
+        $I->haveInDatabase('sync_changed_tasks', array(
+            'id' => 5,
+            'user_id' => 1,
+            'task_id' => 50,
+            'action' => 'CREATED',
+            'datetime' => '2017-01-01 00:00:00',
+            'server_update_time' => '2017-01-02 00:00:00'));
+
+        $lastSyncTime = '2017-01-03 00:00:00';
+
         // Task 104 was Created on server
         $I->haveInDatabase('tasks', array(
             'id' => 104,
@@ -58,7 +78,7 @@ class GetTasksChangedFromLastSyncCest
 
 
         $I->sendPOST('sync/get-tasks',
-            ['accessToken' => Yii::$app->params['testAccessToken'], 'last_sync_time' => '10-04-2017 10:00'],
+            ['accessToken' => Yii::$app->params['testAccessToken'], 'last_sync_time' => $lastSyncTime],
             ['exists_tasks_xml' => codecept_data_dir('SyncControllerFeed/exists_tasks.xml')]
         );
         $I->seeResponseCodeIs(200);
