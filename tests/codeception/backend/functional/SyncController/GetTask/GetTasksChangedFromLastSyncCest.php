@@ -7,15 +7,15 @@
  * Time: 5:07 PM
  */
 
-class GetUpdatesFromLastSyncCest
+use  \common\infrastructure\ChangeOfTask;
+
+class GetTasksChangedFromLastSyncCest
 {
     public function _before(\FunctionalTester $I)
     {
         $DBCleaner = new DBCleaner(Yii::$app->db);
         $DBCleaner->clean();
     }
-
-    /* @var $scenario Codeception\Scenario */
 
     public function tryToTest(\FunctionalTester $I)
     {
@@ -37,6 +37,25 @@ class GetUpdatesFromLastSyncCest
             'action' => 'CREATED',
             'datetime' => '2017-02-04 00:00:00',
             'server_update_time' => '2017-02-04 00:00:00'));
+
+        // Task 99 was Created on server
+        $I->haveInDatabase('tasks', array(
+            'id' => 99,
+            'user' => 1,
+            'message' => 'Task 99',
+            'description' => 'No desc 99',
+            'status' => 'ACTIVE',
+            'created' => '2017-01-01 00:00:00',
+            'last_modify' => '2017-01-20 00:00:00'));
+
+        $I->haveInDatabase('sync_changed_tasks', array(
+            'id' => 99,
+            'user_id' => 1,
+            'task_id' => 99,
+            'action' => ChangeOfTask::STATUS_UPDATED,
+            'datetime' => '2017-01-19 00:00:00',
+            'server_update_time' => '2017-01-20 00:00:00'));
+
 
         $I->sendPOST('sync/get-tasks',
             ['accessToken' => Yii::$app->params['testAccessToken'], 'last_sync_time' => '10-04-2017 10:00'],
@@ -71,9 +90,9 @@ class GetUpdatesFromLastSyncCest
         }
 
         $I->assertEquals($responseXML->getName(), 'tasks', 'Wrong root element name');
-        $I->assertEquals(count($responseXML->created), 1, 'Must have one created element');
 
         $created = $responseXML->created;
+        $I->assertEquals(count($created), 1, 'Must have one created element');
         $I->assertEquals(count($created->task), 1, 'Wrong number of created tasks elements');
 
         $task1 = $created->task[0];
@@ -83,11 +102,14 @@ class GetUpdatesFromLastSyncCest
         $I->assertEquals("Task 104", $task1->message, 'Wrong message');
         $I->assertEquals("No desc", $task1->description, 'Wrong description');
         $I->assertEquals("TODO", $task1->status, 'Wrong status');
-        $I->assertEquals("TODO", $task1->status, 'Wrong status');
 
         $conditions1 = $task1->conditions;
         $I->assertEquals(count($conditions1), 1, 'Must have 1 condiitons element');
         $I->assertEquals(count($conditions1->condition), 0, 'Must have 0 condiiton elements');
+
+        $updated = $responseXML->updated;
+        $I->assertEquals(count($updated), 1, 'Must have one updated element');
+        $I->assertEquals(count($updated->task), 1, 'Wrong number of updated tasks elements');
     }
 
 }
