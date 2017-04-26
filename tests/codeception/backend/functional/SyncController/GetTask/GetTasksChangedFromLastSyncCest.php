@@ -94,6 +94,13 @@ class GetTasksChangedFromLastSyncCest
                         <status>ACTIVE</status>
                     </task>
                 </created>
+                <updated>
+                    ....
+                </updated>
+                <deleted>
+                    <deletedTask global-id=66 local-id=6></deletedTask>
+                    <deletedTask global-id=77 local-id=7></deletedTask>
+                </deleted>
             </tasks>
          */
 
@@ -131,6 +138,10 @@ class GetTasksChangedFromLastSyncCest
         $updated = $responseXML->tasks->updated;
         $I->assertEquals(count($updated), 1, 'Must have one updated element');
         $I->assertEquals(count($updated->task), 1, 'Wrong number of updated tasks elements');
+
+        $deleted = $responseXML->tasks->deleted;
+        $I->assertEquals(count($deleted), 1, 'Must have one <deleted> element');
+        $I->assertEquals(count($deleted->deletedTask), 2, 'Must have 2 <deletedTask> element');
     }
 
 }

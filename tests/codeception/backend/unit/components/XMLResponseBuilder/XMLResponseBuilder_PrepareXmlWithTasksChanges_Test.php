@@ -86,6 +86,7 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
                             '<status>ACTIVE</status>' .
                         '</task>' .
                     '</updated>'  .
+                    '<deleted></deleted>' .
                 '</tasks>' .
                 '<serverTime>2017-06-01 00:00:00</serverTime>' .
             '</changes>';
@@ -132,6 +133,7 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
                             '<status>ACTIVE</status>' .
                         '</task>' .
                     '</updated>'  .
+                    '<deleted></deleted>' .
                 '</tasks>' .
                 '<serverTime>2017-06-01 00:00:00</serverTime>' .
             '</changes>';

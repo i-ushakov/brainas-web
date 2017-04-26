@@ -176,6 +176,15 @@ class XMLResponseBuilder {
         }
         $xmlResponse .= '</updated>';
 
+        $xmlResponse .= '<deleted>';
+        foreach ($changedTasks['deleted'] as $globalId => $localId) {
+            $xmlResponse .= '<deletedTask ' .
+                'global-id="' . $globalId . '" ' .
+                'local-id="' . $localId . '"' .
+                '></deletedTask>';
+        }
+        $xmlResponse .= '</deleted>';
+
         $xmlResponse .= '</tasks>';
 
         $xmlResponse .= '<serverTime>' . $currentTime . '</serverTime>';

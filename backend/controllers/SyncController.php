@@ -80,14 +80,15 @@ class SyncController extends Controller
         $authInfo = GoogleAuthHelper::verifyUserAccess($token);
         $userId = $authInfo['userId'];
 
-        $existsTasksFromDevice = simplexml_load_file($_FILES['exists_tasks_xml']['tmp_name']);
+        $existsTasksFromDeviceXml = simplexml_load_file($_FILES['exists_tasks_xml']['tmp_name']);
+        $existingTasksFromDevice = json_decode($existsTasksFromDeviceXml->existingTasks);
         $timeOfLastSync = $this->getTimeOfLastSync();
 
         /* @var $tasksSyncManager TasksSyncManager */
         $tasksSyncManager = Yii::$container->get(TasksSyncManager::class);
         $tasksSyncManager->setUserId($userId);
 
-        $resultXml = $tasksSyncManager->getXmlWithChanges($existsTasksFromDevice, $timeOfLastSync);
+        $resultXml = $tasksSyncManager->getXmlWithChanges($existingTasksFromDevice, $timeOfLastSync);
 
         return $resultXml;
     }

@@ -62,8 +62,8 @@ class TasksSyncManager
     public function getXmlWithChanges($existsTasksFromDevice, $lastSyncTime)
     {
         $serverChanges = $this->getChangesOfTasks($lastSyncTime);
-        //$existingTasksOnDevice = TaskXMLHelper::retrieveExistingTasksFromXML($this->syncDataFromDevice);
-        //$serverChanges['deleted'] = TaskHelper::getTasksRemovedOnServer($existingTasksOnDevice, $this->userId);
+        $serverChanges['deleted'] = $this->getDeletedTasks($existsTasksFromDevice);
+
         return $this->responseBuilder->prepareXmlWithTasksChanges($serverChanges, $this->getCurrentTime());
     }
 
@@ -132,5 +132,26 @@ class TasksSyncManager
         $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
         $lastSyncTime = $currentDatetime->format('Y-m-d H:i:s');
         return $lastSyncTime;
+    }
+
+    /*
+     * We are getting tasks that we have on device but they are absent on server side
+     */
+    public function getDeletedTasks($existingTasksOnDevice) {
+        file_put_contents("test0105.txt", "getDeletedTasks", FILE_APPEND);
+        $removedTasks = array();
+        $existingTasksOnServer = array();
+        $tasks = Task::findAll(['user' => $this->userId]);
+        foreach ($tasks as $task) {
+            $existingTasksOnServer[] = intval($task->id);
+        }
+        foreach ($existingTasksOnDevice as $serverId => $localId) {
+            file_put_contents("test0106.txt", "serverId" . $serverId, FILE_APPEND);
+            file_put_contents("test0106.txt", "localId" . $localId, FILE_APPEND);
+            if (!in_array(intval($serverId), $existingTasksOnServer)) {
+                $removedTasks[$serverId] = intval($localId);
+            }
+        }
+        return $removedTasks;
     }
 }
