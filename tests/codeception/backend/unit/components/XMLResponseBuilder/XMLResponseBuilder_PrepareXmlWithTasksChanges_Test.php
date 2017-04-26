@@ -63,28 +63,32 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
         ];
 
         // testing ...
-        $result = $xmlResponseBuilder->prepareXmlWithTasksChanges($changedTasks);
+        $currentTime = "2017-06-01 00:00:00";
+        $result = $xmlResponseBuilder->prepareXmlWithTasksChanges($changedTasks, $currentTime);
 
         // assetions :
         $xmlWithTasksChanges = '<?xml version="1.0" encoding="UTF-8"?>' .
-            '<tasks>' .
-                '<created>' .
-                    '<task globalId="11" timeOfChange="2017-04-13 20:00:16">' .
-                        '<message>Task 11</message>' .
-                        '<description>No desc</description>' .
-                        '<conditions></conditions>' .
-                        '<status>TODO</status>' .
-                    '</task>' .
-                '</created>' .
-                '<updated>' .
-                    '<task globalId="12" timeOfChange="2017-04-13 22:00:00">' .
-                        '<message>Task 12</message>' .
-                        '<description>No desc</description>' .
-                        '<conditions></conditions>' .
-                        '<status>ACTIVE</status>' .
-                    '</task>' .
-                '</updated>'  .
-            '</tasks>';
+            '<changes>' .
+                '<tasks>' .
+                    '<created>' .
+                        '<task globalId="11" timeOfChange="2017-04-13 20:00:16">' .
+                            '<message>Task 11</message>' .
+                            '<description>No desc</description>' .
+                            '<conditions></conditions>' .
+                            '<status>TODO</status>' .
+                        '</task>' .
+                    '</created>' .
+                    '<updated>' .
+                        '<task globalId="12" timeOfChange="2017-04-13 22:00:00">' .
+                            '<message>Task 12</message>' .
+                            '<description>No desc</description>' .
+                            '<conditions></conditions>' .
+                            '<status>ACTIVE</status>' .
+                        '</task>' .
+                    '</updated>'  .
+                '</tasks>' .
+                '<serverTime>2017-06-01 00:00:00</serverTime>' .
+            '</changes>';
         $this->tester->assertEquals($xmlWithTasksChanges, $result, "Wrong xml with synchronized objects");
     }
 
@@ -112,21 +116,25 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
         ];
 
         // testing ...
-        $result = $xmlResponseBuilder->prepareXmlWithTasksChanges($changedTasks);
+        $currentTime = "2017-06-01 00:00:00";
+        $result = $xmlResponseBuilder->prepareXmlWithTasksChanges($changedTasks, $currentTime);
 
         // assetions :
         $xmlWithTasksChanges = '<?xml version="1.0" encoding="UTF-8"?>' .
-            '<tasks>' .
-                '<created></created>' .
-                '<updated>' .
-                    '<task globalId="12" timeOfChange="2017-04-13 22:00:00">' .
-                        '<message>Task 12</message>' .
-                        '<description>No desc</description>' .
-                        '<conditions></conditions>' .
-                        '<status>ACTIVE</status>' .
-                    '</task>' .
-                '</updated>'  .
-            '</tasks>';
+            '<changes>' .
+                '<tasks>' .
+                    '<created></created>' .
+                    '<updated>' .
+                        '<task globalId="12" timeOfChange="2017-04-13 22:00:00">' .
+                            '<message>Task 12</message>' .
+                            '<description>No desc</description>' .
+                            '<conditions></conditions>' .
+                            '<status>ACTIVE</status>' .
+                        '</task>' .
+                    '</updated>'  .
+                '</tasks>' .
+                '<serverTime>2017-06-01 00:00:00</serverTime>' .
+            '</changes>';
         $this->tester->assertEquals($xmlWithTasksChanges, $result, "Wrong xml with synchronized objects");
     }
 }

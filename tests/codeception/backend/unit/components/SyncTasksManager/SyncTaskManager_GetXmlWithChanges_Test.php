@@ -31,13 +31,15 @@ class SyncTaskManager_GetXmlWithChanges_Test extends \Codeception\TestCase\Test
         /* @var $responseBuilder Mockery */
         $responseBuilder =  m::mock(XMLResponseBuilder::class);
         $serverChanges = ['created' => [], 'updated' => []];
-        $responseBuilder->shouldReceive('prepareXmlWithTasksChanges')->once()->with($serverChanges);
+        $currentTime = '2017-02-05 00:00:00';
+        $responseBuilder->shouldReceive('prepareXmlWithTasksChanges')->once()->with($serverChanges, $currentTime);
 
         /* @var $tasksSyncManager Mockery */
         $tasksSyncManager = m::mock(
-            TasksSyncManager::class . '[getChangesOfTasks]',
+            TasksSyncManager::class . '[getChangesOfTasks, getCurrentTime]',
             [$changeOfTaskHandler, $responseBuilder]);
         $tasksSyncManager->shouldReceive('getChangesOfTasks')->once()->andReturn($serverChanges);
+        $tasksSyncManager->shouldReceive('getCurrentTime')->once()->andReturn($currentTime);
 
         // testing...
         $existsTasksFromDevice = new SimpleXMLElement("<xml/>");

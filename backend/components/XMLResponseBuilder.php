@@ -148,10 +148,11 @@ class XMLResponseBuilder {
         return $xmlPart;
     }
 
-    public function prepareXmlWithTasksChanges($changedTasks) {
+    public function prepareXmlWithTasksChanges($changedTasks, $currentTime) {
         $xmlResponse = "";
         $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
 
+        $xmlResponse .= '<changes>';
         $xmlResponse .= '<tasks>';
 
         // Created tasks
@@ -176,6 +177,10 @@ class XMLResponseBuilder {
         $xmlResponse .= '</updated>';
 
         $xmlResponse .= '</tasks>';
+
+        $xmlResponse .= '<serverTime>' . $currentTime . '</serverTime>';
+
+        $xmlResponse .= '</changes>';
 
         return $xmlResponse;
     }

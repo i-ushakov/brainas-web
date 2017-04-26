@@ -9,7 +9,7 @@
 
 use  \common\infrastructure\ChangeOfTask;
 
-class GetAllTasksChangedCest
+class GetAllChangedTasksCest
 {
     public function _before(\FunctionalTester $I)
     {
@@ -70,13 +70,14 @@ class GetAllTasksChangedCest
             $I->fail("Response is not valid XML");
         }
 
-        $I->assertEquals($responseXML->getName(), 'tasks', 'Wrong root element name');
+        $I->assertEquals($responseXML->getName(), 'changes', 'Wrong root element name');
+        $I->assertEquals(count($responseXML->tasks), 1, 'Must have 1 <tasks> elemnt');
 
-        $created = $responseXML->created;
-        $I->assertEquals(count($created), 1, 'Must have one created element');
+        $created = $responseXML->tasks->created;
+        $I->assertEquals(count($created), 1, 'Must have one <created> element');
         $I->assertEquals(count($created->task), 0, 'Wrong number of created tasks elements');
 
-        $updated = $responseXML->updated;
+        $updated = $responseXML->tasks->updated;
         $I->assertEquals(count($updated), 1, 'Must have one updated element');
         $I->assertEquals(count($updated->task), 1, 'Wrong number of updated tasks elements');
 

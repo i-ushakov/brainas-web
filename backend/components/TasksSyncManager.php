@@ -64,7 +64,7 @@ class TasksSyncManager
         $serverChanges = $this->getChangesOfTasks($lastSyncTime);
         //$existingTasksOnDevice = TaskXMLHelper::retrieveExistingTasksFromXML($this->syncDataFromDevice);
         //$serverChanges['deleted'] = TaskHelper::getTasksRemovedOnServer($existingTasksOnDevice, $this->userId);
-        return $this->responseBuilder->prepareXmlWithTasksChanges($serverChanges);
+        return $this->responseBuilder->prepareXmlWithTasksChanges($serverChanges, $this->getCurrentTime());
     }
 
     public function getChangesOfTasks($lastSyncTime) {
@@ -125,5 +125,12 @@ class TasksSyncManager
             );
             return false;
         }
+    }
+
+    public function getCurrentTime() {
+        $currentDatetime = new \DateTime();
+        $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
+        $lastSyncTime = $currentDatetime->format('Y-m-d H:i:s');
+        return $lastSyncTime;
     }
 }
