@@ -179,8 +179,8 @@ class XMLResponseBuilder {
         $xmlResponse .= '<deleted>';
         foreach ($changedTasks['deleted'] as $globalId => $localId) {
             $xmlResponse .= '<deletedTask ' .
-                'global-id="' . $globalId . '" ' .
-                'local-id="' . $localId . '"' .
+                'globalId="' . $globalId . '" ' .
+                'localId="' . $localId . '"' .
                 '></deletedTask>';
         }
         $xmlResponse .= '</deleted>';
