@@ -29,7 +29,9 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
     public function testPrepareXmlWithCreatedAndUpdated()
     {
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = new XMLResponseBuilder();
+        $xmlResponseBuilder = m::mock(XMLResponseBuilder::class . "[buildDeletedPart]");
+        $xmlResponseBuilder->shouldReceive('buildDeletedPart')
+            ->once()->andReturn("<deleted>some stuff</deleted>");
 
         $changedTasks = [
             'created' => [
@@ -59,7 +61,9 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
                         'created' => '2017-04-13 20:00:16',
                         'last_modify' => '2017-04-13 22:00:00'])
                 ]
-            ]
+            ],
+            'deleted' => []
+
         ];
 
         // testing ...
@@ -86,7 +90,7 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
                             '<status>ACTIVE</status>' .
                         '</task>' .
                     '</updated>'  .
-                    '<deleted></deleted>' .
+                    '<deleted>some stuff</deleted>' .
                 '</tasks>' .
                 '<serverTime>2017-06-01 00:00:00</serverTime>' .
             '</changes>';
@@ -96,7 +100,10 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
     public function testPrepareXmlWithOnlyUpdated()
     {
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = new XMLResponseBuilder();
+        $xmlResponseBuilder = m::mock(XMLResponseBuilder::class . "[buildDeletedPart]");
+        $xmlResponseBuilder->shouldReceive('buildDeletedPart')
+            ->once()->andReturn("<deleted>some stuff</deleted>");
+
 
         $changedTasks = [
             'created' => [],
@@ -113,7 +120,8 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
                         'created' => '2017-04-13 20:00:16',
                         'last_modify' => '2017-04-13 22:00:00'])
                 ]
-            ]
+            ],
+            'deleted' => []
         ];
 
         // testing ...
@@ -133,7 +141,7 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
                             '<status>ACTIVE</status>' .
                         '</task>' .
                     '</updated>'  .
-                    '<deleted></deleted>' .
+                    '<deleted>some stuff</deleted>' .
                 '</tasks>' .
                 '<serverTime>2017-06-01 00:00:00</serverTime>' .
             '</changes>';

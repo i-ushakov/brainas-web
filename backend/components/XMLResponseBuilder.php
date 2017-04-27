@@ -176,14 +176,7 @@ class XMLResponseBuilder {
         }
         $xmlResponse .= '</updated>';
 
-        $xmlResponse .= '<deleted>';
-        foreach ($changedTasks['deleted'] as $globalId => $localId) {
-            $xmlResponse .= '<deletedTask ' .
-                'globalId="' . $globalId . '" ' .
-                'localId="' . $localId . '"' .
-                '></deletedTask>';
-        }
-        $xmlResponse .= '</deleted>';
+        $xmlResponse .= $this->buildDeletedPart($changedTasks['deleted']);
 
         $xmlResponse .= '</tasks>';
 
@@ -192,6 +185,18 @@ class XMLResponseBuilder {
         $xmlResponse .= '</changes>';
 
         return $xmlResponse;
+    }
+
+    public function buildDeletedPart($deletedTasks) {
+        $xmlPart = '<deleted>';
+        foreach ($deletedTasks as $globalId => $localId) {
+            $xmlPart .= '<deletedTask ' .
+                'globalId="' . $globalId . '" ' .
+                'localId="' . $localId . '"' .
+                '></deletedTask>';
+        }
+        $xmlPart .= '</deleted>';
+        return $xmlPart;
     }
 
     public function prepareSyncObjectsXml($synchronizedTasks)
