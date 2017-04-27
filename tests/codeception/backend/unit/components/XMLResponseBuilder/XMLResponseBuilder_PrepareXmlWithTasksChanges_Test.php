@@ -13,7 +13,7 @@ use common\infrastructure\ChangeOfTask;
 use AspectMock\Test as test;
 use Mockery as m;
 
-class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\TestCase\Test
+class XMLResponseBuilder_BuildXmlWithTasksChanges_Test extends \Codeception\TestCase\Test
 {
     /**
      * @var UnitTester
@@ -69,7 +69,7 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
 
         // testing ...
         $currentTime = "2017-06-01 00:00:00";
-        $result = $xmlResponseBuilder->prepareXmlWithTasksChanges($changedTasks, $currentTime);
+        $result = $xmlResponseBuilder->buildXmlWithTasksChanges($changedTasks, $currentTime);
 
         // assetions :
         $xmlWithTasksChanges = '<?xml version="1.0" encoding="UTF-8"?>' .

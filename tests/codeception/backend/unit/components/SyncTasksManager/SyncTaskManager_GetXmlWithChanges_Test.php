@@ -33,7 +33,7 @@ class SyncTaskManager_GetXmlWithChanges_Test extends \Codeception\TestCase\Test
         $serverChanges = ['created' => [], 'updated' => []];
         $serverChangesWithDeleted = array_merge($serverChanges, ['deleted' => [10 => 1, 11 => 2]]);
         $currentTime = '2017-02-05 00:00:00';
-        $responseBuilder->shouldReceive('prepareXmlWithTasksChanges')
+        $responseBuilder->shouldReceive('buildXmlWithTasksChanges')
             ->once()->with($serverChangesWithDeleted, $currentTime);
 
         /* @var $tasksSyncManager Mockery */

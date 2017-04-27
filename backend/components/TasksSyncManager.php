@@ -64,7 +64,7 @@ class TasksSyncManager
         $serverChanges = $this->getChangesOfTasks($lastSyncTime);
         $serverChanges['deleted'] = $this->getDeletedTasks($existsTasksFromDevice);
 
-        return $this->responseBuilder->prepareXmlWithTasksChanges($serverChanges, $this->getCurrentTime());
+        return $this->responseBuilder->buildXmlWithTasksChanges($serverChanges, $this->getCurrentTime());
     }
 
     public function getChangesOfTasks($lastSyncTime) {
