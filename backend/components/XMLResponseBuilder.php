@@ -8,8 +8,6 @@
  */
 namespace backend\components;
 
-use \common\models\Task;
-
 class XMLResponseBuilder {
 
     static function buildXMLResponse($serverChanges, $synchronizedObjects, $lastSyncTime, $token) {
@@ -102,9 +100,9 @@ class XMLResponseBuilder {
         return $xmlResponse;
     }
 
-    private static function buildXmlOfTask($task, $datetime) {
+    public function buildXmlOfTask($task, $datetime) {
         $xml = '' .
-            '<task global-id="' . $task->id . '" time-changes="' . $datetime . '">' .
+            '<task globalId="' . $task->id . '" timeOfChange="' . $datetime . '">' .
             '<message>' . $task->message . '</message>' .
             '<description>' . $task->description . '</description>' .
             self::addPictureEntity($task->picture) .
@@ -148,5 +146,89 @@ class XMLResponseBuilder {
             $xmlPart .= '</picture>';
         }
         return $xmlPart;
+    }
+
+    public function buildXmlWithTasksChanges($changedTasks, $currentTime) {
+        $xmlResponse = "";
+        $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
+
+        $xmlResponse .= '<changes>';
+        $xmlResponse .= '<tasks>';
+
+        // Created tasks
+        $xmlResponse .= $this->buildCreatedPart($changedTasks['created']);
+
+        // Updated tasks
+        $xmlResponse .= $this->buildUpdatedPart($changedTasks['updated']);
+
+        // Deleted tasks
+        $xmlResponse .= $this->buildDeletedPart($changedTasks['deleted']);
+
+        $xmlResponse .= '</tasks>';
+
+        $xmlResponse .= '<serverTime>' . $currentTime . '</serverTime>';
+
+        $xmlResponse .= '</changes>';
+
+        return $xmlResponse;
+    }
+
+    public function buildCreatedPart($createdTasks)
+    {
+        $xmlPart = '<created>';
+        foreach ($createdTasks as $id => $createdTask) {
+            $xmlPart .= XMLResponseBuilder::buildXmlOfTask($createdTask['object'],  $createdTask['datetime']);
+        }
+        $xmlPart .= '</created>';
+        return $xmlPart;
+    }
+
+    public function buildUpdatedPart($updatedTasks)
+    {
+        $xmlPart = '<updated>';
+        foreach ($updatedTasks as $id => $updatedTask) {
+            if (isset($updatedTask['object']) && !empty($updatedTask['object'])) {
+                $xmlPart .= self::buildXmlOfTask($updatedTask['object'], $updatedTask['datetime']);
+            } else {
+                \Yii::info(
+                    "We have a server change without object with datetime = " . $updatedTask['datetime'] .
+                    " for task with id = " . $id, "MyLog"
+                );
+            }
+        }
+        $xmlPart .= '</updated>';
+
+        return $xmlPart;
+    }
+
+    public function buildDeletedPart($deletedTasks)
+    {
+        $xmlPart = '<deleted>';
+        foreach ($deletedTasks as $globalId => $localId) {
+            $xmlPart .= '<deletedTask ' .
+                'globalId="' . $globalId . '" ' .
+                'localId="' . $localId . '"' .
+                '></deletedTask>';
+        }
+        $xmlPart .= '</deleted>';
+        return $xmlPart;
+    }
+
+    public function prepareSyncObjectsXml($synchronizedTasks)
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<synchronizedTasks>';
+
+        if (count($synchronizedTasks) > 0) {
+            foreach ($synchronizedTasks as $localId => $globalId) {
+                $xml .= "<synchronizedTask>" .
+                    "<localId>$localId</localId>" .
+                    "<globalId>$globalId</globalId>" .
+                    "</synchronizedTask>";
+            }
+        }
+
+        $xml .= '</synchronizedTasks>';
+        return $xml;
     }
 }

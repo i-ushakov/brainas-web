@@ -57,7 +57,8 @@ $I->assertEquals($responseXML->getName(), 'synchronizedTasks', 'Wrong root eleme
 $I->assertEquals(count($responseXML->synchronizedTask), 1, 'Must have one synchronizedTask element');
 
 $synchronizedTask = $responseXML->synchronizedTask[0];
-$I->assertEquals(intval($synchronizedTask->localId), 1, 'Local id have to be 1');
+$I->assertEquals(intval($synchronizedTask->localId), 1, 'Local Id have to be 1');
+$I->assertEquals(intval($synchronizedTask->globalId), 101, 'Global Id have to be 101');
 
 $I->wantTo('check that Task 101 was DELETED from database');
 

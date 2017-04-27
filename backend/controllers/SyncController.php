@@ -62,11 +62,11 @@ class SyncController extends Controller
         $syncDataFromDevice = simplexml_load_file($_FILES['tasks_changes_xml']['tmp_name']);
         $changedTasksXml = $syncDataFromDevice->changedTasks;
 
+        /* @var $tasksSyncManager TasksSyncManager */
         $tasksSyncManager = Yii::$container->get(TasksSyncManager::class);
         $tasksSyncManager->setUserId($userId);
 
-        $synchronizedTasks = $tasksSyncManager->handleTasksFromDevice($changedTasksXml);
-        $syncObjectsXml = $tasksSyncManager->prepareSyncObjectsXml($synchronizedTasks);
+        $syncObjectsXml = $tasksSyncManager->handleTasksFromDevice($changedTasksXml);
         return $syncObjectsXml;
     }
 
@@ -75,10 +75,26 @@ class SyncController extends Controller
      */
     public function actionGetTasks()
     {
-        //TODO
+        $token = $this->getAccessTokenFromPost();
+
+        $authInfo = GoogleAuthHelper::verifyUserAccess($token);
+        $userId = $authInfo['userId'];
+
+        $existsTasksFromDeviceXml = simplexml_load_file($_FILES['exists_tasks_xml']['tmp_name']);
+        $existingTasksFromDevice = json_decode($existsTasksFromDeviceXml->existingTasks);
+        $timeOfLastSync = $this->getTimeOfLastSync();
+
+        /* @var $tasksSyncManager TasksSyncManager */
+        $tasksSyncManager = Yii::$container->get(TasksSyncManager::class);
+        $tasksSyncManager->setUserId($userId);
+
+        $resultXml = $tasksSyncManager->getXmlWithChanges($existingTasksFromDevice, $timeOfLastSync);
+
+        return $resultXml;
     }
 
-    protected function getAccessTokenFromPost() {
+    protected function getAccessTokenFromPost()
+    {
         $post = Yii::$app->request->post();
         if(isset($post['accessToken'])) {
             $accessToken = $post['accessToken'];
@@ -86,5 +102,16 @@ class SyncController extends Controller
             return null;
         }
         return json_decode($accessToken, true);
+    }
+
+    protected function getTimeOfLastSync()
+    {
+        $post = Yii::$app->request->post();
+        if(isset($post['lastSyncTime'])) {
+            $timeOfLastSync = $post['lastSyncTime'];
+        } else {
+            return null;
+        }
+        return $timeOfLastSync;
     }
 }
