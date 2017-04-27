@@ -13,7 +13,7 @@ use common\infrastructure\ChangeOfTask;
 use AspectMock\Test as test;
 use Mockery as m;
 
-class XMLResponseBuilder_BuildXmlWithTasksChanges_Test extends \Codeception\TestCase\Test
+class BuildXmlWithTasksChanges_Test extends \Codeception\TestCase\Test
 {
     /**
      * @var UnitTester
@@ -26,7 +26,7 @@ class XMLResponseBuilder_BuildXmlWithTasksChanges_Test extends \Codeception\Test
         m::close();
     }
 
-    public function testPrepareXmlWithCreatedAndUpdated()
+    public function testBuildXmlWithTasksChanges()
     {
         /* var $xmlResponseBuilder XMLResponseBuilder */
         $xmlResponseBuilder = m::mock(XMLResponseBuilder::class . "[buildUpdatedPart, buildDeletedPart]");

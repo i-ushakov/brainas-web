@@ -156,11 +156,7 @@ class XMLResponseBuilder {
         $xmlResponse .= '<tasks>';
 
         // Created tasks
-        $xmlResponse .= '<created>';
-        foreach ($changedTasks['created'] as $id => $changedTask) {
-            $xmlResponse .= XMLResponseBuilder::buildXmlOfTask($changedTask['object'],  $changedTask['datetime']);
-        }
-        $xmlResponse .= '</created>';
+        $xmlResponse .= $this->buildCreatedPart($changedTasks['created']);
 
         // Updated tasks
         $xmlResponse .= $this->buildUpdatedPart($changedTasks['updated']);
@@ -177,15 +173,25 @@ class XMLResponseBuilder {
         return $xmlResponse;
     }
 
+    public function buildCreatedPart($createdTasks)
+    {
+        $xmlPart = '<created>';
+        foreach ($createdTasks as $id => $createdTask) {
+            $xmlPart .= XMLResponseBuilder::buildXmlOfTask($createdTask['object'],  $createdTask['datetime']);
+        }
+        $xmlPart .= '</created>';
+        return $xmlPart;
+    }
+
     public function buildUpdatedPart($updatedTasks)
     {
         $xmlPart = '<updated>';
-        foreach ($updatedTasks as $id => $changedTask) {
-            if (isset($changedTask['object']) && !empty($changedTask['object'])) {
-                $xmlPart .= self::buildXmlOfTask($changedTask['object'], $changedTask['datetime']);
+        foreach ($updatedTasks as $id => $updatedTask) {
+            if (isset($updatedTask['object']) && !empty($updatedTask['object'])) {
+                $xmlPart .= self::buildXmlOfTask($updatedTask['object'], $updatedTask['datetime']);
             } else {
                 \Yii::info(
-                    "We have a server change without object with datetime = " . $changedTask['datetime'] .
+                    "We have a server change without object with datetime = " . $updatedTask['datetime'] .
                     " for task with id = " . $id, "MyLog"
                 );
             }
