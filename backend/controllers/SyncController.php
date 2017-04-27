@@ -107,8 +107,8 @@ class SyncController extends Controller
     protected function getTimeOfLastSync()
     {
         $post = Yii::$app->request->post();
-        if(isset($post['last_sync_time'])) {
-            $timeOfLastSync = $post['last_sync_time'];
+        if(isset($post['lastSyncTime'])) {
+            $timeOfLastSync = $post['lastSyncTime'];
         } else {
             return null;
         }
