@@ -29,7 +29,9 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
     public function testPrepareXmlWithCreatedAndUpdated()
     {
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = m::mock(XMLResponseBuilder::class . "[buildDeletedPart]");
+        $xmlResponseBuilder = m::mock(XMLResponseBuilder::class . "[buildUpdatedPart, buildDeletedPart]");
+        $xmlResponseBuilder->shouldReceive('buildUpdatedPart')
+            ->once()->andReturn("<updated>some stuff</updated>");
         $xmlResponseBuilder->shouldReceive('buildDeletedPart')
             ->once()->andReturn("<deleted>some stuff</deleted>");
 
@@ -62,8 +64,7 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
                         'last_modify' => '2017-04-13 22:00:00'])
                 ]
             ],
-            'deleted' => []
-
+            'deleted' => [11 => 1, 12 => 2]
         ];
 
         // testing ...
@@ -82,65 +83,7 @@ class XMLResponseBuilder_PrepareXmlWithTasksChanges_Test extends \Codeception\Te
                             '<status>TODO</status>' .
                         '</task>' .
                     '</created>' .
-                    '<updated>' .
-                        '<task globalId="12" timeOfChange="2017-04-13 22:00:00">' .
-                            '<message>Task 12</message>' .
-                            '<description>No desc</description>' .
-                            '<conditions></conditions>' .
-                            '<status>ACTIVE</status>' .
-                        '</task>' .
-                    '</updated>'  .
-                    '<deleted>some stuff</deleted>' .
-                '</tasks>' .
-                '<serverTime>2017-06-01 00:00:00</serverTime>' .
-            '</changes>';
-        $this->tester->assertEquals($xmlWithTasksChanges, $result, "Wrong xml with synchronized objects");
-    }
-
-    public function testPrepareXmlWithOnlyUpdated()
-    {
-        /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = m::mock(XMLResponseBuilder::class . "[buildDeletedPart]");
-        $xmlResponseBuilder->shouldReceive('buildDeletedPart')
-            ->once()->andReturn("<deleted>some stuff</deleted>");
-
-
-        $changedTasks = [
-            'created' => [],
-            'updated' => [
-                12 => [
-                    'action' => ChangeOfTask::STATUS_UPDATED,
-                    'datetime' => '2017-04-13 22:00:00',
-                    'object' => new Task([
-                        'id' => 12,
-                        'user' => 1,
-                        'message' => 'Task 12',
-                        'description' => 'No desc',
-                        'status' => 'ACTIVE',
-                        'created' => '2017-04-13 20:00:16',
-                        'last_modify' => '2017-04-13 22:00:00'])
-                ]
-            ],
-            'deleted' => []
-        ];
-
-        // testing ...
-        $currentTime = "2017-06-01 00:00:00";
-        $result = $xmlResponseBuilder->prepareXmlWithTasksChanges($changedTasks, $currentTime);
-
-        // assetions :
-        $xmlWithTasksChanges = '<?xml version="1.0" encoding="UTF-8"?>' .
-            '<changes>' .
-                '<tasks>' .
-                    '<created></created>' .
-                    '<updated>' .
-                        '<task globalId="12" timeOfChange="2017-04-13 22:00:00">' .
-                            '<message>Task 12</message>' .
-                            '<description>No desc</description>' .
-                            '<conditions></conditions>' .
-                            '<status>ACTIVE</status>' .
-                        '</task>' .
-                    '</updated>'  .
+                    '<updated>some stuff</updated>'  .
                     '<deleted>some stuff</deleted>' .
                 '</tasks>' .
                 '<serverTime>2017-06-01 00:00:00</serverTime>' .
