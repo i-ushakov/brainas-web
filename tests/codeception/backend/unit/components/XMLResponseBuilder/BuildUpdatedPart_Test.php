@@ -48,7 +48,7 @@ class BuildUpdatedPart_Test extends \Codeception\TestCase\Test
         $result = $xmlResponseBuilder->buildUpdatedPart($updatedTasks);
 
         // assetions :
-        $deletedPartOfXml = '' .
+        $updatedPartOfXml = '' .
             '<updated>' .
                 '<task globalId="12" timeOfChange="2017-04-13 22:00:00">' .
                     '<message>Task 12</message>' .
@@ -57,6 +57,6 @@ class BuildUpdatedPart_Test extends \Codeception\TestCase\Test
                     '<status>ACTIVE</status>' .
                 '</task>' .
             '</updated>';
-        $this->tester->assertEquals($deletedPartOfXml, $result, "Wrong part of xml with updated tasks");
+        $this->tester->assertEquals($updatedPartOfXml, $result, "Wrong part of xml with updated tasks");
     }
 }

@@ -12,7 +12,7 @@ use backend\components\XMLResponseBuilder;
 use AspectMock\Test as test;
 use Mockery as m;
 
-class XMLResponseBuilder_PrepareSyncObjectsXml_Test extends \Codeception\TestCase\Test
+class PrepareSyncObjectsXml_Test.php extends \Codeception\TestCase\Test
 {
     /**
      * @var UnitTester
