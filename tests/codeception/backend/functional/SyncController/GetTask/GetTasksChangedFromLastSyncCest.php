@@ -78,7 +78,7 @@ class GetTasksChangedFromLastSyncCest
 
 
         $I->sendPOST('sync/get-tasks',
-            ['accessToken' => Yii::$app->params['testAccessToken'], 'last_sync_time' => $lastSyncTime],
+            ['accessToken' => Yii::$app->params['testAccessToken'], 'lastSyncTime' => $lastSyncTime],
             ['exists_tasks_xml' => codecept_data_dir('SyncControllerFeed/exists_tasks.xml')]
         );
         $I->seeResponseCodeIs(200);
@@ -98,8 +98,8 @@ class GetTasksChangedFromLastSyncCest
                     ....
                 </updated>
                 <deleted>
-                    <deletedTask global-id=66 local-id=6></deletedTask>
-                    <deletedTask global-id=77 local-id=7></deletedTask>
+                    <deletedTask globalId=66 localId=6></deletedTask>
+                    <deletedTask globalId=77 localId=7></deletedTask>
                 </deleted>
             </tasks>
          */
