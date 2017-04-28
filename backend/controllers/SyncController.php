@@ -12,7 +12,7 @@ use Yii;
 use yii\web\Controller;
 use backend\components\TasksSyncManager;
 use backend\components\GoogleAuthHelper;
-use common\models\GoogleDriveFolder;
+use backend\components\SettingsManager;
 use common\models\User;
 
 class SyncController extends Controller
@@ -60,7 +60,8 @@ class SyncController extends Controller
         if (isset($authInfo['userEmail'])) {
             $user = User::find()->where(['username' => $authInfo['userEmail']])->one();
             $settings = $this->retrieveSettingsFomPost();
-            return $this->handleSettings($user, $settings);
+            $settingsManager = new SettingsManager();
+            return $settingsManager->handleSettings($user, $settings);
         }
     }
 
@@ -137,42 +138,5 @@ class SyncController extends Controller
             return json_decode($settings, true);
         }
         return null;
-    }
-
-    private function handleSettings($user, $settings) {
-        if ($user != null) {
-            $projectFolder = GoogleDriveFolder::findOne(['id' => $user->projectFolder->id]);
-            $pictureFolder = GoogleDriveFolder::findOne(['id' => $user->pictureFolder->id]);
-
-            if (isset($settings) && !empty($settings)) {
-                if (
-                    !isset($projectFolder->resource_id) &&
-                    isset($settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID]) &&
-                    $settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID] != ""
-                ) {
-                    $projectFolder->resource_id = $settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID];
-                }
-                $projectFolder->save();
-
-                if (
-                    !isset($pictureFolder->resource_id) &&
-                    isset($settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID]) &&
-                    $settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID] != ""
-                ) {
-                    $pictureFolder->resource_id = $settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID];
-                }
-                $pictureFolder->save();
-            }
-
-            if (isset($projectFolder->resource_id)) {
-                $settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID] = $projectFolder->resource_id;
-            }
-            if (isset($pictureFolder->resource_id)) {
-                $settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID] = $pictureFolder->resource_id;
-            }
-            return json_encode($settings);
-        } else {
-            return null;
-        }
     }
 }
