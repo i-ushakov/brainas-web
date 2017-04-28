@@ -12,6 +12,8 @@ use Yii;
 use yii\web\Controller;
 use backend\components\TasksSyncManager;
 use backend\components\GoogleAuthHelper;
+use backend\components\SettingsManager;
+use common\models\User;
 
 class SyncController extends Controller
 {
@@ -47,6 +49,20 @@ class SyncController extends Controller
 
         return $xmlResp;
 
+    }
+
+    /*
+     * Synchronization settings between dives and server
+     */
+    public function actionGetSettings() {
+        $token = $this->getAccessTokenFromPost();
+        $authInfo = GoogleAuthHelper::verifyUserAccess($token);
+        if (isset($authInfo['userEmail'])) {
+            $user = User::find()->where(['username' => $authInfo['userEmail']])->one();
+            $settings = $this->retrieveSettingsFomPost();
+            $settingsManager = new SettingsManager();
+            return $settingsManager->handleSettings($user, $settings);
+        }
     }
 
     /*
@@ -113,5 +129,14 @@ class SyncController extends Controller
             return null;
         }
         return $timeOfLastSync;
+    }
+
+    protected function retrieveSettingsFomPost() {
+        $post = Yii::$app->request->post();
+        if(isset($post['settings'])) {
+            $settings = $post['settings'];
+            return json_decode($settings, true);
+        }
+        return null;
     }
 }
