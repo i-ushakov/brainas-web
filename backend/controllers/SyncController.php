@@ -55,9 +55,10 @@ class SyncController extends Controller
      * Synchronization settings between dives and server
      */
     public function actionGetSettings() {
-        $accessToken = $this->getAccessTokenFromPost();
-        if (isset($accessToken)) {
-            $user = $this->getUserByToken($accessToken);
+        $token = $this->getAccessTokenFromPost();
+        $authInfo = GoogleAuthHelper::verifyUserAccess($token);
+        if (isset($authInfo['userEmail'])) {
+            $user = User::find()->where(['username' => $authInfo['userEmail']])->one();
             $settings = $this->retrieveSettingsFomPost();
             return $this->handleSettings($user, $settings);
         }
@@ -127,23 +128,6 @@ class SyncController extends Controller
             return null;
         }
         return $timeOfLastSync;
-    }
-
-    protected function getUserByToken($accessToken) {
-        $client = GoogleAuthHelper::getGoogleClient();
-        $client->setAccessToken($accessToken);
-        if ($client->isAccessTokenExpired()) {
-            if (isset($accessToken['refresh_token'])) {
-                $accessToken = $client->refreshToken($accessToken['refresh_token']);
-                $client->setAccessToken($accessToken);
-            } else {
-                throw new InvalidArgumentException();
-            }
-        }
-        $data = $client->verifyIdToken();
-        $userEmail = $data['email'];
-        $user = User::find()->where(['username' => $userEmail])->one();
-        return $user;
     }
 
     protected function retrieveSettingsFomPost() {
