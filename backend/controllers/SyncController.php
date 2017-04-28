@@ -12,6 +12,8 @@ use Yii;
 use yii\web\Controller;
 use backend\components\TasksSyncManager;
 use backend\components\GoogleAuthHelper;
+use common\models\GoogleDriveFolder;
+use common\models\User;
 
 class SyncController extends Controller
 {
@@ -47,6 +49,18 @@ class SyncController extends Controller
 
         return $xmlResp;
 
+    }
+
+    /*
+     * Synchronization settings between dives and server
+     */
+    public function actionGetSettings() {
+        $accessToken = $this->getAccessTokenFromPost();
+        if (isset($accessToken)) {
+            $user = $this->getUserByToken($accessToken);
+            $settings = $this->retrieveSettingsFomPost();
+            return $this->handleSettings($user, $settings);
+        }
     }
 
     /*
@@ -113,5 +127,68 @@ class SyncController extends Controller
             return null;
         }
         return $timeOfLastSync;
+    }
+
+    protected function getUserByToken($accessToken) {
+        $client = GoogleAuthHelper::getGoogleClient();
+        $client->setAccessToken($accessToken);
+        if ($client->isAccessTokenExpired()) {
+            if (isset($accessToken['refresh_token'])) {
+                $accessToken = $client->refreshToken($accessToken['refresh_token']);
+                $client->setAccessToken($accessToken);
+            } else {
+                throw new InvalidArgumentException();
+            }
+        }
+        $data = $client->verifyIdToken();
+        $userEmail = $data['email'];
+        $user = User::find()->where(['username' => $userEmail])->one();
+        return $user;
+    }
+
+    protected function retrieveSettingsFomPost() {
+        $post = Yii::$app->request->post();
+        if(isset($post['settings'])) {
+            $settings = $post['settings'];
+            return json_decode($settings, true);
+        }
+        return null;
+    }
+
+    private function handleSettings($user, $settings) {
+        if ($user != null) {
+            $projectFolder = GoogleDriveFolder::findOne(['id' => $user->projectFolder->id]);
+            $pictureFolder = GoogleDriveFolder::findOne(['id' => $user->pictureFolder->id]);
+
+            if (isset($settings) && !empty($settings)) {
+                if (
+                    !isset($projectFolder->resource_id) &&
+                    isset($settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID]) &&
+                    $settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID] != ""
+                ) {
+                    $projectFolder->resource_id = $settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID];
+                }
+                $projectFolder->save();
+
+                if (
+                    !isset($pictureFolder->resource_id) &&
+                    isset($settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID]) &&
+                    $settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID] != ""
+                ) {
+                    $pictureFolder->resource_id = $settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID];
+                }
+                $pictureFolder->save();
+            }
+
+            if (isset($projectFolder->resource_id)) {
+                $settings[GoogleDriveFolder::PROJECT_FOLDER_RESOURCE_ID] = $projectFolder->resource_id;
+            }
+            if (isset($pictureFolder->resource_id)) {
+                $settings[GoogleDriveFolder::PICTURE_FOLDER_RESOURCE_ID] = $pictureFolder->resource_id;
+            }
+            return json_encode($settings);
+        } else {
+            return null;
+        }
     }
 }
