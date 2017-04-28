@@ -57,9 +57,9 @@ class Task extends ActiveRecord {
     public function afterSave($insert, $changedAttributes) {
         parent::afterSave($insert, $changedAttributes);
         if($insert == true) {
-            $action = "Created";
+            $action = ChangeOfTask::STATUS_CREATED;
         } else {
-            $action = "Changed";
+            $action = ChangeOfTask::STATUS_UPDATED;
         }
         ChangeOfTask::loggingChangesForSync($action, null, $this);
     }
