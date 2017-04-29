@@ -7,7 +7,6 @@
  */
 use backend\components\TasksSyncManager;
 use backend\components\ChangeOfTaskHandler;
-use backend\components\ChangeOfTaskParser;
 use backend\components\XMLResponseBuilder;
 use common\components\TaskXMLConverter;
 use common\components\BAException;
@@ -15,7 +14,7 @@ use common\components\BAException;
 use AspectMock\Test as test;
 use Mockery as m;
 
-class TasksSyncManager_HandleTasksFromDevice_Test extends \Codeception\TestCase\Test
+class HandleTasksFromDevice_Test extends \Codeception\TestCase\Test
 {
     /**
      * @var UnitTester
@@ -40,7 +39,7 @@ class TasksSyncManager_HandleTasksFromDevice_Test extends \Codeception\TestCase\
         $changeOfTaskHandler = \Mockery::mock(ChangeOfTaskHandler::class);
 
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = new XMLResponseBuilder();
+        $xmlResponseBuilder = new XMLResponseBuilder(m::mock(TaskXMLConverter::class));
 
         /* var $tasksSyncManager TasksSyncManager */
         $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler, $xmlResponseBuilder);
@@ -66,7 +65,7 @@ class TasksSyncManager_HandleTasksFromDevice_Test extends \Codeception\TestCase\
         $changeOfTaskHandler->shouldReceive('handle')->never();
 
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = new XMLResponseBuilder();
+        $xmlResponseBuilder = new XMLResponseBuilder(m::mock(TaskXMLConverter::class));
 
         /* var $tasksSyncManager TasksSyncManager */
         $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler, $xmlResponseBuilder);

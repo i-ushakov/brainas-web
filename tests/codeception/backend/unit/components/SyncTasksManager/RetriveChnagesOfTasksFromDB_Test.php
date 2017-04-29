@@ -11,12 +11,13 @@ use backend\components\TasksSyncManager;
 use backend\components\XMLResponseBuilder;
 use common\infrastructure\ChangeOfTask;
 use common\components\BAException;
+use \common\components\TaskXMLConverter;
 
 
 use Mockery as m;
 use Codeception\Util\Stub;
 
-class SyncTaskManager_RetriveChangesOfTaskFromDB_Test extends \Codeception\TestCase\Test
+class RetriveChangesOfTaskFromDB_Test extends \Codeception\TestCase\Test
 {
     /**
      * @var UnitTester
@@ -41,7 +42,7 @@ class SyncTaskManager_RetriveChangesOfTaskFromDB_Test extends \Codeception\TestC
         $changeOfTaskHandler->shouldReceive('setUserId');
 
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = new XMLResponseBuilder();
+        $xmlResponseBuilder = new XMLResponseBuilder(m::mock(TaskXMLConverter::class));
 
         /* var $tasksSyncManager TasksSyncManager */
         $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler, $xmlResponseBuilder);
@@ -92,7 +93,7 @@ class SyncTaskManager_RetriveChangesOfTaskFromDB_Test extends \Codeception\TestC
         $changeOfTaskHandler = \Mockery::mock(ChangeOfTaskHandler::class);
 
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = new XMLResponseBuilder();
+        $xmlResponseBuilder = new XMLResponseBuilder(m::mock(TaskXMLConverter::class));
 
         $tasksSyncManager = new TasksSyncManager($changeOfTaskHandler, $xmlResponseBuilder);
 
