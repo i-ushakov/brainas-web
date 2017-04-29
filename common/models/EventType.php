@@ -12,6 +12,7 @@ use common\components\BAException;
 use yii\db\ActiveRecord;
 
 class EventType extends ActiveRecord {
+    const WRONG_NAME_OF_TYPE__MSG = "Wrong name of event type";
 
     public static function tableName() {
         return 'event_types';
@@ -22,7 +23,7 @@ class EventType extends ActiveRecord {
             ->where(['name' => $typeName])
             ->one();
         if ($eventType == null) {
-            throw new BAException("Wrong name of event type", BAException::WRONG_NAME_OF_EVENT_TYPE_ERRORCODE);
+            throw new BAException(self::WRONG_NAME_OF_TYPE__MSG, BAException::WRONG_NAME_OF_EVENT_TYPE_ERRORCODE);
         }
 
         return  $eventType->id;;
