@@ -6,6 +6,11 @@
                 <message>Task 1 ADDED(ACTIVE)</message>
                 <description>Task 1 Desc</description>
                 <status>ACTIVE</status>
+                <conditions>
+                    <condition localId="3" globalId="0" type="LOCATION">
+                        <params>{"lat":55.5991901,"lng":38.1256387,"radius":200}</params>
+                    </condition>
+                </conditions>
             </task>
             <change><status>CREATED</status><changeDatetime>2016-12-01 06:05:13</changeDatetime></change>
         </changeOfTask>

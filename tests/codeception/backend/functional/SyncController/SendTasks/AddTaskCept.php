@@ -47,3 +47,9 @@ $I->seeInDatabase('tasks', array(
     'message' => 'Task 1 ADDED(ACTIVE)',
     'description' => 'Task 1 Desc',
     'status' => 'ACTIVE'));
+
+$I->seeInDatabase('conditions', array(
+    'task_id' => 1,
+    'type' => 1,
+    'params' => '{"lat":55.5991901,"lng":38.1256387,"radius":200}')
+);
