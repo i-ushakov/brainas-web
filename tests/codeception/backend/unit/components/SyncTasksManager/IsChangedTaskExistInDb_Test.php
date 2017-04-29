@@ -14,7 +14,7 @@ use common\nmodels\Task;
 
 use Mockery as m;
 
-class SyncTaskManager_IsChangedTaskExistInDb_Test extends \Codeception\TestCase\Test
+class IsChangedTaskExistInDb_Test extends \Codeception\TestCase\Test
 {
     /**
      * @var UnitTester

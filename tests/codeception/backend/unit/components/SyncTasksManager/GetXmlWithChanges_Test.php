@@ -12,7 +12,7 @@ use \backend\components\XMLResponseBuilder;
 
 use Mockery as m;
 
-class SyncTaskManager_GetXmlWithChanges_Test extends \Codeception\TestCase\Test
+class GetXmlWithChanges_Test extends \Codeception\TestCase\Test
 {
     /**
      * @var UnitTester

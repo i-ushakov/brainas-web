@@ -17,7 +17,7 @@ use \common\components\TaskXMLConverter;
 use Mockery as m;
 use Codeception\Util\Stub;
 
-class SyncTaskManager_GetChangesOfTasks_Test extends \Codeception\TestCase\Test
+class GetChangesOfTasks_Test extends \Codeception\TestCase\Test
 {
     /**
      * @var UnitTester
