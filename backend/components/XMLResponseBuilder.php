@@ -8,7 +8,11 @@
  */
 namespace backend\components;
 
+use common\components\TaskXMLConverter;
+
 class XMLResponseBuilder {
+
+    private $taskConveter;
 
     static function buildXMLResponse($serverChanges, $synchronizedObjects, $lastSyncTime, $token) {
         $xmlResponse = "";
@@ -100,39 +104,9 @@ class XMLResponseBuilder {
         return $xmlResponse;
     }
 
-    public function buildXmlOfTask($task, $datetime) {
-        $xml = '' .
-            '<task globalId="' . $task->id . '" timeOfChange="' . $datetime . '">' .
-            '<message>' . $task->message . '</message>' .
-            '<description>' . $task->description . '</description>' .
-            self::addPictureEntity($task->picture) .
-            '<conditions>' . self::buildXmlOfConditions($task) . '</conditions>' .
-            '<status>' . $task->status . '</status>' .
-            '</task>';
-        return $xml;
-    }
-
-    private static function buildXmlOfConditions($task) {
-        $xml = "";
-        $conditions = $task->conditions;
-        foreach($conditions as $condition){
-            if ($condition->validate()) {
-                $xml .= "<condition id='" . $condition->id . "' task-id='" . $condition->task_id . "'>";
-                $events = $condition->events;
-                foreach ($events as $event) {
-                    $xml .= "<event type='" . $event->eventType->name . "' id='" . $event->id . "'>";
-                    $xml .= "<params>";
-                    $params = json_decode($event->params);
-                    foreach ($params as $name => $value) {
-                        $xml .= "<$name>$value</$name>";
-                    }
-                    $xml .= "</params>";
-                    $xml .= "</event>";
-                }
-                $xml .= "</condition>";
-            }
-        }
-        return $xml;
+    public function __construct(TaskXMLConverter $taskXMLConverter)
+    {
+        $this->taskConveter = $taskXMLConverter;
     }
 
     private function addPictureEntity($picture) {
@@ -177,7 +151,7 @@ class XMLResponseBuilder {
     {
         $xmlPart = '<created>';
         foreach ($createdTasks as $id => $createdTask) {
-            $xmlPart .= XMLResponseBuilder::buildXmlOfTask($createdTask['object'],  $createdTask['datetime']);
+            $xmlPart .= $this->taskConveter->toXML($createdTask['object'],  $createdTask['datetime']);
         }
         $xmlPart .= '</created>';
         return $xmlPart;
