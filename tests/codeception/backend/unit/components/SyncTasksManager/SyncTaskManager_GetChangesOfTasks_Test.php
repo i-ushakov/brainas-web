@@ -8,9 +8,10 @@
 
 use backend\components\ChangeOfTaskHandler;
 use backend\components\TasksSyncManager;
-use \backend\components\XMLResponseBuilder;
+use backend\components\XMLResponseBuilder;
 use common\infrastructure\ChangeOfTask;
 use common\nmodels\Task;
+use \common\components\TaskXMLConverter;
 
 
 use Mockery as m;
@@ -32,7 +33,7 @@ class SyncTaskManager_GetChangesOfTasks_Test extends \Codeception\TestCase\Test
     public function test() {
         $changeOfTaskHandler = \Mockery::mock(ChangeOfTaskHandler::class);
 
-        $responseBuilder = new XMLResponseBuilder();
+        $responseBuilder = new XMLResponseBuilder(m::mock(TaskXMLConverter::class));
 
         $tasksSyncManager = \Mockery::mock(
             TasksSyncManager::class . '[retrieveChangesOfTasksFromDB, isChangedTaskExistInDb]',

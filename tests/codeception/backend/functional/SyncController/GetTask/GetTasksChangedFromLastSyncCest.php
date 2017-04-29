@@ -58,6 +58,12 @@ class GetTasksChangedFromLastSyncCest
             'datetime' => '2017-02-04 00:00:00',
             'server_update_time' => '2017-02-04 00:00:00'));
 
+        $I->haveInDatabase('conditions', array(
+            'id' => 114,
+            'task_id' => 104,
+            'type' => 1,
+            'params' => '{"lat":55.5991901,"lng":38.1256387,"radius":200}'));
+
         // Task 99 was Created on server
         $I->haveInDatabase('tasks', array(
             'id' => 99,
@@ -131,9 +137,11 @@ class GetTasksChangedFromLastSyncCest
         $I->assertEquals("No desc", $task1->description, 'Wrong description');
         $I->assertEquals("TODO", $task1->status, 'Wrong status');
 
-        $conditions1 = $task1->conditions;
-        $I->assertEquals(count($conditions1), 1, 'Must have 1 condiitons element');
-        $I->assertEquals(count($conditions1->condition), 0, 'Must have 0 condiiton elements');
+        $conditions104 = $task1->conditions;
+        $I->assertEquals(count($conditions104), 1, 'Must have 1 condiitons element');
+        $I->assertEquals(count($conditions104->condition), 1, 'Must have 1 <condiiton> elements');
+        $condition114 = $conditions104->condition;
+        $I->assertEquals(114, $condition114['globalId'], 'Wrong condition globalId');
 
         $updated = $responseXML->tasks->updated;
         $I->assertEquals(count($updated), 1, 'Must have one updated element');

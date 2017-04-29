@@ -76,4 +76,16 @@ class TaskXMLConverter {
 
         return array('task'=>$task, 'conditions'=>$conditions, 'picture' => $picture);
     }
+
+    public function toXML($task, $datetime) {
+        $xml = '' .
+            '<task globalId="' . $task->id . '" timeOfChange="' . $datetime . '">' .
+                '<message>' . $task->message . '</message>' .
+                '<description>' . $task->description . '</description>' .
+                self::addPictureEntity($task->picture) .
+                '<conditions>' . $this->conditionConverter->toXML() . '</conditions>' .
+                '<status>' . $task->status . '</status>' .
+            '</task>';
+        return $xml;
+    }
 }
