@@ -7,6 +7,7 @@
  */
 
 use backend\components\XMLResponseBuilder;
+use common\components\TaskXMLConverter;
 
 
 use AspectMock\Test as test;
@@ -28,7 +29,7 @@ class BuildDeletedPart_Test extends \Codeception\TestCase\Test
     public function testbuildDeletedPart()
     {
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = new XMLResponseBuilder();
+        $xmlResponseBuilder = new XMLResponseBuilder(m::mock(TaskXMLConverter::class));
 
         $deletedTasks = [11 => 1, 12 => 2];
         // testing ...

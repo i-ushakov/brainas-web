@@ -9,6 +9,8 @@
 use backend\components\XMLResponseBuilder;
 use common\infrastructure\ChangeOfTask;
 use common\nmodels\Task;
+use common\components\TaskXMLConverter;
+use common\components\ConditionXMLConverter;
 
 use AspectMock\Test as test;
 use Mockery as m;
@@ -26,10 +28,15 @@ class BuildUpdatedPart_Test extends \Codeception\TestCase\Test
         m::close();
     }
 
-    public function testbuildDeletedPart()
+    public function testBuildUpdatedPart()
     {
+        /* var $taskXMLConverter TaskXMLConverter */
+        $taskXMLConverter = m::mock(TaskXMLConverter::class . "[toXML]", [m::mock(ConditionXMLConverter::class)]);
+        $taskXMLConverter->shouldReceive('toXML')
+            ->once()->andReturn('<task globalId="12" timeOfChange="2017-04-13 22:00:0">task stuff</task>');
+
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = new XMLResponseBuilder();
+        $xmlResponseBuilder = new XMLResponseBuilder($taskXMLConverter);
 
         $updatedTasks = [12 => [
             'action' => ChangeOfTask::STATUS_UPDATED,
@@ -50,12 +57,7 @@ class BuildUpdatedPart_Test extends \Codeception\TestCase\Test
         // assetions :
         $updatedPartOfXml = '' .
             '<updated>' .
-                '<task globalId="12" timeOfChange="2017-04-13 22:00:00">' .
-                    '<message>Task 12</message>' .
-                    '<description>No desc</description>' .
-                    '<conditions></conditions>' .
-                    '<status>ACTIVE</status>' .
-                '</task>' .
+                '<task globalId="12" timeOfChange="2017-04-13 22:00:0">task stuff</task>' .
             '</updated>';
         $this->tester->assertEquals($updatedPartOfXml, $result, "Wrong part of xml with updated tasks");
     }

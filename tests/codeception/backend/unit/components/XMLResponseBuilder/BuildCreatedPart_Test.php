@@ -9,6 +9,7 @@
 use backend\components\XMLResponseBuilder;
 use common\infrastructure\ChangeOfTask;
 use common\nmodels\Task;
+use common\components\TaskXMLConverter;
 
 use AspectMock\Test as test;
 use Mockery as m;
@@ -26,10 +27,15 @@ class BuildCreatedPart_Test extends \Codeception\TestCase\Test
         m::close();
     }
 
-    public function testbuildCreatedPart()
+    public function testBuildCreatedPart()
     {
+        /* var $taskXMLConverter TaskXMLConverter */
+        $taskXMLConverter = m::mock(TaskXMLConverter::class . "[toXML]", [m::mock(\common\components\ConditionXMLConverter::class)]);
+        $taskXMLConverter->shouldReceive('toXML')
+            ->once()->andReturn("<task globalId=\"11\" timeOfChange=\"2017-04-13 20:00:16\">task_stuff1</task>");
+
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = new XMLResponseBuilder();
+        $xmlResponseBuilder = new XMLResponseBuilder($taskXMLConverter);
 
         $createdTasks = [
             11 => [
@@ -51,12 +57,7 @@ class BuildCreatedPart_Test extends \Codeception\TestCase\Test
         // assetions :
         $createdPartOfXml = '' .
             '<created>' .
-                '<task globalId="11" timeOfChange="2017-04-13 20:00:16">' .
-                    '<message>Task 11</message>' .
-                    '<description>No desc</description>' .
-                    '<conditions></conditions>' .
-                    '<status>TODO</status>' .
-                '</task>' .
+                '<task globalId="11" timeOfChange="2017-04-13 20:00:16">task_stuff1</task>' .
             '</created>';
         $this->tester->assertEquals($createdPartOfXml, $result, "Wrong part of xml with updated tasks");
     }

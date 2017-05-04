@@ -9,6 +9,8 @@
 use backend\components\XMLResponseBuilder;
 use common\nmodels\Task;
 use common\infrastructure\ChangeOfTask;
+use common\components\TaskXMLConverter;
+use common\components\ConditionXMLConverter;
 
 use AspectMock\Test as test;
 use Mockery as m;
@@ -28,12 +30,18 @@ class BuildXmlWithTasksChanges_Test extends \Codeception\TestCase\Test
 
     public function testBuildXmlWithTasksChanges()
     {
+        /* var $taskXMLConverter TaskXMLConverter */
+        $taskXMLConverter = m::mock(TaskXMLConverter::class . "[toXML]", [m::mock(ConditionXMLConverter::class)]);
+        $taskXMLConverter->shouldReceive('toXML');
+
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = m::mock(XMLResponseBuilder::class . "[buildUpdatedPart, buildDeletedPart]");
+        $xmlResponseBuilder = m::mock(XMLResponseBuilder::class . "[buildCreatedPart, buildUpdatedPart, buildDeletedPart]", [$taskXMLConverter]);
+        $xmlResponseBuilder->shouldReceive('buildCreatedPart')
+            ->once()->andReturn("<created>created_stuff</created>");
         $xmlResponseBuilder->shouldReceive('buildUpdatedPart')
-            ->once()->andReturn("<updated>some stuff</updated>");
+            ->once()->andReturn("<updated>updated_stuff</updated>");
         $xmlResponseBuilder->shouldReceive('buildDeletedPart')
-            ->once()->andReturn("<deleted>some stuff</deleted>");
+            ->once()->andReturn("<deleted>deleted_stuff</deleted>");
 
         $changedTasks = [
             'created' => [
@@ -75,16 +83,9 @@ class BuildXmlWithTasksChanges_Test extends \Codeception\TestCase\Test
         $xmlWithTasksChanges = '<?xml version="1.0" encoding="UTF-8"?>' .
             '<changes>' .
                 '<tasks>' .
-                    '<created>' .
-                        '<task globalId="11" timeOfChange="2017-04-13 20:00:16">' .
-                            '<message>Task 11</message>' .
-                            '<description>No desc</description>' .
-                            '<conditions></conditions>' .
-                            '<status>TODO</status>' .
-                        '</task>' .
-                    '</created>' .
-                    '<updated>some stuff</updated>'  .
-                    '<deleted>some stuff</deleted>' .
+                    '<created>created_stuff</created>' .
+                    '<updated>updated_stuff</updated>'  .
+                    '<deleted>deleted_stuff</deleted>' .
                 '</tasks>' .
                 '<serverTime>2017-06-01 00:00:00</serverTime>' .
             '</changes>';
