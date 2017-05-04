@@ -46,18 +46,8 @@ class ConditionXMLConverter {
         $conditions = $task->conditions;
         foreach($conditions as $condition){
             if ($condition->validate()) {
-                $xml .= "<condition globalId='" . $condition->id . "' task-id='" . $condition->task_id . "'>";
-                $events = $condition->events;
-                foreach ($events as $event) {
-                    $xml .= "<event type='" . $event->eventType->name . "' id='" . $event->id . "'>";
-                    $xml .= "<params>";
-                    $params = json_decode($event->params);
-                    foreach ($params as $name => $value) {
-                        $xml .= "<$name>$value</$name>";
-                    }
-                    $xml .= "</params>";
-                    $xml .= "</event>";
-                }
+                $xml .= "<condition globalId='" . $condition->id . "' type='" . $condition->eventType->name ."'>";
+                $xml .= "<params>" . $condition->params ."</params>";
                 $xml .= "</condition>";
             }
         }
