@@ -82,10 +82,23 @@ class TaskXMLConverter {
             '<task globalId="' . $task->id . '" timeOfChange="' . $datetime . '">' .
                 '<message>' . $task->message . '</message>' .
                 '<description>' . $task->description . '</description>' .
-                self::addPictureEntity($task->picture) .
-                '<conditions>' . $this->conditionConverter->toXML() . '</conditions>' .
+                $this->addPictureEntity($task->picture) .
+                '<conditions>' . $this->conditionConverter->toXML($task) . '</conditions>' .
                 '<status>' . $task->status . '</status>' .
             '</task>';
         return $xml;
+    }
+
+    public function addPictureEntity($picture) {
+        $xmlPart = "";
+        if (isset($picture) && isset($picture->name)) {
+            $xmlPart =
+                '<picture><name>' . $picture->name . '</name>';
+            if (isset($picture->file_id)) {
+                $xmlPart .= '<resourceId>' . $picture->file_id . '</resourceId>';
+            }
+            $xmlPart .= '</picture>';
+        }
+        return $xmlPart;
     }
 }

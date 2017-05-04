@@ -109,19 +109,6 @@ class XMLResponseBuilder {
         $this->taskConveter = $taskXMLConverter;
     }
 
-    private function addPictureEntity($picture) {
-        $xmlPart = "";
-        if (isset($picture) && isset($picture->name)) {
-            $xmlPart =
-                '<picture><name>' . $picture->name . '</name>';
-            if (isset($picture->file_id)) {
-                $xmlPart .= '<resourceId>' . $picture->file_id . '</resourceId>';
-            }
-            $xmlPart .= '</picture>';
-        }
-        return $xmlPart;
-    }
-
     public function buildXmlWithTasksChanges($changedTasks, $currentTime) {
         $xmlResponse = "";
         $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
@@ -162,7 +149,7 @@ class XMLResponseBuilder {
         $xmlPart = '<updated>';
         foreach ($updatedTasks as $id => $updatedTask) {
             if (isset($updatedTask['object']) && !empty($updatedTask['object'])) {
-                $xmlPart .= self::buildXmlOfTask($updatedTask['object'], $updatedTask['datetime']);
+                $xmlPart .= $this->taskConveter->toXML($updatedTask['object'], $updatedTask['datetime']);
             } else {
                 \Yii::info(
                     "We have a server change without object with datetime = " . $updatedTask['datetime'] .
