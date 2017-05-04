@@ -141,7 +141,9 @@ class GetTasksChangedFromLastSyncCest
         $I->assertEquals(count($conditions104), 1, 'Must have 1 condiitons element');
         $I->assertEquals(count($conditions104->condition), 1, 'Must have 1 <condiiton> elements');
         $condition114 = $conditions104->condition;
-        $I->assertEquals(114, $condition114['globalId'], 'Wrong condition globalId');
+        $I->assertEquals("114", $condition114['globalId'], 'Wrong condition globalId');
+        $I->assertEquals('LOCATION', $condition114['type'], 'Wrong condition type');
+        $I->assertEquals('{"lat":55.5991901,"lng":38.1256387,"radius":200}', $condition114->params, 'Wrong condition params');
 
         $updated = $responseXML->tasks->updated;
         $I->assertEquals(count($updated), 1, 'Must have one updated element');
