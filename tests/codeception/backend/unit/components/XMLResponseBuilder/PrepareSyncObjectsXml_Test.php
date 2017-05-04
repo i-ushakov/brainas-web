@@ -11,6 +11,7 @@ use backend\components\XMLResponseBuilder;
 
 use AspectMock\Test as test;
 use Mockery as m;
+use common\components\TaskXMLConverter;
 
 class XMLResponseBuilder_PrepareSyncObjectsXml_Test extends \Codeception\TestCase\Test
 {
@@ -27,8 +28,11 @@ class XMLResponseBuilder_PrepareSyncObjectsXml_Test extends \Codeception\TestCas
 
     public function testPrepareSyncObjectsXml()
     {
+        /* var $taskXMLConverter TaskXMLConverter */
+        $taskXMLConverter = m::mock(TaskXMLConverter::class);
+
         /* var $xmlResponseBuilder XMLResponseBuilder */
-        $xmlResponseBuilder = new XMLResponseBuilder();
+        $xmlResponseBuilder = new XMLResponseBuilder($taskXMLConverter);
 
         $synchronizedTasks = [
             1 => 11,
