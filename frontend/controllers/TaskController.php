@@ -85,8 +85,9 @@ class TaskController extends Controller {
             return;
         }
     }
+
     /**
-     * Return tasks
+     * Return tasks in JSON format
      *
      * @return mixed
      */
