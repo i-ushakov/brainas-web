@@ -19,6 +19,18 @@ $I->haveInDatabase('tasks', array(
     'created' => '2017-02-04 00:00:00',
     'last_modify' => '2017-02-04 00:00:00'));
 
+$I->haveInDatabase('conditions', array(
+    'id' => 10,
+    'task_id' => 101,
+    'type' => 2,
+    'params' => '{"offset":180,"datetime":"15-01-2016 00:00:00"}'));
+
+$I->haveInDatabase('conditions', array(
+    'id' => 11,
+    'task_id' => 101,
+    'type' => 2,
+    'params' => '{"offset":180,"datetime":"01-11-2017 13:34:08"}'));
+
 $I->haveInDatabase('sync_changed_tasks', array(
     'id' => 11,
     'user_id' => 1,
@@ -66,4 +78,22 @@ $I->seeInDatabase('tasks', [
     'message' => 'Task 101 UPDATED(ACTIVE)',
     'status' => 'ACTIVE',
     'description' => 'Task 101 Desc'
+]);
+
+$I->seeInDatabase('conditions', [
+    'id' => 11,
+    'task_id' => 101,
+    'type' => 2,
+    'params' => '{"offset":180,"datetime":"02-12-2017 00:00:00"}'
+]);
+
+$I->seeInDatabase('conditions', [
+    'task_id' => 101,
+    'type' => 1,
+    'params' => '{"address":"ул. Фрунзе, 12, Zhukovskiy","radius":100,"lng":38.125353455544,"lat":55.59917167827}'
+]);
+
+$I->dontSeeInDatabase('conditions', [
+    'id' => 10,
+    'task_id' => 101,
 ]);

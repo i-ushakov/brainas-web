@@ -11,6 +11,7 @@ namespace backend\components;
 use common\components\BAException;
 use common\components\TaskXMLConverter;
 use common\nmodels\Task;
+use common\nmodels\Condition;
 use common\models\PictureOfTask;
 use common\infrastructure\ChangeOfTask;
 use frontend\components\GoogleDriveHelper;
@@ -118,7 +119,13 @@ class ChangeOfTaskHandler {
         }
 
         $this->cleanDeletedConditions($updatedConditions, $updatedTask->id);
-        /*foreach ($updatedConditions as $updatedCondition) {
+        $this->updateConditions($updatedConditions, $updatedTask->id);
+
+        return $task->id;
+    }
+
+    public function updateConditions($updatedConditions) {
+        foreach ($updatedConditions as $updatedCondition) {
             $condition = \common\nmodels\Condition::findOne($updatedCondition->id);
             if (!isset($condition)) {
                 $condition = new \common\nmodels\Condition();
@@ -127,8 +134,7 @@ class ChangeOfTaskHandler {
             $condition->type = $updatedCondition->type;
             $condition->params = $updatedCondition->params;
             $condition->save();
-        }*/
-        return $task->id;
+        }
     }
 
     public function deleteTask($taskId) {
@@ -223,8 +229,21 @@ class ChangeOfTaskHandler {
         }
     }
 
-    public function cleanDeletedConditions() {
-        return true;
+    public function cleanDeletedConditions($updatedConditions, $taskId) {
+        $conditionsIds = array();
+        foreach ($updatedConditions as $updatedCondition) {
+            if (isset($updatedCondition->id) && $updatedCondition->id != 0) {
+                $conditionsIds[] = $updatedCondition->id;
+            }
+        }
+        $conditionsFromDB = Condition::find()
+            ->where(['task_id' => $taskId])
+            ->all();
+        foreach($conditionsFromDB as $conditionFromDB) {
+            if(!in_array ($conditionFromDB->id, $conditionsIds)) {
+                $conditionFromDB->delete();
+            }
+        }
     }
 
 }
