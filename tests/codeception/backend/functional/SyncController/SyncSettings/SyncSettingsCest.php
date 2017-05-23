@@ -50,7 +50,7 @@ class SyncSettingsCest
             '"PROJECT_FOLDER_RESOURCE_ID":"0B-nWSp42Pq2nQ01rY3NmMlVVV1k",' .
             '"PICTURE_FOLDER_RESOURCE_ID":"0B-nWSp42Pq2nRm1mRHNqeTFTYkk"' .
         '}';
-        $I->assertEquals($expectedResult, $response, 'Must have 2 <deletedTask> element');
+        $I->assertEquals($expectedResult, $response, 'Wrong folder settings');
     }
 
 }
