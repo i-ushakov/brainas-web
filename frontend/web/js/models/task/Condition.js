@@ -18,8 +18,8 @@ var Condition = Backbone.Model.extend({
             this.set('id', condition.conditionId);
             this.set('conditionId', condition.conditionId);
             var events = {};
-            if (condition.GPS) {
-                events.GPS = new Event(condition.GPS);
+            if (condition.LOCATION) {
+                events.LOCATION = new Event(condition.LOCATION);
             } else if (condition.TIME) {
                 events.TIME = new Event(condition.TIME);
             }
@@ -29,8 +29,8 @@ var Condition = Backbone.Model.extend({
     },
 
     getType: function() {
-        if (this.get("events")['GPS'] != undefined) {
-            return "GPS";
+        if (this.get("events")['LOCATION'] != undefined) {
+            return "LOCATION";
         } else if (this.get("events")['TIME'] != undefined) {
             return "TIME";
         }

@@ -28,7 +28,7 @@ var ConditionTypeSelectorView = Backbone.View.extend({
 
         eventJSON = {};
         eventJSON.id = null;
-        eventJSON.type = "GPS";
+        eventJSON.type = "LOCATION";
 
         if (navigator.geolocation) {
             var location = app.getCurrentUserLocation();
@@ -45,7 +45,7 @@ var ConditionTypeSelectorView = Backbone.View.extend({
 
 
         var events = {
-            GPS: new Event(eventJSON) || null
+            LOCATION: new Event(eventJSON) || null
         }
 
         condition.set('events', events);

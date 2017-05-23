@@ -22,7 +22,7 @@ var TaskLocationConditionView = Backbone.View.extend({
 
     initialize: function (options) {
         this.parent = options.parent;
-        this.params = this.model.get("events").GPS.get("params");
+        this.params = this.model.get("events").LOCATION.get("params");
         if (this.params == null || this.params === undefined) {
             return null;
         }
@@ -37,7 +37,7 @@ var TaskLocationConditionView = Backbone.View.extend({
 
     render: function() {
         var params = {
-            GPS: this.model.get("events").GPS
+            LOCATION: this.model.get("events").LOCATION
         };
         this.$el.html(this.template(params));
         return this.$el;
@@ -79,7 +79,7 @@ var TaskLocationConditionView = Backbone.View.extend({
     },
 
     fitBounds: function(map) {
-        var placeId = this.model.get("events").GPS.get("params").placeId;
+        var placeId = this.model.get("events").LOCATION.get("params").placeId;
         if (placeId) {
             var request = {
                 placeId: placeId
@@ -165,7 +165,7 @@ var TaskLocationConditionView = Backbone.View.extend({
 
     changeLocationParams: function(latLng) {
         var self = this;
-        var gpsParams = this.model.get("events").GPS.get("params");
+        var gpsParams = this.model.get("events").LOCATION.get("params");
         if (gpsParams) {
             gpsParams.lat = latLng.lat();
             gpsParams.lng = latLng.lng();
@@ -191,7 +191,7 @@ var TaskLocationConditionView = Backbone.View.extend({
             }
         });
 
-        this.parent.changeGPSHandler();
+        this.parent.changeLOCATIONHandler();
     },
 
     deleteConditionHandler: function() {

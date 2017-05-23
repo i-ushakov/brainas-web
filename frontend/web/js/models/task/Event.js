@@ -23,7 +23,7 @@ var Event = Backbone.Model.extend({
     getEventInfo: function() {
         var info = "";
         switch (this.type) {
-            case "GPS" :
+            case "LOCATION" :
                 if (this.params.address != undefined && this.params.address !="") {
                     info = "<span>Location:</span> " + this.params.address;
                 } else {
