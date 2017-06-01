@@ -22,14 +22,14 @@ class SyncSettingsCest
 
         $I->haveInDatabase('google_drive_folders', array(
             'id' => 1,
-            'user_id' => 1,
+            'user_id' => 2,
             'folder_type' => 1,
             'resource_id' => '0B-nWSp42Pq2nQ01rY3NmMlVVV1k',
             'timestamp' => '2016-08-03 14:49:25'));
 
         $I->haveInDatabase('google_drive_folders', array(
             'id' => 2,
-            'user_id' => 1,
+            'user_id' => 2,
             'folder_type' => 2,
             'resource_id' => '0B-nWSp42Pq2nRm1mRHNqeTFTYkk',
             'timestamp' => '2016-08-03 14:49:30'));

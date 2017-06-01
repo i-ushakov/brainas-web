@@ -12,7 +12,7 @@ $I = new \FunctionalTester($scenario);
 
 $I->haveInDatabase('tasks', array(
     'id' => 101,
-    'user' => 1,
+    'user' => 2,
     'message' => 'Task 101',
     'description' => 'No desc',
     'status' => 'TODO',
@@ -21,7 +21,7 @@ $I->haveInDatabase('tasks', array(
 
 $I->haveInDatabase('sync_changed_tasks', array(
     'id' => 11,
-    'user_id' => 1,
+    'user_id' => 2,
     'task_id' => 101,
     'datetime' => '2017-02-04 00:00:00',
     'server_update_time' => '2017-02-04 00:00:00'));
