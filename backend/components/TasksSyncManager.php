@@ -26,9 +26,11 @@ class TasksSyncManager
     const WRONG_ROOT_ELEMNT = 'Param ($tasksXML) with WRONG ROOT ELEMENT was sent into synchronization method';
     const USER_ID_MUST_TO_BE_SET_MSG = "User id must to be set";
 
+    /* var ChangeOfTask */
     protected $changeHandler;
     protected $responseBuilder;
     protected $userId = null;
+    protected $googleDriveHelper = null;
 
     public function __construct(ChangeOfTaskHandler $changeOfTaskHandler, XMLResponseBuilder $responseBuilder)
     {
@@ -40,6 +42,13 @@ class TasksSyncManager
     {
         $this->userId = $userId;
         $this->changeHandler->setUserId($userId);
+        return $this;
+    }
+
+    public function setGoogleDriveHelper($googleDriveHelper) {
+        $this->googleDriveHelper = $googleDriveHelper;
+        $this->changeHandler->setGoogleDriveHelper($googleDriveHelper);
+        return $this;
     }
 
     public function handleTasksFromDevice(\SimpleXMLElement $taskChangesXML)
