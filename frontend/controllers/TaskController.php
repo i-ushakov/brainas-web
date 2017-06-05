@@ -8,9 +8,6 @@
 
 namespace frontend\controllers;
 
-
-use common\models\Condition;
-use common\models\Event;
 use frontend\components\GoogleDriveHelper;
 use frontend\components\GoogleIdentityHelper;
 use frontend\components\TaskConverter;
@@ -19,6 +16,7 @@ use common\infrastructure\ChangeOfTask;
 use Yii;
 use yii\web\Controller;
 use common\nmodels\Task;
+use common\nmodels\Condition;
 use common\models\PictureOfTask;
 use common\models\EventType;
 use yii\helpers\Json;
@@ -198,30 +196,14 @@ class TaskController extends Controller {
                     } else {
                         $condition = new Condition();
                         $condition->task_id = $task->id;
-                        $condition->save();
                     }
                     foreach ($conditionAr['events'] as $eventType => $eventAr) {
                         if (empty($eventAr)) {
                             continue;
                         }
-                        if (isset($eventAr['eventId'])) {
-                            $eventId = $eventAr['eventId'];
-                            $event = Event::find($eventId)
-                                ->where(['id' => $eventId])
-                                ->one();
-
-                            if (isset($eventAr['deleted'])) {
-                                $event->delete();
-                            }
-                            $event->params = Json::encode($eventAr['params']);
-                            $event->save();
-                        } else {
-                            $event = new Event();
-                            $event->condition_id = $condition->id;
-                            $event->type = EventType::getTypeIdByName($eventAr['type']);
-                            $event->params = Json::encode($eventAr['params']);
-                            $event->save();
-                        }
+                        $condition->type = EventType::getTypeIdByName($eventAr['type']);
+                        $condition->params = Json::encode($eventAr['params']);
+                        $condition->save();
                     }
                 }
             }
@@ -358,10 +340,5 @@ class TaskController extends Controller {
                 $this->cleanDeletedEvents($conditionFromDB->id);
             }
         }
-    }
-
-
-    private function cleanDeletedEvents($conditionId) {
-        Event::deleteAll(['condition_id' => $conditionId]);
     }
 }
