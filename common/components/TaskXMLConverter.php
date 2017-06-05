@@ -71,7 +71,11 @@ class TaskXMLConverter {
         $picture = null;
         if (isset($xml->picture)) {
             $picture = new PictureOfTask();
-            //$picture->
+            $picture->name = (String)$xml->picture->fileName;
+            $fileId = (String)$xml->picture->resourceId;
+            if (isset($fileId) && $fileId != "") {
+                $picture->file_id = $fileId;
+            }
         }
 
         return array('task'=>$task, 'conditions'=>$conditions, 'picture' => $picture);
