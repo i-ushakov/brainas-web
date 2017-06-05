@@ -22,9 +22,10 @@ class ChangeOfTaskHandler {
     private $changeParser;
     private $converter;
     private $userId = null;
-    private $client;
+    private $googleDriveHelper;
 
-    public function __construct(ChangeOfTaskParser $changeParser, TaskXMLConverter $taskConverter, $userId = null) {
+    public function __construct(ChangeOfTaskParser $changeParser, TaskXMLConverter $taskConverter,
+                                $userId = null, $googleDriveHelper = null) {
         $this->changeParser = $changeParser;
         $this->converter = $taskConverter;
         $this->userId = $userId;
@@ -48,6 +49,10 @@ class ChangeOfTaskHandler {
         return $this;
     }
 
+    public function setGoogleDriveHelper($googleDriveHelper) {
+        $this->googleDriveHelper = $googleDriveHelper;
+        return $this;
+    }
     public function handleNewTask(\SimpleXMLElement $chnageOfTaskXML)
     {
         $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
@@ -200,7 +205,7 @@ class ChangeOfTaskHandler {
         return true;
     }
 
-    public function savePistureOfTask($pictureForSave, $taskId) {
+    public function savePistureOfTask(PictureOfTask $pictureForSave, $taskId) {
         $picture = PictureOfTask::find()->where(['task_id' => $taskId])->one();
         if (!isset($picture)) {
             $picture = new PictureOfTask();
@@ -210,9 +215,13 @@ class ChangeOfTaskHandler {
         $picture->name = $pictureForSave->name;
 
         if (isset($pictureForSave->file_id)) {
-            $picture->file_id = $pictureForSave->resourceId;
+            $picture->file_id = $pictureForSave->file_id;
         } else {
-            $picture->file_id = GoogleDriveHelper::getInstance($this->client)->getFileIdByName($pictureForSave->name);
+            if ($this->googleDriveHelper != null) {
+                $picture->file_id = $this->googleDriveHelper->getFileIdByName($pictureForSave->name);
+            } else {
+                // TODO  throw Exception
+            }
         }
         $picture->save();
     }
