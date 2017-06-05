@@ -33,10 +33,11 @@ class ChangeOfTaskHandler_UpdateTask_Test extends \Codeception\TestCase\Test
         $userId = 1;
 
         $changeOfTaskHandler = \Mockery::mock(
-            ChangeOfTaskHandler::class . '[cleanDeletedConditions]',
+            ChangeOfTaskHandler::class . '[cleanDeletedConditions, updateConditions]',
             [$changeOfTaskParser, $taskXMLConverter, $userId]
         );
         $changeOfTaskHandler->shouldReceive('cleanDeletedConditions')->once();
+        $changeOfTaskHandler->shouldReceive('updateConditions')->once();
 
         $taskFromDevice = new Task([
             'id' => 88,
@@ -45,14 +46,21 @@ class ChangeOfTaskHandler_UpdateTask_Test extends \Codeception\TestCase\Test
             'status' => 'ACTIVE',
         ]);
 
-        $condition = m::mock(Condition::class);
+        /* var $conditionFromDevice1 Condition */
+        $conditionFromDevice1 = new Condition([]);
+
+        /* var $conditionFromDevice2 Condition */
+        $conditionFromDevice2 = new Condition([]);
+
+        $conditionsFromDevice = [$conditionFromDevice1, $conditionFromDevice2];
 
         $taskWithConditions = [
             'task' => $taskFromDevice,
-            'conditions' => [$condition],
+            'conditions' => [$conditionsFromDevice],
             'picture' => null
         ];
 
+        // Preparing DB
         $existsTask = new Task([
             'id' => 88,
             'user' => 1,
@@ -61,10 +69,11 @@ class ChangeOfTaskHandler_UpdateTask_Test extends \Codeception\TestCase\Test
         ]);
         $existsTask->save();
 
+        // testing ...
         $taskId = $changeOfTaskHandler->updateTask($taskWithConditions);
 
+        // assertions:
         $this->assertEquals(88, $taskId);
-
         $updatedTask = Task::findOne(['id' => $taskId]);
         $this->tester->assertEquals("Task 88 (UPDATED)", $updatedTask->message);
         $this->tester->assertEquals("ACTIVE", $updatedTask->status);

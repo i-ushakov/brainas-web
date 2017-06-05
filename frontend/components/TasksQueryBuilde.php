@@ -9,10 +9,15 @@
 namespace frontend\components;
 
 
-use common\models\Task;
+use common\nmodels\Task;
 
 class TasksQueryBuilde
 {
+
+    const SORTTYPE_NEWEST= "TIME_ADDED_NEWEST";
+    const SORTTYPE_OLDEST= "TIME_ADDED_OLDEST";
+    const SORTTYPE_LATEST_CHANGES= "LATEST_CHANGES";
+    const SORTTYPE_TITLE= "TASK_TITLE";
 
     private $userId;
 
@@ -33,16 +38,16 @@ class TasksQueryBuilde
 
         if ($typeOfSort != null) {
             switch ($typeOfSort){
-                case "TIME_ADDED_NEWEST" :
+                case self::SORTTYPE_NEWEST :
                     $tasks = $tasksGetQuery->orderBy('created')->all();
                     break;
-                case "TIME_ADDED_OLDEST" :
+                case self::SORTTYPE_OLDEST :
                     $tasks = $tasksGetQuery->orderBy('created desc')->all();
                     break;
-                case  "LATEST_CHANGES":
+                case  self::SORTTYPE_LATEST_CHANGES :
                     $tasks = $tasksGetQuery->orderBy('sync_changed_tasks.datetime')->all();
                     break;
-                case "TASK_TITLE" :
+                case self::SORTTYPE_TITLE :
                     $tasks = $tasksGetQuery->orderBy('message')->all();
                     break;
                 default :

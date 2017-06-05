@@ -23,7 +23,7 @@ class GetTasksChangedFromLastSyncCest
         // Task 50 was changed befor last sync
         $I->haveInDatabase('tasks', array(
             'id' => 50,
-            'user' => 1,
+            'user' => 2,
             'message' => 'Task 50',
             'description' => 'No desc 50',
             'status' => 'TODO',
@@ -32,7 +32,7 @@ class GetTasksChangedFromLastSyncCest
 
         $I->haveInDatabase('sync_changed_tasks', array(
             'id' => 5,
-            'user_id' => 1,
+            'user_id' => 2,
             'task_id' => 50,
             'action' => 'CREATED',
             'datetime' => '2017-01-01 00:00:00',
@@ -43,7 +43,7 @@ class GetTasksChangedFromLastSyncCest
         // Task 104 was Created on server
         $I->haveInDatabase('tasks', array(
             'id' => 104,
-            'user' => 1,
+            'user' => 2,
             'message' => 'Task 104',
             'description' => 'No desc',
             'status' => 'TODO',
@@ -52,7 +52,7 @@ class GetTasksChangedFromLastSyncCest
 
         $I->haveInDatabase('sync_changed_tasks', array(
             'id' => 14,
-            'user_id' => 1,
+            'user_id' => 2,
             'task_id' => 104,
             'action' => 'CREATED',
             'datetime' => '2017-02-04 00:00:00',
@@ -67,7 +67,7 @@ class GetTasksChangedFromLastSyncCest
         // Task 99 was Created on server
         $I->haveInDatabase('tasks', array(
             'id' => 99,
-            'user' => 1,
+            'user' => 2,
             'message' => 'Task 99',
             'description' => 'No desc 99',
             'status' => 'ACTIVE',
@@ -76,7 +76,7 @@ class GetTasksChangedFromLastSyncCest
 
         $I->haveInDatabase('sync_changed_tasks', array(
             'id' => 99,
-            'user_id' => 1,
+            'user_id' => 2,
             'task_id' => 99,
             'action' => ChangeOfTask::STATUS_UPDATED,
             'datetime' => '2017-01-19 00:00:00',

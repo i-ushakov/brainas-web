@@ -104,6 +104,8 @@ class GoogleAuthHelper {
             $user = new User();
             $user->username = $userEmail;
             $user->email = $userEmail;
+            $user->auth_key = "";
+            $user->password_hash = "";
             $user->save();
             return $user->id;
         }

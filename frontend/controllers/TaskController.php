@@ -15,9 +15,10 @@ use frontend\components\GoogleDriveHelper;
 use frontend\components\GoogleIdentityHelper;
 use frontend\components\TaskConverter;
 use frontend\components\TasksQueryBuilde;
+use common\infrastructure\ChangeOfTask;
 use Yii;
 use yii\web\Controller;
-use common\models\Task;
+use common\nmodels\Task;
 use common\models\PictureOfTask;
 use common\models\EventType;
 use yii\helpers\Json;
@@ -85,8 +86,9 @@ class TaskController extends Controller {
             return;
         }
     }
+
     /**
-     * Return tasks
+     * Return tasks in JSON format
      *
      * @return mixed
      */
@@ -128,6 +130,7 @@ class TaskController extends Controller {
                 $task->user = $this->userId;
                 $task->message = "New task";
                 $task->save();
+                $changeStatus = ChangeOfTask::STATUS_CREATED;
             } else {
 
                 $task = Task::find($taskId)
@@ -143,6 +146,7 @@ class TaskController extends Controller {
                     \Yii::$app->response->format = 'json';
                     return $result;
                 }
+                $changeStatus = ChangeOfTask::STATUS_UPDATED;
             }
 
             if (isset($taskForSave['message'])) {
@@ -222,6 +226,7 @@ class TaskController extends Controller {
                 }
             }
 
+            ChangeOfTask::loggingChangesForSync($changeStatus, null, $task);
 
             $task = Task::find($task->id)
                 ->where(['id' => $task->id, 'user' => Yii::$app->user->id])

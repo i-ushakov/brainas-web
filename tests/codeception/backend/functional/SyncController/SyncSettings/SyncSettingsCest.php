@@ -22,14 +22,14 @@ class SyncSettingsCest
 
         $I->haveInDatabase('google_drive_folders', array(
             'id' => 1,
-            'user_id' => 1,
+            'user_id' => 2,
             'folder_type' => 1,
             'resource_id' => '0B-nWSp42Pq2nQ01rY3NmMlVVV1k',
             'timestamp' => '2016-08-03 14:49:25'));
 
         $I->haveInDatabase('google_drive_folders', array(
             'id' => 2,
-            'user_id' => 1,
+            'user_id' => 2,
             'folder_type' => 2,
             'resource_id' => '0B-nWSp42Pq2nRm1mRHNqeTFTYkk',
             'timestamp' => '2016-08-03 14:49:30'));
@@ -50,7 +50,7 @@ class SyncSettingsCest
             '"PROJECT_FOLDER_RESOURCE_ID":"0B-nWSp42Pq2nQ01rY3NmMlVVV1k",' .
             '"PICTURE_FOLDER_RESOURCE_ID":"0B-nWSp42Pq2nRm1mRHNqeTFTYkk"' .
         '}';
-        $I->assertEquals($expectedResult, $response, 'Must have 2 <deletedTask> element');
+        $I->assertEquals($expectedResult, $response, 'Wrong folder settings');
     }
 
 }

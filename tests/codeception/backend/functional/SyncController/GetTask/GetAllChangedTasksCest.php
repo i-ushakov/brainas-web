@@ -22,7 +22,7 @@ class GetAllChangedTasksCest
         // Task 99 was Created on server
         $I->haveInDatabase('tasks', array(
             'id' => 99,
-            'user' => 1,
+            'user' => 2,
             'message' => 'Task 99',
             'description' => 'No desc 99',
             'status' => 'ACTIVE',
@@ -31,7 +31,7 @@ class GetAllChangedTasksCest
 
         $I->haveInDatabase('sync_changed_tasks', array(
             'id' => 99,
-            'user_id' => 1,
+            'user_id' => 2,
             'task_id' => 99,
             'action' => ChangeOfTask::STATUS_UPDATED,
             'datetime' => '2017-01-19 00:00:00',

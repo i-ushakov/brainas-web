@@ -8,9 +8,10 @@
 
 namespace frontend\components;
 
+use \common\nmodels\Task;
 
 class TaskConverter {
-    public static function prepareTaskForResponse($task) {
+    public static function prepareTaskForResponse(Task $task) {
         $item['id'] = $task->id;
         $item['message'] = $task->message;
         $item['description'] = nl2br($task->description);
@@ -26,14 +27,13 @@ class TaskConverter {
         foreach ($conditions as $condition) {
             $c = array();
             $c['conditionId'] = $condition->id;
-            $events = $condition->events;
-            foreach ($events as $event) {
-                $c[$event->eventType->name]['eventId'] = $event->id;
-                $c[$event->eventType->name]['type'] = $event->eventType->name;
-                $c[$event->eventType->name]['params'] = json_decode($event->params);
-            }
+            $eventName = $condition->eventType->name;
+            $c[$eventName]['eventId'] = $condition->id;
+            $c[$eventName]['type'] = $eventName;
+            $c[$eventName]['params'] = json_decode($condition->params);
             $item['conditions'][] = $c;
         }
+
         return $item;
     }
 }

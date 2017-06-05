@@ -15,7 +15,6 @@ use \common\components\TaskXMLConverter;
 
 
 use Mockery as m;
-use Codeception\Util\Stub;
 
 class GetChangesOfTasks_Test extends \Codeception\TestCase\Test
 {

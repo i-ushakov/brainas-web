@@ -4,9 +4,9 @@
             <div class="delete-condition-cont">
                 <img class="delete-condition-icon" src = "<%= app.url %>images/delete_icon_100.png" />
             </div>
-            <% if (typeof(GPS) !== "undefined" && GPS != null) { %>
+            <% if (typeof(LOCATION) !== "undefined" && LOCATION != null) { %>
             <div class="condition-event gps-event">
-                <%= GPS.getEventInfo() %>
+                <%= LOCATION.getEventInfo() %>
             </div>
             <% } %>
         </div>

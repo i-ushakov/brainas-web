@@ -123,7 +123,7 @@ var TaskCardView = Backbone.View.extend({
         self.$el.find('.task-conditions-cont').html('');
 
         self.model.get("conditions").each(function(condition) {
-            if (condition.getType() == 'GPS') {
+            if (condition.getType() == 'LOCATION') {
                 var conditionView = new TaskLocationConditionView({
                         model: condition,
                         parent: self
@@ -189,7 +189,7 @@ var TaskCardView = Backbone.View.extend({
         this.saveBtn.show();
     },
 
-    changeGPSHandler: function() {
+    changeLOCATIONHandler: function() {
         this.saveBtn.show();
     },
 
