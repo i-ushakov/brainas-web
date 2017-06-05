@@ -13,6 +13,7 @@ use yii\web\Controller;
 use backend\components\TasksSyncManager;
 use backend\components\GoogleAuthHelper;
 use backend\components\SettingsManager;
+use frontend\components\GoogleDriveHelper;
 use common\models\User;
 
 class SyncController extends Controller
@@ -80,7 +81,10 @@ class SyncController extends Controller
 
         /* @var $tasksSyncManager TasksSyncManager */
         $tasksSyncManager = Yii::$container->get(TasksSyncManager::class);
-        $tasksSyncManager->setUserId($userId);
+
+        $client = GoogleAuthHelper::getGoogleClientWithToken($token);
+        $googleDriveHelper = GoogleDriveHelper::getInstance($client);
+        $tasksSyncManager->setUserId($userId)->setGoogleDriveHelper($googleDriveHelper);
 
         $syncObjectsXml = $tasksSyncManager->handleTasksFromDevice($changedTasksXml);
         return $syncObjectsXml;
