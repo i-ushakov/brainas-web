@@ -16,7 +16,7 @@ use frontend\components\GoogleDriveHelper;
 
 
 class PictureController extends Controller {
-    const TMP_PICTURTE = "/var/www/brainas.net/frontend/tmp/tmpPicture";
+    const TMP_PICTURTE = "/var/www/brainas.net/frontend/runtime/tmp/tmp_picture_";
 
     public $mimeTypes_Extensions = [
         "image/jpeg" => 'jpg',
