@@ -22,6 +22,7 @@ class GoogleAuthHelper {
         //$client->setRedirectUri("http://brainas.net/backend/web/connection/");
         $client->setRedirectUri("http://brainas.net/site/login");
         $client->setScopes("https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.appdata");
+        $client->setDeveloperKey(Yii::$app->params['ServiceAccountKey']);
         $client->setAccessType('offline'); //online
         //$client->setApprovalPrompt('force');
 
