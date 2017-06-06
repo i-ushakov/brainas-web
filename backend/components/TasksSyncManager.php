@@ -147,7 +147,6 @@ class TasksSyncManager
      * We are getting tasks that we have on device but they are absent on server side
      */
     public function getDeletedTasks($existingTasksOnDevice) {
-        file_put_contents("test0105.txt", "getDeletedTasks", FILE_APPEND);
         $removedTasks = array();
         $existingTasksOnServer = array();
         $tasks = Task::findAll(['user' => $this->userId]);
@@ -155,8 +154,6 @@ class TasksSyncManager
             $existingTasksOnServer[] = intval($task->id);
         }
         foreach ($existingTasksOnDevice as $serverId => $localId) {
-            file_put_contents("test0106.txt", "serverId" . $serverId, FILE_APPEND);
-            file_put_contents("test0106.txt", "localId" . $localId, FILE_APPEND);
             if (!in_array(intval($serverId), $existingTasksOnServer)) {
                 $removedTasks[$serverId] = intval($localId);
             }
