@@ -85,6 +85,10 @@ class SiteController extends Controller
         return $this->redirect(\Yii::$app->urlManager->createUrl("main/panel"));
     }
 
+    public function actionPolicy()
+    {
+        return $this->render('policy', []);
+    }
     /**
      * Logs in a user.
      *
