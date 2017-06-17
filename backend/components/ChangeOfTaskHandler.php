@@ -40,6 +40,17 @@ class ChangeOfTaskHandler {
         $this->googleDriveHelper = $googleDriveHelper;
     }
 
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+        return $this;
+    }
+
+    public function setGoogleDriveHelper($googleDriveHelper) {
+        $this->googleDriveHelper = $googleDriveHelper;
+        return $this;
+    }
+
     public function handle(\SimpleXMLElement $chnageOfTaskXML) {
         if (is_null($this->userId)) {
             throw new BAException(self::USER_ID_MUST_TO_BE_SET_MSG, BAException::PARAM_NOT_SET_EXCODE);
@@ -52,16 +63,6 @@ class ChangeOfTaskHandler {
         }
     }
 
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-        return $this;
-    }
-
-    public function setGoogleDriveHelper($googleDriveHelper) {
-        $this->googleDriveHelper = $googleDriveHelper;
-        return $this;
-    }
     public function handleNewTask(\SimpleXMLElement $chnageOfTaskXML)
     {
         $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
