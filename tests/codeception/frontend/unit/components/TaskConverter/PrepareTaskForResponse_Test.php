@@ -6,8 +6,8 @@
  * Time: 8:39 PM
  */
 
-use \common\nmodels\Task;
-use \common\nmodels\Condition;
+use \common\models\Task;
+use \common\models\Condition;
 use \common\models\EventType;
 use \common\models\PictureOfTask;
 use \common\infrastructure\ChangeOfTask;

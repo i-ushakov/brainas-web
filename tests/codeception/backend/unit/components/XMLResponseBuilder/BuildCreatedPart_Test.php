@@ -8,7 +8,7 @@
 
 use backend\components\XMLResponseBuilder;
 use common\infrastructure\ChangeOfTask;
-use common\nmodels\Task;
+use common\models\Task;
 use common\components\TaskXMLConverter;
 
 use AspectMock\Test as test;

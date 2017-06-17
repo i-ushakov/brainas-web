@@ -8,9 +8,9 @@
 
 namespace common\models;
 
-use Yii;
 use yii\db\ActiveRecord;
 use common\infrastructure\ChangeOfTask;
+use common\models\PictureOfTask;
 
 class Task extends ActiveRecord {
 
@@ -47,23 +47,11 @@ class Task extends ActiveRecord {
     {
         $this->last_modify = date('Y-m-d H:i:s');
         if (parent::beforeSave($insert)) {
-            $this->updateStatus();
             return true;
         } else {
             return false;
         }
     }
-
-    public function afterSave($insert, $changedAttributes) {
-        parent::afterSave($insert, $changedAttributes);
-        if($insert == true) {
-            $action = ChangeOfTask::STATUS_CREATED;
-        } else {
-            $action = ChangeOfTask::STATUS_UPDATED;
-        }
-        ChangeOfTask::loggingChangesForSync($action, null, $this);
-    }
-
 
     public function beforeDelete()
     {
@@ -83,19 +71,5 @@ class Task extends ActiveRecord {
     public function afterDelete() {
         parent::afterDelete();
         ChangeOfTask::removeFromChangeLog($this->id);
-    }
-
-    public function updateStatus() {
-        // TODO remove all this logic out side
-        $conditions = $this->conditions;
-        if ($this->status == 'TODO' && !empty($conditions)) {
-            $this->status = "WAITING";
-        }
-        if ($this->status == 'DISABLED' && !empty($conditions)) {
-            $this->status = "WAITING";
-        }
-        if(($this->status == 'WAITING' || $this->status == 'ACTIVE') && empty($conditions)) {
-            $this->status = "DISABLED";
-        }
     }
 }

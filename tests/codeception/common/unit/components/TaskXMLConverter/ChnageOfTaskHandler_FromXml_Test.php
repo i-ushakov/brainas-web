@@ -8,7 +8,7 @@
 
 use common\components\TaskXMLConverter;
 use common\components\ConditionXMLConverter;
-use common\nmodels\Condition;
+use common\models\Condition;
 use \common\components\BAException;
 
 use Mockery as m;

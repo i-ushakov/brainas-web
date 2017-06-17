@@ -10,7 +10,7 @@ namespace backend\components;
 
 use common\components\BAException;
 use common\infrastructure\ChangeOfTask;
-use common\nmodels\Task;
+use common\models\Task;
 
 /**
  * Class SyncManager

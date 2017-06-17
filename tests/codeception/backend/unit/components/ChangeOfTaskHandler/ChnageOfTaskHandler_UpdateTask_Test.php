@@ -9,8 +9,8 @@
 use backend\components\ChangeOfTaskParser;
 use backend\components\ChangeOfTaskHandler;
 use common\components\TaskXMLConverter;
-use common\nmodels\Task;
-use common\nmodels\Condition;
+use common\models\Task;
+use common\models\Condition;
 
 use Mockery as m;
 

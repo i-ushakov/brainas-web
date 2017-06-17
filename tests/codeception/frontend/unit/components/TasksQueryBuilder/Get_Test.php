@@ -95,7 +95,7 @@ class Get_Test extends \Codeception\TestCase\Test
         $this->tester->assertEquals(6, count($tasks), "Wrong number of tasks");
 
         $task98 = $tasks[0];
-        $this->tester->assertTrue($task98 instanceof \common\nmodels\Task);
+        $this->tester->assertTrue($task98 instanceof \common\models\Task);
         $this->tester->assertEquals(98, $task98->id, "Wrong id of tasks");
 
         $task99 = $tasks[1];
@@ -128,7 +128,7 @@ class Get_Test extends \Codeception\TestCase\Test
         $this->tester->assertEquals(6, count($tasks), "Wrong number of tasks");
 
         $task98 = $tasks[5];
-        $this->tester->assertTrue($task98 instanceof \common\nmodels\Task);
+        $this->tester->assertTrue($task98 instanceof \common\models\Task);
         $this->tester->assertEquals(98, $task98->id, "Wrong id of tasks");
 
         $task99 = $tasks[4];

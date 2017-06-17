@@ -7,7 +7,7 @@
  */
 
 use backend\components\XMLResponseBuilder;
-use common\nmodels\Task;
+use common\models\Task;
 use common\infrastructure\ChangeOfTask;
 use common\components\TaskXMLConverter;
 use common\components\ConditionXMLConverter;

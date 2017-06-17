@@ -10,8 +10,8 @@ use Codeception\Util\Stub;
 use Mockery as m;
 use \common\components\TaskXMLConverter;
 use \common\components\ConditionXMLConverter;
-use \common\nmodels\Task;
-use \common\nmodels\Condition;
+use \common\models\Task;
+use \common\models\Condition;
 
 class FromXMLTest extends \Codeception\TestCase\Test {
     /**

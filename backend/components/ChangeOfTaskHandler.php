@@ -10,22 +10,30 @@ namespace backend\components;
 
 use common\components\BAException;
 use common\components\TaskXMLConverter;
-use common\nmodels\Task;
-use common\nmodels\Condition;
+use common\models\Task;
+use common\models\Condition;
 use common\models\PictureOfTask;
 use common\infrastructure\ChangeOfTask;
 use frontend\components\GoogleDriveHelper;
 
+/*
+ * Responsive for handling task that was got from device
+ */
 class ChangeOfTaskHandler {
     const USER_ID_MUST_TO_BE_SET_MSG = "User id must to be set";
     const TASK_ID_MUST_TO_BE_KNOWN_MSG = "Task id must to be known";
+
+    /* var ChangeOfTaskParser $changeParser */
     private $changeParser;
+    /* var TaskXMLConverter $converter */
     private $converter;
+    /* var Integer $userId */
     private $userId = null;
+    /* var GoogleDriveHelper $googleDriveHelper */
     private $googleDriveHelper;
 
     public function __construct(ChangeOfTaskParser $changeParser, TaskXMLConverter $taskConverter,
-                                $userId = null, $googleDriveHelper = null) {
+                                $userId = null, GoogleDriveHelper $googleDriveHelper = null) {
         $this->changeParser = $changeParser;
         $this->converter = $taskConverter;
         $this->userId = $userId;
@@ -131,9 +139,9 @@ class ChangeOfTaskHandler {
 
     public function updateConditions($updatedConditions) {
         foreach ($updatedConditions as $updatedCondition) {
-            $condition = \common\nmodels\Condition::findOne($updatedCondition->id);
+            $condition = \common\models\Condition::findOne($updatedCondition->id);
             if (!isset($condition)) {
-                $condition = new \common\nmodels\Condition();
+                $condition = new \common\models\Condition();
             }
             $condition->task_id = $updatedCondition->task_id;
             $condition->type = $updatedCondition->type;

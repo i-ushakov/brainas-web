@@ -9,8 +9,8 @@
 namespace tests\codeception\common\unit;
 
 use common\components\ConditionXMLConverter;
-use common\nmodels\Condition;
-use common\nmodels\Task;
+use common\models\Condition;
+use common\models\Task;
 use Mockery as m;
 
 class ToXmlTest extends \Codeception\TestCase\Test {

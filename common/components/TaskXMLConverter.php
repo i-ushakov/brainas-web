@@ -10,7 +10,7 @@ namespace common\components;
 
 use common\components\BAException;
 use common\models\PictureOfTask;
-use common\nmodels\Task;
+use common\models\Task;
 
 class TaskXMLConverter {
     const WRONG_ROOT_ELEMNT = "XML root element have to be <task>";

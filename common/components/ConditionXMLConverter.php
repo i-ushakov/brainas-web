@@ -9,7 +9,7 @@
 namespace common\components;
 
 use common\models\EventType;
-use common\nmodels\Condition;
+use common\models\Condition;
 
 class ConditionXMLConverter {
 

@@ -9,7 +9,7 @@
 namespace frontend\components;
 
 
-use common\nmodels\Task;
+use common\models\Task;
 
 class TasksQueryBuilde
 {

@@ -10,7 +10,7 @@ use Codeception\Util\Stub;
 use Mockery as m;
 use \common\components\TaskXMLConverter;
 use \common\components\ConditionXMLConverter;
-use \common\nmodels\Task;
+use \common\models\Task;
 
 class ToXMLTest extends \Codeception\TestCase\Test {
     /**
