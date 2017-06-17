@@ -169,18 +169,6 @@ class ChangeOfTaskHandler {
         }
     }
 
-    public function getTimeOfLastLoggedChanges($taskId) {
-        $changeOfTask = ChangeOfTask::find()
-            ->where(['user_id' => $this->userId, 'task_id' => $taskId])
-            ->orderBy('id')
-            ->one();
-        if (!is_null($changeOfTask)) {
-            return $changeOfTask->datetime;
-        } else {
-            return null;
-        }
-    }
-
     public function loggingChanges($changeOfTaskXML, $action, $taskId = null) {
         $changeDatetime = $this->changeParser->getClientTimeOfChanges($changeOfTaskXML);
         if (is_null($taskId)) {
