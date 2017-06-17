@@ -38,6 +38,11 @@ $I->haveInDatabase('sync_changed_tasks', array(
     'datetime' => '2017-02-04 00:00:00',
     'server_update_time' => '2017-02-04 00:00:00'));
 
+$I->haveInDatabase('tasks_pictures', array(
+    'task_id' => 101,
+    'name' => 'task_picture_old.png',
+    'file_id' => '0B-nWSp4lPq2nZTNMeFhWVWVWV3c'));
+
 
 
 $I->sendPOST('sync/send-tasks',
@@ -97,3 +102,8 @@ $I->dontSeeInDatabase('conditions', [
     'id' => 10,
     'task_id' => 101,
 ]);
+
+$I->seeInDatabase('tasks_pictures', array(
+        'task_id' => 101,
+        'name' => 'task_picture_updated.png')
+);

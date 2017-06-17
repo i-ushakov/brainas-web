@@ -11,6 +11,7 @@ use backend\components\ChangeOfTaskHandler;
 use common\components\TaskXMLConverter;
 use common\models\Task;
 use common\models\Condition;
+use \common\models\PictureOfTask;
 
 use Mockery as m;
 
@@ -36,7 +37,7 @@ class ChangeOfTaskHandler_AddTask_Test extends \Codeception\TestCase\Test
             ChangeOfTaskHandler::class . '[savePistureOfTask]',
             [$changeOfTaskParser, $taskXMLConverter, $userId]
         );
-        $changeOfTaskHandler->shouldReceive('savePistureOfTask')->never();
+        $changeOfTaskHandler->shouldReceive('savePistureOfTask')->once();
 
         $task = m::mock(Task::class . '[save]');
         $task->id = 77;
@@ -45,10 +46,12 @@ class ChangeOfTaskHandler_AddTask_Test extends \Codeception\TestCase\Test
         $condition = m::mock(Condition::class . '[save]');
         $condition->shouldReceive('save')->times(1);
 
+        $picture = new PictureOfTask();
+
         $taskWithConditions = [
             'task' => $task,
             'conditions' => [$condition],
-            'picture' => null
+            'picture' => $picture
         ];
 
         $changeOfTaskHandler->addTask($taskWithConditions);

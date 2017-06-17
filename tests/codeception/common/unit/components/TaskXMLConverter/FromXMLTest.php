@@ -12,6 +12,7 @@ use \common\components\TaskXMLConverter;
 use \common\components\ConditionXMLConverter;
 use \common\models\Task;
 use \common\models\Condition;
+use \common\models\PictureOfTask;
 
 class FromXMLTest extends \Codeception\TestCase\Test {
     /**
@@ -19,12 +20,16 @@ class FromXMLTest extends \Codeception\TestCase\Test {
      */
     protected $tester;
 
-    public function testTaskWithoutPicture()
+    public function testTaskWithPicture()
     {
         $taskXMLStr = "<task localId=\"1\" globalId=\"0\">
                 <message>Task 1 ADDED(ACTIVE)</message>
                 <description>Task 1 Desc</description>
                 <status>ACTIVE</status>
+                <picture>
+                    <fileName>picture_name.png</fileName>
+                    <resourceId>picture_resourceId</resourceId>
+                 </picture>
             </task>";
         $taskXML = new SimpleXMLElement($taskXMLStr);
 
@@ -35,18 +40,16 @@ class FromXMLTest extends \Codeception\TestCase\Test {
         $r = $taskXMLConverter->fromXML($taskXML);
         $task = $r['task'];
         //$conditions = $r['conditions'];
-        //$picture = $r['picture'];
+        $picture = $r['picture'];
 
         // assertions :
         $this->tester->assertInstanceOf(Task::class, $task);
         $this->tester->assertEquals('Task 1 ADDED(ACTIVE)', $task->message);
         $this->tester->assertEquals('Task 1 Desc', $task->description);
         $this->tester->assertEquals('ACTIVE', $task->status);
-    }
-
-    public function testTaskWithPicture()
-    {
-        //TODO
+        $this->tester->assertTrue($picture instanceof PictureOfTask);
+        $this->tester->assertEquals('picture_name.png', $picture->name);
+        $this->tester->assertEquals('picture_resourceId', $picture->file_id);
     }
 
     public function testIncorrectXmlObj() {

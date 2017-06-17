@@ -53,3 +53,8 @@ $I->seeInDatabase('conditions', array(
     'type' => 1,
     'params' => '{"lat":55.5991901,"lng":38.1256387,"radius":200}')
 );
+
+$I->seeInDatabase('tasks_pictures', array(
+        'task_id' => 1,
+        'name' => 'task_picture_1497698508046.png')
+);

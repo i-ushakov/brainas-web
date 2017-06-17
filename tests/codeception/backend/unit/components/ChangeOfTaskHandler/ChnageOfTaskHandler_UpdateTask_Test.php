@@ -11,6 +11,7 @@ use backend\components\ChangeOfTaskHandler;
 use common\components\TaskXMLConverter;
 use common\models\Task;
 use common\models\Condition;
+use \common\models\PictureOfTask;
 
 use Mockery as m;
 
@@ -33,11 +34,12 @@ class ChangeOfTaskHandler_UpdateTask_Test extends \Codeception\TestCase\Test
         $userId = 1;
 
         $changeOfTaskHandler = \Mockery::mock(
-            ChangeOfTaskHandler::class . '[cleanDeletedConditions, updateConditions]',
+            ChangeOfTaskHandler::class . '[cleanDeletedConditions, updateConditions, savePistureOfTask]',
             [$changeOfTaskParser, $taskXMLConverter, $userId]
         );
         $changeOfTaskHandler->shouldReceive('cleanDeletedConditions')->once();
         $changeOfTaskHandler->shouldReceive('updateConditions')->once();
+        $changeOfTaskHandler->shouldReceive('savePistureOfTask')->once();
 
         $taskFromDevice = new Task([
             'id' => 88,
@@ -54,10 +56,13 @@ class ChangeOfTaskHandler_UpdateTask_Test extends \Codeception\TestCase\Test
 
         $conditionsFromDevice = [$conditionFromDevice1, $conditionFromDevice2];
 
+        /* var $picture PictureOfTask */
+        $picture = new PictureOfTask();
+
         $taskWithConditions = [
             'task' => $taskFromDevice,
             'conditions' => [$conditionsFromDevice],
-            'picture' => null
+            'picture' => $picture
         ];
 
         // Preparing DB
