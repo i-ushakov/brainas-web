@@ -17,21 +17,40 @@ use common\infrastructure\ChangeOfTask;
 use frontend\components\GoogleDriveHelper;
 
 /*
- * Responsive for handling task that was got from device
+ * ChangeOfTaskHandler responsive for handling task that was got from device
  */
 class ChangeOfTaskHandler {
     const USER_ID_MUST_TO_BE_SET_MSG = "User id must to be set";
     const TASK_ID_MUST_TO_BE_KNOWN_MSG = "Task id must to be known";
 
-    /* var ChangeOfTaskParser $changeParser */
+    /** var ChangeOfTaskParser $changeParser
+     *  helper class that used to parse XML-document of task
+     */
     private $changeParser;
-    /* var TaskXMLConverter $converter */
+
+    /** var TaskXMLConverter $converter
+     *  helper class that convert task from/to XML-document
+     */
     private $converter;
-    /* var Integer $userId */
+
+    /** var Integer $userId
+     * internal ID of the user (inside the system) from the device of which the request was received
+     */
     private $userId = null;
-    /* var GoogleDriveHelper $googleDriveHelper */
+
+
+    /** var GoogleDriveHelper $googleDriveHelper
+     *  helper class intends for working with Google Drive API
+     */
     private $googleDriveHelper;
 
+    /*
+     * Create new ChangeOfTaskHandler object
+     * @param ChangeOfTaskParser $changeParser - helper class that used to parse XML-document of task
+     * @param TaskXMLConverter $taskConverter - helper class that convert task from/to XML-document
+     * @param Integer $userId - internal ID of the user (inside the system) from the device of which the request was received
+     * @param GoogleDriveHelper $googleDriveHelper - helper class intends for working with Google Drive API
+     */
     public function __construct(ChangeOfTaskParser $changeParser, TaskXMLConverter $taskConverter,
                                 $userId = null, GoogleDriveHelper $googleDriveHelper = null) {
         $this->changeParser = $changeParser;
@@ -40,17 +59,33 @@ class ChangeOfTaskHandler {
         $this->googleDriveHelper = $googleDriveHelper;
     }
 
+    /**
+     * @param $userId
+     * @return $this
+     */
     public function setUserId($userId)
     {
         $this->userId = $userId;
         return $this;
     }
 
+    /**
+     * @param $googleDriveHelper
+     * @return $this
+     */
     public function setGoogleDriveHelper($googleDriveHelper) {
         $this->googleDriveHelper = $googleDriveHelper;
         return $this;
     }
 
+
+    /**
+     * Handle a new or updated task (xml-document) gotten from user device
+     *
+     * @param \SimpleXMLElement $chnageOfTaskXML
+     * @return int|mixed|null|string
+     * @throws BAException
+     */
     public function handle(\SimpleXMLElement $chnageOfTaskXML) {
         if (is_null($this->userId)) {
             throw new BAException(self::USER_ID_MUST_TO_BE_SET_MSG, BAException::PARAM_NOT_SET_EXCODE);
@@ -63,6 +98,12 @@ class ChangeOfTaskHandler {
         }
     }
 
+    /**
+     * Handle a NEW task (xml-document) gotten from user device
+     *
+     * @param \SimpleXMLElement $chnageOfTaskXML
+     * @return null
+     */
     public function handleNewTask(\SimpleXMLElement $chnageOfTaskXML)
     {
         $taskWithConditions = $this->converter->fromXML($chnageOfTaskXML->task);
@@ -71,6 +112,12 @@ class ChangeOfTaskHandler {
         return $taskId;
     }
 
+    /**
+     * Handle a UPDATED task (xml-document) gotten from user device
+     *
+     * @param \SimpleXMLElement $chnageOfTaskXML
+     * @return int|mixed|null|string
+     */
     public function handleExistTask(\SimpleXMLElement $chnageOfTaskXML)
     {
         $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);;
@@ -95,6 +142,12 @@ class ChangeOfTaskHandler {
         return null;
     }
 
+    /**
+     * Add task with conditions and picture to DB
+     *
+     * @param array $taskWithConditions
+     * @return null
+     */
     public function addTask(array $taskWithConditions) {
         $task = $taskWithConditions['task'];
         $conditions = $taskWithConditions['conditions'];
@@ -115,6 +168,12 @@ class ChangeOfTaskHandler {
         return $task->id;
     }
 
+    /**
+     * Update task with conditions and picture in DB
+     *
+     * @param $taskWithConditions
+     * @return mixed|null
+     */
     public function updateTask($taskWithConditions) {
         $updatedTask = $taskWithConditions['task'];
         $updatedPicture = $taskWithConditions['picture'];
@@ -139,6 +198,11 @@ class ChangeOfTaskHandler {
         return $task->id;
     }
 
+    /**
+     * Update conditions of task in DB
+     *
+     * @param $updatedConditions
+     */
     public function updateConditions($updatedConditions) {
         foreach ($updatedConditions as $updatedCondition) {
             $condition = \common\models\Condition::findOne($updatedCondition->id);
@@ -152,6 +216,12 @@ class ChangeOfTaskHandler {
         }
     }
 
+    /**
+     * Delete task from DB
+     *
+     * @param $taskId
+     * @return mixed
+     */
     public function deleteTask($taskId) {
         $task = Task::findOne($taskId);
         if (isset($task)) {
@@ -160,6 +230,12 @@ class ChangeOfTaskHandler {
         return $taskId;
     }
 
+    /**
+     * Check if changes that came from device are actual or server's data is newest
+     *
+     * @param \SimpleXMLElement $chnageOfTaskXML
+     * @return bool
+     */
     public function isActualChange(\SimpleXMLElement $chnageOfTaskXML) {
         $taskId = $this->changeParser->getGlobalId($chnageOfTaskXML);
         $serverTime = $this->getServerTimeOfChanges($taskId);
@@ -169,6 +245,15 @@ class ChangeOfTaskHandler {
         }
     }
 
+    /**
+     * Logging tasks changes in DB for control actualization of data in future
+     *
+     * @param $changeOfTaskXML
+     * @param $action
+     * @param null $taskId
+     * @return bool
+     * @throws BAException
+     */
     public function loggingChanges($changeOfTaskXML, $action, $taskId = null) {
         $changeDatetime = $this->changeParser->getClientTimeOfChanges($changeOfTaskXML);
         if (is_null($taskId)) {
@@ -203,6 +288,12 @@ class ChangeOfTaskHandler {
         return true;
     }
 
+    /**
+     * Save picture's name and fileId (for Google Drive API)
+     *
+     * @param PictureOfTask $pictureForSave
+     * @param $taskId
+     */
     public function savePistureOfTask(PictureOfTask $pictureForSave, $taskId) {
         $picture = PictureOfTask::find()->where(['task_id' => $taskId])->one();
         if (!isset($picture)) {
@@ -224,6 +315,12 @@ class ChangeOfTaskHandler {
         $picture->save();
     }
 
+    /**
+     * Retrieve server time of the last update of task from logging table in DB,
+     * we need this to know is server data actual or need to be updated
+     * @param $taskid
+     * @return mixed|null
+     */
     public function getServerTimeOfChanges($taskid) {
         $changedTask = ChangeOfTask::find()
             ->where(['user_id' => $this->userId, 'task_id' => $taskid])
@@ -236,6 +333,12 @@ class ChangeOfTaskHandler {
         }
     }
 
+    /**
+     * Remove conditions from DB
+     *
+     * @param $updatedConditions
+     * @param $taskId
+     */
     public function cleanDeletedConditions($updatedConditions, $taskId) {
         $conditionsIds = array();
         foreach ($updatedConditions as $updatedCondition) {
