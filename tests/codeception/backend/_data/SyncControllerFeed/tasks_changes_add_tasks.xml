@@ -6,6 +6,9 @@
                 <message>Task 1 ADDED(ACTIVE)</message>
                 <description>Task 1 Desc</description>
                 <status>ACTIVE</status>
+                <picture>
+                    <fileName>task_picture_1497698508046.png</fileName>
+                </picture>
                 <conditions>
                     <condition localId="3" globalId="0" type="LOCATION">
                         <params>{"lat":55.5991901,"lng":38.1256387,"radius":200}</params>
