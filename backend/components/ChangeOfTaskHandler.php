@@ -37,6 +37,7 @@ class ChangeOfTaskHandler {
         $this->changeParser = $changeParser;
         $this->converter = $taskConverter;
         $this->userId = $userId;
+        $this->googleDriveHelper = $googleDriveHelper;
     }
 
     public function handle(\SimpleXMLElement $chnageOfTaskXML) {
