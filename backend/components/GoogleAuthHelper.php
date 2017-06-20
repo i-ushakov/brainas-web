@@ -8,29 +8,17 @@
 
 namespace backend\components;
 
-use Google_Client;
 use Yii;
+use backend\components\Factory\GoogleClientFactory;
 use common\models\User;
+
 
 
 class GoogleAuthHelper {
     public static $jsonGoogleClientConfig = "/var/www/brainas.net/backend/config/client_secret_925705811320-cenbqg1fe5jb804116oefl78sbishnga.apps.googleusercontent.com.json";
 
-    static public function getGoogleClient() {
-        $client = new Google_Client();
-        $client->setAuthConfigFile(self::$jsonGoogleClientConfig);
-        //$client->setRedirectUri("http://brainas.net/backend/web/connection/");
-        $client->setRedirectUri("http://brainas.net/site/login");
-        $client->setScopes("https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.appdata");
-        $client->setDeveloperKey(Yii::$app->params['ServiceAccountKey']);
-        $client->setAccessType('offline'); //online
-        //$client->setApprovalPrompt('force');
-
-        return $client;
-    }
-
     static public function getGoogleClientWithToken($accessToken) {
-        $client = self::getGoogleClient();
+        $client = GoogleClientFactory::create();
         $client->setAccessToken($accessToken);
         if ($client->isAccessTokenExpired() && isset($accessToken['refresh_token'])) {
             $accessToken = $client->refreshToken($accessToken['refresh_token']);
@@ -40,7 +28,7 @@ class GoogleAuthHelper {
     }
 
     static public  function getAccessTokenByCode($code) {
-        $client = self::getGoogleClient();
+        $client = GoogleClientFactory::create();
         if ($code != null) {
             $client->authenticate($code);
             $token = $client->getAccessToken();
@@ -59,7 +47,7 @@ class GoogleAuthHelper {
     static public function verifyUserAccess($token) {
         $authInfo = array();
         // Create Google client and get accessToken
-        $client = GoogleAuthHelper::getGoogleClient();
+        $client = GoogleClientFactory::create();
         $client->setAccessToken($token);
         if ($client->isAccessTokenExpired()) {
             if (isset($token['refresh_token'])) {

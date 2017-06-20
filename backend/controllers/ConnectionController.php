@@ -10,6 +10,7 @@
 namespace backend\controllers;
 
 
+use backend\components\Factory\GoogleClientFactory;
 use Google_Client;
 use Yii;
 use backend\components\TaskSyncHelper;
@@ -145,7 +146,7 @@ class ConnectionController extends Controller {
     }
 
     private function getUserByToken($accessToken) {
-        $client = GoogleAuthHelper::getGoogleClient();
+        $client = GoogleClientFactory::create();
         $client->setAccessToken($accessToken);
         if ($client->isAccessTokenExpired()) {
             if (isset($accessToken['refresh_token'])) {
