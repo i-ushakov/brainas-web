@@ -165,7 +165,7 @@ class TaskController extends Controller {
                if ((!isset($task->picture->file_id) || $taskForSave['picture_file_id'] != $task->picture->file_id)) {
                    $currentPicture = $task->picture;
                    if (isset($currentPicture)) {
-                       $googleDriveHelper = new GoogleDriveHelper(
+                       $googleDriveHelper = GoogleDriveHelper::getInstance(
                            GoogleIdentityHelper::getGoogleClientWithToken(\Yii::$app->user->identity)
                        );
                        $googleDriveHelper->removeFile($currentPicture->file_id);

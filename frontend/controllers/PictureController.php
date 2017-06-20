@@ -178,7 +178,7 @@ class PictureController extends Controller {
             }
             if (isset($pictureForRemove['file_id'])) {
                 $client = GoogleIdentityHelper::getGoogleClientWithToken($user);
-                $googleDriveHelper = new GoogleDriveHelper($client);
+                $googleDriveHelper = GoogleDriveHelper::getInstance($client);
                 $googleDriveHelper->removeFile($pictureForRemove['file_id']);
             }
         } else {
