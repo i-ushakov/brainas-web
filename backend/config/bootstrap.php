@@ -8,7 +8,7 @@ use backend\components\TasksSyncManager;
 use backend\components\Factory\GoogleClientFactory;
 use common\components\TaskXMLConverter;
 use common\components\ConditionXMLConverter;
-use \frontend\components\GoogleDriveHelper;
+use \common\components\GoogleDriveHelper;
 
 $container = Yii::$container;
 

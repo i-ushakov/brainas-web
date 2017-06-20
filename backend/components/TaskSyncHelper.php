@@ -6,7 +6,7 @@ use common\models\PictureOfTask;
 use common\models\Task;
 use common\models\User;
 use common\infrastructure\ChangeOfTask;
-use frontend\components\GoogleDriveHelper;
+use common\components\GoogleDriveHelper;
 
 
 /**

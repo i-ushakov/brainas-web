@@ -8,7 +8,7 @@
 
 namespace frontend\controllers;
 
-use frontend\components\GoogleDriveHelper;
+use common\components\GoogleDriveHelper;
 use frontend\components\GoogleIdentityHelper;
 use frontend\components\TaskConverter;
 use frontend\components\TasksQueryBuilde;

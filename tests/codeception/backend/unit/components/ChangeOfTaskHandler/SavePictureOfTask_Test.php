@@ -10,7 +10,7 @@ use backend\components\ChangeOfTaskParser;
 use backend\components\ChangeOfTaskHandler;
 use common\components\TaskXMLConverter;
 use \common\models\PictureOfTask;
-use \frontend\components\GoogleDriveHelper;
+use \common\components\GoogleDriveHelper;
 
 use Mockery as m;
 

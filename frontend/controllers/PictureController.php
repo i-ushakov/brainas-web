@@ -12,7 +12,7 @@ use common\models\GoogleDriveFolder;
 use Yii;
 use yii\web\Controller;
 use frontend\components\GoogleIdentityHelper;
-use frontend\components\GoogleDriveHelper;
+use common\components\GoogleDriveHelper;
 
 
 class PictureController extends Controller {

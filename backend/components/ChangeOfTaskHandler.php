@@ -14,7 +14,7 @@ use common\models\Task;
 use common\models\Condition;
 use common\models\PictureOfTask;
 use common\infrastructure\ChangeOfTask;
-use frontend\components\GoogleDriveHelper;
+use common\components\GoogleDriveHelper;
 
 /*
  * ChangeOfTaskHandler responsive for handling task that was got from device

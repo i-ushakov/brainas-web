@@ -6,7 +6,7 @@
  * Time: 8:06 AM
  */
 
-namespace frontend\components;
+namespace common\components;
 
 use common\models\PictureOfTask;
 use Yii;
