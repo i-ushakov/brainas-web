@@ -13,13 +13,6 @@ use \common\components\GoogleDriveHelper;
 $container = Yii::$container;
 
 $container->setDefinitions([
-
-    GoogleDriveHelper::class => function()
-    {
-        $client = GoogleClientFactory::create();
-        return new GoogleDriveHelper($client);
-    },
-
     ChangeOfTaskParser::class => [
         ['class' => ChangeOfTaskParser::class],
     ],
@@ -40,7 +33,7 @@ $container->setDefinitions([
             Instance::of(ChangeOfTaskParser::class),
             Instance::of(TaskXMLConverter::class),
             null,
-            Instance::of(GoogleDriveHelper::class),
+            null,
         ]
     ],
 
