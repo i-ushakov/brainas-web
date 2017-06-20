@@ -26,7 +26,7 @@ class GoogleDriveHelper {
     }
 
 
-    public function __construct($client) {
+    public function __construct(\Google_Client $client) {
         $this->driveService = new \Google_Service_Drive($client);
     }
 
