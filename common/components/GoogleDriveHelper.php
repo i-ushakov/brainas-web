@@ -27,34 +27,13 @@ class GoogleDriveHelper {
 
 
     public function __construct(\Google_Client $client) {
+        // TODO check that $client with token
         $this->driveService = new \Google_Service_Drive($client);
     }
 
     static public function buildImageRef($imageGoogleDriveId) {
         $imageRef = "https://drive.google.com/uc?export=view&id=" . $imageGoogleDriveId;
         return $imageRef;
-    }
-
-    static public function test($imageGoogleDriveId) {
-        var_dump("imageGoogleDriveId");
-        var_dump($imageGoogleDriveId);
-        $client = GoogleIdentityHelper::getGoogleClient();
-        $user = \Yii::$app->user->identity;
-        $client->setAccessToken($user->access_token);
-
-        $driveService = new \Google_Service_Drive($client);
-        $pageToken = null;
-        do {
-            $response = $driveService->files->listFiles(array(
-                'q' => "name='task_img_1467800323282.png'",
-                'spaces' => 'drive',
-                'pageToken' => $pageToken,
-                'fields' => 'nextPageToken, files(id, name, webViewLink)',
-            ));
-            foreach ($response->files as $file) {
-            printf("Found file: %s (%s) (%s)\n", $file->name, $file->id, $file->webViewLink);
-            }
-        } while ($pageToken != null);
     }
 
     public function getFileIdByName($fileName) {
