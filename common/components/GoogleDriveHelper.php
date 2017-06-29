@@ -12,8 +12,9 @@ use common\models\PictureOfTask;
 use Yii;
 use common\models\Task;
 class GoogleDriveHelper {
+    const CLIENT_NOT_HAVE_TOKEN_MESSAGE = "Client(Google_Client) not have an access token";
+
     private static $instance;
-    private $client;
     private $driveService;
     private $message;
 
@@ -26,9 +27,12 @@ class GoogleDriveHelper {
     }
 
 
-    public function __construct(\Google_Client $client) {
-        // TODO check that $client with token
-        $this->driveService = new \Google_Service_Drive($client);
+    private function __construct(\Google_Client $client) {
+        if ($client->getAccessToken()) {
+            $this->driveService = new \Google_Service_Drive($client);
+        } else {
+            throw new BAException(self::CLIENT_NOT_HAVE_TOKEN_MESSAGE, BAException::INVALID_PARAM_EXCODE, null);
+        }
     }
 
     static public function buildImageRef($imageGoogleDriveId) {
