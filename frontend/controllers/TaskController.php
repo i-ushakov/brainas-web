@@ -31,60 +31,6 @@ class TaskController extends Controller {
         return parent::beforeAction($action);
     }
 
-
-    public function actionTestCode() {
-        define('APPLICATION_NAME', 'Brainas app');
-        define('CLIENT_SECRET_PATH',"/var/www/brainas.net/backend/config/client_secret_925705811320-cenbqg1fe5jb804116oefl78sbishnga.apps.googleusercontent.com.json");
-        define('CREDENTIALS_PATH', '/var/www/brainas.net/frontend/credentials');
-        define('SCOPES', implode(' ', array(
-                \Google_Service_Drive::DRIVE_APPDATA,
-                \Google_Service_Drive::DRIVE_METADATA,
-                \Google_Service_Drive::DRIVE_FILE,
-                )
-        ));
-        $client = new \Google_Client();
-        $client->setApplicationName(APPLICATION_NAME);
-        $client->setScopes(SCOPES);
-        $client->setAuthConfigFile(CLIENT_SECRET_PATH);
-        $client->setDeveloperKey('f958e7db2a82727525e231bd43aabfeddae0a2f3');
-        $client->setRedirectUri("postmessage");
-        $client->setAccessType('offline');
-
-        $authCode = file_get_contents('php://input');
-
-        if (isset($authCode)) {
-            $accessToken = $client->authenticate($authCode);
-            \Yii::$app->response->format = 'json';
-            $service = new \Google_Service_Drive($client);
-
-            $optParams = array(
-                'pageSize' => 10,
-                'fields' => "nextPageToken, files(id, name)"
-            );
-            $results = $service->files->listFiles($optParams);
-
-            $results =  $service->files->listFiles(array(
-                'spaces' => 'appDataFolder',
-                'fields' => 'nextPageToken, files(id, name, webContentLink)',
-                'pageSize' => 10
-            ));
-
-            if (count($results->getFiles()) == 0) {
-                //print "No files found.\n";
-            } else {
-                //print "Files:\n";
-                foreach ($results->getFiles() as $file) {
-                    printf("%s (%s)\n", $file->getName(), $file->getId());
-                    print_r("111".$file->getWebContentLink(). "11111");
-                }
-            }
-            $fileId = "1rwymhdIqpVgd3lhH1Qp5VXpGipDjtSO-MinR3KL_xwzP";
-            $content = $service->files->get($fileId, array(
-                'alt' => 'media' ));
-            return;
-        }
-    }
-
     /**
      * Return tasks in JSON format
      *
