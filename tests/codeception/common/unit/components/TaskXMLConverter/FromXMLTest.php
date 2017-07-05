@@ -13,6 +13,7 @@ use \common\components\ConditionXMLConverter;
 use \common\models\Task;
 use \common\models\Condition;
 use \common\models\PictureOfTask;
+use \common\components\BAException;
 
 class FromXMLTest extends \Codeception\TestCase\Test {
     /**
@@ -58,6 +59,22 @@ class FromXMLTest extends \Codeception\TestCase\Test {
         $taskConverter = new TaskXMLConverter($conditionConverter);
         $this->tester->expectException('\common\components\BAException', function() use ($taskConverter, $taskXMLElement) {
                 $taskConverter->fromXML($taskXMLElement);
+            }
+        );
+    }
+
+    public function testThrowInavlidRootElException()
+    {
+        $taskXMLStr = "<taskEl localId=\"1\" globalId=\"11\"></taskEl>";
+        $taskXML = new SimpleXMLElement($taskXMLStr);
+
+        $cConverterMock = m::mock(ConditionXMLConverter::class);
+        $taskXMLConverter = new TaskXMLConverter($cConverterMock);
+
+        $this->tester->expectException(
+            new BAException(TaskXMLConverter::WRONG_ROOT_ELEMNT, BAException::WRONG_ROOT_XML_ELEMENT_NAME),
+            function() use ($taskXMLConverter, $taskXML){
+                $taskXMLConverter->fromXML($taskXML);
             }
         );
     }
