@@ -39,11 +39,9 @@ class ConnectionController extends Controller {
 
     public function actionAuthenticateUser() {
         $code = $this->getCodeFromPost();
-        $accessToken = GoogleAuthHelper::getAccessTokenByCode($code);
+        $client = GoogleAuthHelper::getClientWithTokenByCode($code);
+        $accessToken = $client->getAccessToken();
 
-        // Get user's date (email) and user id in our system
-        $client = GoogleClientFactory::create();
-        $client->setAccessToken($accessToken);
         $data =  $client->verifyIdToken();
         $userEmail = $data['email'];
         $userId = GoogleAuthHelper::getUserIdByEmail($userEmail);
