@@ -22,7 +22,29 @@ return [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
+                    'levels' => ['error', 'info', 'warning', 'trace'],
+                    'categories' => [
+                        'MyLog', 'CustomLog'
+                    ],
+                    'logFile' => '@app/runtime/logs/MyLog/my.log',
+
+
+                ],
+
+                [
+                    'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
+                ],
+
+                [
+                    'class' => 'yii\log\EmailTarget',
+                    'levels' => ['error'],
+                    'categories' => ['Corrupted_data'],
+                    'message' => [
+                        'from' => ['log@brainas.net'],
+                        'to' => ['kitushakoff@gmail.com'],
+                        'subject' => 'Corrupted data from database',
+                    ],
                 ],
             ],
         ],
@@ -39,7 +61,23 @@ return [
                 '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
             ),
 
-        ]
+        ],
+
+        'mail' => [
+            'class' => 'yii\swiftmailer\Mailer',
+            'viewPath' => '@frontend/views/layouts/mail',
+            'useFileTransport' => false,//set this property to false to send mails to real email addresses
+            //comment the following array to send mail using php's mail function
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'smtp.gmail.com',
+                'username' => 'brainasnet@gmail.com',
+                'password' => 'K2507#brain',
+                'port' => '465',
+                'encryption' => 'ssl',
+            ],
+
+        ],
     ],
     'params' => $params,
 ];
