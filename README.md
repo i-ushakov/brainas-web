@@ -7,6 +7,7 @@ Brain Assistant is a software complex which consists of the website and Android 
 - For this moment implemented two type of event for triggering notifications: Time and Location
 - Convenient fast accessible panel with active tasks
 - Ability extremely fast to add an image to task based on the text of task title using Android device. 
+
 **Website:**
 
 http://www.brainas.net/
