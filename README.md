@@ -1,1 +1,23 @@
-<body class="c2"><div><p class="c3"><span class="c8"></span></p></div><p class="c6"><span class="c4">Website: </span></p><p class="c6"><span class="c7"><a class="c0" href="https://www.google.com/url?q=http://www.brainas.net/&amp;sa=D&amp;ust=1497098000460000&amp;usg=AFQjCNEg0W5tGXrJsVmmO3LfCnAR9QT_5w">http://www.brainas.net/</a></span><span class="c4">&nbsp;</span></p><p class="c3"><span class="c4"></span></p><p class="c6"><span class="c5">Link to Android app on google play</span><span class="c5 c10">&nbsp;</span></p><p class="c6"><span class="c7"><a class="c0" href="https://www.google.com/url?q=https://play.google.com/store/apps/details?id%3Dnet.brainas.android.app%26hl%3Den&amp;sa=D&amp;ust=1497098000462000&amp;usg=AFQjCNGVE3JhtMvx7geh7QDPe4XMV16Qnw">https://play.google.com/store/apps/details?id=net.brainas.android.app&amp;hl=en</a></span></p><p class="c3"><span class="c1"></span></p><p class="c6"><span class="c11">Web Server Infrastructure</span></p><p class="c6"><span class="c8">The Web Server of Brain Assistant Project is running on virtual machine that is working in a cloud hosting. I am using Ubuntu 16 as an operation system for server and Apache Web Server to handle HTTP requests. </span></p><p class="c3"><span class="c8"></span></p><p class="c6"><span class="c8">MySQL used as a database management system for BA. </span></p><p class="c3"><span class="c8"></span></p>
+Brain Assistant Project
+======================
+Brain Assistant is a software complex which consists of the website and Android application. Its main goal is to give to user ability to save their task on a server and get reminders about them on all Android devices on which this app is installed
+
+**Features:**
+- Using Google Identity Token for identification and authorization of users on website and devices via Google account
+- For this moment implemented two type of event for triggering notifications: Time and Location
+- Convenient fast accessible panel with active tasks
+- Ability extremely fast to add an image to task based on the text of task title using Android device. 
+**Website:**
+
+http://www.brainas.net/
+
+**Link to Android app on google play:**
+
+https://play.google.com/store/apps/details?id=net.brainas.android.app&hl=en
+
+Web Server Infrastructure
+=========================
+
+The Web Server of Brain Assistant Project is running on virtual machine that is working in a cloud hosting. I am using Ubuntu 16 as an operation system for server and Apache Web Server to handle HTTP requests.
+
+MySQL used as a database management system for BA.
