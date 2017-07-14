@@ -15,8 +15,13 @@ use common\models\User;
 
 
 class GoogleAuthHelper {
-    public static $jsonGoogleClientConfig = "/var/www/brainas.net/backend/config/client_secret_925705811320-cenbqg1fe5jb804116oefl78sbishnga.apps.googleusercontent.com.json";
 
+    /**
+     * Create Google Client object and pass to it the access token
+     *
+     * @param $accessToken
+     * @return \Google_Client
+     */
     static public function getGoogleClientWithToken($accessToken) {
         $client = GoogleClientFactory::create();
         $client->setAccessToken($accessToken);
@@ -27,26 +32,28 @@ class GoogleAuthHelper {
         return $client;
     }
 
-    static public  function getAccessTokenByCode($code) {
+    /**
+     * Exchanging the access code with token
+     * @param $code
+     * @return array|string
+     */
+    static public  function getClientWithTokenByCode($code) {
         $client = GoogleClientFactory::create();
         if ($code != null) {
             $client->authenticate($code);
-            $token = $client->getAccessToken();
+            return $client;
         } else {
             throw new HttpException(471 ,'Code wasn\'t sent');
         }
-
-        // Get user's date (email) and user id in our system
-        $data = $client->verifyIdToken();
-        $userEmail = $data['email'];
-        $userId = self::getUserIdByEmail($userEmail);
-        $token = self::actualizeRefreshToken($token, $userId);
-        return $token;
     }
 
+    /**
+     * Exchanging the access token on the internal information (like user's id, email)
+     * @param $token
+     * @return array
+     */
     static public function verifyUserAccess($token) {
         $authInfo = array();
-        // Create Google client and get accessToken
         $client = GoogleClientFactory::create();
         $client->setAccessToken($token);
         if ($client->isAccessTokenExpired()) {
@@ -73,7 +80,7 @@ class GoogleAuthHelper {
     /*
      *  Save refresh token if exist or retrieve from database and send to client
      */
-    static private function actualizeRefreshToken($token, $userId) {
+    static public function actualizeRefreshToken($token, $userId) {
         if (isset($token['refresh_token'])) {
             self::saveRefreshToken($token['refresh_token'], $userId);
         } else {
@@ -85,7 +92,7 @@ class GoogleAuthHelper {
         return $token;
     }
 
-    static private function getUserIdByEmail($userEmail) {
+    static public function getUserIdByEmail($userEmail) {
         $user = User::findOne(['username' => $userEmail]);
         if (!empty($user)) {
             return $user->id;

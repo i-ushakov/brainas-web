@@ -6,7 +6,7 @@ Brain Assistant is a software complex which consists of the website and Android 
 - Using Google Identity Token for identification and authorization of users on website and devices via Google account
 - For this moment implemented two type of event for triggering notifications: Time and Location
 - Convenient fast accessible panel with active tasks
-- Ability extremely fast to add an image to task based on the text of task title using Android device.
+- Ability extremely fast to add an image to task based on the text of task title using Android device. 
 
 **Website:**
 
