@@ -14,6 +14,7 @@ class BAException extends \Exception {
     const EMPTY_PARAM_EXCODE = 1103;
     const INVALID_PARAM_EXCODE = 1104;
     const WRONG_ROOT_XML_ELEMENT_NAME = 1105;
+    const NOT_ENOUGH_DATA = 1106;
 
     public function __construct(string $message, int $code, \Exception $previous = null) {
         parent::__construct($message, $code, $previous);

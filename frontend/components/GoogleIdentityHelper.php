@@ -7,45 +7,52 @@ namespace frontend\components;
  * Time: 12:45 PM
  */
 
+use common\components\BAException;
 use \Yii;
 use common\models\User;
+use yii\debug\models\search\Log;
 
 class GoogleIdentityHelper {
-    static public $APP_NAME = "Brain Assistant app";
-    static public $CLIENT_SECRET_PATH = "/var/www/brainas.net/backend/config/client_secret_925705811320-cenbqg1fe5jb804116oefl78sbishnga.apps.googleusercontent.com.json";
+    const APP_NAME = "Brain Assistant app";
+    const CLIENT_SECRET_PATH = "/var/www/brainas.net/backend/config/client_secret_925705811320-cenbqg1fe5jb804116oefl78sbishnga.apps.googleusercontent.com.json";
+    const PROBLEM_WITH_REFRESH_TOKEN_MSG = "Access token expired and we cannot to refresh it (may be refresh_token is broken)";
+    const NO_REFRESH_TOKEN_MSG = "Access token expired havn't refresh_token";
 
     static public function getGoogleClient() {
         $client = new \Google_Client();
-        $client->setApplicationName(self::$APP_NAME);
+        $client->setApplicationName(self::APP_NAME);
         $client->setScopes(implode(' ', array(
             \Google_Service_Drive::DRIVE_APPDATA,
             \Google_Service_Drive::DRIVE_METADATA,
             \Google_Service_Drive::DRIVE_FILE,
             \Google_Service_Drive::DRIVE
         )));
-        $client->setAuthConfigFile(self::$CLIENT_SECRET_PATH);
+        $client->setAuthConfigFile(self::CLIENT_SECRET_PATH);
         $client->setDeveloperKey(Yii::$app->params['ServiceAccountKey']);
         $client->setRedirectUri("postmessage");
         $client->setAccessType('offline');
         return $client;
     }
 
-    static public function getGoogleClientWithToken($user) {
+    static public function GoogleIdentityHelper(User $user) {
         $client = self::getGoogleClient();
-        $client->setAccessToken($user->access_token );
-        if ($client->isAccessTokenExpired() && isset($user->refresh_token)) {
-            $client->refreshToken($user->refresh_token);
-            $user->access_token = json_encode($client->getAccessToken());
-            $user->save();
+        $client->setAccessToken($user->access_token);
+        if ($client->isAccessTokenExpired()) {
+            if (isset($user->refreshToken->refresh_token)) {
+                $refreshedAccessToken = $client->refreshToken($user->refreshToken->refresh_token);
+                try {
+                    $client->setAccessToken($refreshedAccessToken);
+                } catch (\InvalidArgumentException $e) {
+                    throw new BAException(self::PROBLEM_WITH_REFRESH_TOKEN_MSG, BAException::INVALID_PARAM_EXCODE, $e);
+                }
+                $user->access_token = json_encode($client->getAccessToken());
+                $user->refresh_token = $refreshedAccessToken['refresh_token'];
+                $user->save();
+            } else {
+                throw new BAException(self::NO_REFRESH_TOKEN_MSG, BAException::NOT_ENOUGH_DATA, null);
+            }
         }
         return $client;
-        /*else {
-            $result['status'] = "FAILED";
-            $result['code'] = "no_refresh_token";
-            $result['message'] = "Access tokent txpired and we havn't refresh_token";
-        }
-            TODO May be must be an object ... GoogleClientWithToken($client)... ->errors, ->token, ->message ->status*/
-
     }
 
     static public function authenticationOfUser($accessToken) {

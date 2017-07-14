@@ -77,6 +77,10 @@ class User extends ActiveRecord implements IdentityInterface
         return $pictureFolder;
     }
 
+    public function getRefreshToken() {
+        return $this->hasOne(RefreshToken::className(), ['user_id' => 'id'])->one();
+    }
+
     /**
      * @inheritdoc
      */
