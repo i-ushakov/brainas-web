@@ -19,7 +19,7 @@ use backend\components\GoogleAuthHelper;
 
 use common\models\User;
 use common\models\GoogleDriveFolder;
-use common\components\CustomLogger;
+use common\components\logging\BALogger;
 
 
 use yii\web\Controller;
