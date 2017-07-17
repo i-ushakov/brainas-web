@@ -8,6 +8,7 @@
 
 namespace common\models;
 
+use common\components\logging\BALogger;
 
 use Yii;
 use yii\db\ActiveRecord;
@@ -58,7 +59,8 @@ class Event extends ActiveRecord {
         $params = json_decode($this->$attribute);
         if (empty($params)) {
             $this->addError($attribute, 'Corrupted params of events');
-            CustomLogger::log("We have empty/null (event) params after json_decode() for event with id = " . $this->id, 'error', null, false);
+            // TODO: needs to handle this case with error for new loger
+            //BALogger::log("We have empty/null (event) params after json_decode() for event with id = " . $this->id, 'error', null, false);
         }
     }
 }
