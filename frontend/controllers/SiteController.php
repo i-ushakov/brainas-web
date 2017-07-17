@@ -5,7 +5,6 @@ use Yii;
 use common\models\LoginForm;
 use common\models\User;
 use common\components\MailSender;
-use common\components\CustomLogger;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
