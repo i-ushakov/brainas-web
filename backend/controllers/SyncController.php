@@ -15,6 +15,7 @@ use backend\components\GoogleAuthHelper;
 use backend\components\SettingsManager;
 use common\components\GoogleDriveHelper;
 use common\models\User;
+use common\components\logging\BALogger;
 
 class SyncController extends Controller
 {
@@ -71,13 +72,17 @@ class SyncController extends Controller
      */
     public function actionSendTasks()
     {
+        BALogger::i(
+            "Received SEND request from a device",
+            [BALogger::TAG_SYNC, BALogger::TAG_SENDACTION]
+        );
+
         $token = $this->getAccessTokenFromPost();
 
         $authInfo = GoogleAuthHelper::verifyUserAccess($token);
         $userId = $authInfo['userId'];
 
-        $syncDataFromDevice = simplexml_load_file($_FILES['tasks_changes_xml']['tmp_name']);
-        $changedTasksXml = $syncDataFromDevice->changedTasks;
+        $changedTasksXml = $this->getChangedTaskFromPost();
 
         /* @var $tasksSyncManager TasksSyncManager */
         $tasksSyncManager = Yii::$container->get(TasksSyncManager::class);
@@ -121,7 +126,31 @@ class SyncController extends Controller
         } else {
             return null;
         }
+        BALogger::i(
+            "Access token was retrieved from POST-request",
+            [BALogger::TAG_SYNC, BALogger::TAG_SENDACTION, BALogger::TAG_TOKEN],
+            $accessToken
+        );
         return json_decode($accessToken, true);
+    }
+
+    /**
+     * Create and return XML object based on xml-document from POST request
+     * with data about created and updated tasks
+     *
+     * @return \SimpleXMLElement[]
+     */
+    protected function getChangedTaskFromPost() {
+        $syncDataFromDevice = simplexml_load_file($_FILES['tasks_changes_xml']['tmp_name']);
+        BALogger::i(
+            "XML with updated tasks was received from device",
+            [BALogger::TAG_SYNC, BALogger::TAG_SENDACTION, BALogger::TAG_DEVICE_DATA],
+            $syncDataFromDevice->asXML()
+        );
+
+        // TODO: When I'll remove <existingTasks>, the <changedTasks> will become root element
+        $changedTasksXml = $syncDataFromDevice->changedTasks;
+        return $changedTasksXml;
     }
 
     protected function getTimeOfLastSync()
