@@ -92,6 +92,10 @@ class GoogleAuthHelper {
         return $token;
     }
 
+    /**
+     * @param $userEmail
+     * @return int
+     */
     static public function getUserIdByEmail($userEmail) {
         $user = User::findOne(['username' => $userEmail]);
         if (!empty($user)) {
