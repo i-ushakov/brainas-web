@@ -11,6 +11,7 @@ use backend\components\ChangeOfTaskHandler;
 use common\components\TaskXMLConverter;
 use \common\models\PictureOfTask;
 use \common\components\GoogleDriveHelper;
+use \common\components\BAException;
 
 use Mockery as m;
 
@@ -134,5 +135,25 @@ class SavePictureOfTask_Test extends \Codeception\TestCase\Test
             'name' => 'picture_name_new.png',
             'file_id' => 'picture_fileId_new'
         ]);
+    }
+
+    public function testThrowNoGoogleDriveHelperException()
+    {
+        $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
+        $taskXMLConverter = m::mock(TaskXMLConverter::class);
+        $userId = 1;
+        $handler = new ChangeOfTaskHandler($changeOfTaskParser, $taskXMLConverter, $userId, null);
+
+        $picture = new PictureOfTask();
+        $picture->file_id = null;
+        $picture->name = 'picture_name';
+        $taskId = 11;
+
+        $this->tester->expectException(
+            new BAException(ChangeOfTaskHandler::GOOGLE_DRIVE_HELPER_NOT_SET, BAException::PARAM_NOT_SET_EXCODE),
+            function() use ($handler, $picture, $taskId) {
+                $handler->savePistureOfTask($picture, $taskId);
+            }
+        );
     }
 }

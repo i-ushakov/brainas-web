@@ -22,27 +22,27 @@ use common\components\GoogleDriveHelper;
 class ChangeOfTaskHandler {
     const USER_ID_MUST_TO_BE_SET_MSG = "User id must to be set";
     const TASK_ID_MUST_TO_BE_KNOWN_MSG = "Task id must to be known";
+    const GOOGLE_DRIVE_HELPER_NOT_SET = "We don't have google drive helper";
 
     /** var ChangeOfTaskParser $changeParser
      *  helper class that used to parse XML-document of task
      */
-    private $changeParser;
+    protected $changeParser;
 
     /** var TaskXMLConverter $converter
      *  helper class that convert task from/to XML-document
      */
-    private $converter;
+    protected $converter;
 
     /** var Integer $userId
      * internal ID of the user (inside the system) from the device of which the request was received
      */
-    private $userId = null;
-
+    protected $userId = null;
 
     /** var GoogleDriveHelper $googleDriveHelper
      *  helper class intends for working with Google Drive API
      */
-    private $googleDriveHelper;
+    protected $googleDriveHelper;
 
     /*
      * Create new ChangeOfTaskHandler object
@@ -309,7 +309,7 @@ class ChangeOfTaskHandler {
             if ($this->googleDriveHelper != null) {
                 $picture->file_id = $this->googleDriveHelper->getFileIdByName($pictureForSave->name);
             } else {
-                // TODO  throw Exception
+                throw new BAException(self::GOOGLE_DRIVE_HELPER_NOT_SET, BAException::PARAM_NOT_SET_EXCODE, null);
             }
         }
         $picture->save();
@@ -318,6 +318,7 @@ class ChangeOfTaskHandler {
     /**
      * Retrieve server time of the last update of task from logging table in DB,
      * we need this to know is server data actual or need to be updated
+     *
      * @param $taskid
      * @return mixed|null
      */
