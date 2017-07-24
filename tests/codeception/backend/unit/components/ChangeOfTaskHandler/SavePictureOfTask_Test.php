@@ -17,6 +17,9 @@ use Mockery as m;
 
 class SavePictureOfTask_Test extends \Codeception\TestCase\Test
 {
+    const TEST_VALUE_OF_USER_ID = 1;
+    const TEST_VALUE_OF_TASK_ID = 777;
+
     /**
      * @var UnitTester
      */
@@ -36,7 +39,7 @@ class SavePictureOfTask_Test extends \Codeception\TestCase\Test
             ->once()
             ->with('picture_name.png')
             ->andReturn('picture_fileId');
-        $userId = 1;
+        $userId = self::TEST_VALUE_OF_USER_ID;
 
         /** @var ChangeOfTaskHandler $changeOfTaskHandler  */
         $changeOfTaskHandler = \Mockery::mock(
@@ -52,13 +55,13 @@ class SavePictureOfTask_Test extends \Codeception\TestCase\Test
         $pictureForSave = new PictureOfTask();
         $pictureForSave->name = "picture_name.png";
         //$pictureForSave->file_id = "picture_fileId";
-        $taskId = 777;
+        $taskId = self::TEST_VALUE_OF_TASK_ID;
 
 
         $changeOfTaskHandler->savePistureOfTask($pictureForSave, $taskId);
 
         $this->tester->seeRecord(PictureOfTask::class, [
-            'task_id' => 777,
+            'task_id' => self::TEST_VALUE_OF_TASK_ID,
             'name' => 'picture_name.png',
             'file_id' => 'picture_fileId'
         ]);
@@ -71,7 +74,7 @@ class SavePictureOfTask_Test extends \Codeception\TestCase\Test
         $googleDriveHelper = m::mock(GoogleDriveHelper::class);
         $googleDriveHelper->shouldReceive('getFileIdByName')
             ->never();
-        $userId = 1;
+        $userId = self::TEST_VALUE_OF_USER_ID;
 
         /** @var ChangeOfTaskHandler $changeOfTaskHandler  */
         $changeOfTaskHandler = \Mockery::mock(
@@ -87,13 +90,13 @@ class SavePictureOfTask_Test extends \Codeception\TestCase\Test
         $pictureForSave = new PictureOfTask();
         $pictureForSave->name = "picture_name.png";
         $pictureForSave->file_id = "picture_fileId";
-        $taskId = 777;
+        $taskId = self::TEST_VALUE_OF_TASK_ID;
 
 
         $changeOfTaskHandler->savePistureOfTask($pictureForSave, $taskId);
 
         $this->tester->seeRecord(PictureOfTask::class, [
-            'task_id' => 777,
+            'task_id' => self::TEST_VALUE_OF_TASK_ID,
             'name' => 'picture_name.png',
             'file_id' => 'picture_fileId'
         ]);
@@ -106,7 +109,7 @@ class SavePictureOfTask_Test extends \Codeception\TestCase\Test
         $googleDriveHelper = m::mock(GoogleDriveHelper::class);
         $googleDriveHelper->shouldReceive('getFileIdByName')
             ->never();
-        $userId = 1;
+        $userId = self::TEST_VALUE_OF_USER_ID;
 
         /** @var ChangeOfTaskHandler $changeOfTaskHandler  */
         $changeOfTaskHandler = \Mockery::mock(
@@ -119,19 +122,19 @@ class SavePictureOfTask_Test extends \Codeception\TestCase\Test
             ]
         );
         $existsPicture = new PictureOfTask();
-        $existsPicture->task_id = 777;
+        $existsPicture->task_id = self::TEST_VALUE_OF_TASK_ID;
         $existsPicture->name = 'picture_name_old.png';
         $existsPicture->file_id = 'picture_fileId_old';
 
         $pictureForSave = new PictureOfTask();
         $pictureForSave->name = "picture_name_new.png";
         $pictureForSave->file_id = "picture_fileId_new";
-        $taskId = 777;
+        $taskId = self::TEST_VALUE_OF_TASK_ID;
 
         $changeOfTaskHandler->savePistureOfTask($pictureForSave, $taskId);
 
         $this->tester->seeRecord(PictureOfTask::class, [
-            'task_id' => 777,
+            'task_id' => self::TEST_VALUE_OF_TASK_ID,
             'name' => 'picture_name_new.png',
             'file_id' => 'picture_fileId_new'
         ]);
@@ -141,13 +144,13 @@ class SavePictureOfTask_Test extends \Codeception\TestCase\Test
     {
         $changeOfTaskParser = m::mock(ChangeOfTaskParser::class);
         $taskXMLConverter = m::mock(TaskXMLConverter::class);
-        $userId = 1;
+        $userId = self::TEST_VALUE_OF_USER_ID;
         $handler = new ChangeOfTaskHandler($changeOfTaskParser, $taskXMLConverter, $userId, null);
 
         $picture = new PictureOfTask();
         $picture->file_id = null;
         $picture->name = 'picture_name';
-        $taskId = 11;
+        $taskId = self::TEST_VALUE_OF_TASK_ID;
 
         $this->tester->expectException(
             new BAException(ChangeOfTaskHandler::GOOGLE_DRIVE_HELPER_NOT_SET, BAException::PARAM_NOT_SET_EXCODE),
