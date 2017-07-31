@@ -34,7 +34,7 @@ $container->setDefinitions([
 
     GoogleDriveHelper::class => function() {
         $service = Yii::$container->get(Google_Service_Drive::class);
-        GoogleDriveHelper::getInstance($service);
+        return GoogleDriveHelper::getInstance($service);
     },
 
     ChangeOfTaskHandler::class => [
