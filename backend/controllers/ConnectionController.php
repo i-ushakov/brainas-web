@@ -13,7 +13,6 @@ namespace backend\controllers;
 use backend\components\Factory\GoogleClientFactory;
 use Google_Client;
 use Yii;
-use backend\components\TaskSyncHelper;
 use backend\components\GoogleAuthHelper;
 
 
