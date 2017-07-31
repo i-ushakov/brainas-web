@@ -12,10 +12,11 @@ use common\models\PictureOfTask;
 use Yii;
 use common\models\Task;
 class GoogleDriveHelper {
-    const CLIENT_NOT_HAVE_TOKEN_MESSAGE = "Client(Google_Client) not have an access token";
+    const CLIENT_NOT_HAVE_TOKEN_MSG = "Client(Google_Client) not have a access token";
+    const CLIENT_TOKEN_WAS_EXPIRED_MSG = "Client(Google_Client) have expired token";
 
     private static $instance;
-    private $driveService;
+    private $service;
     private $message;
 
     public static function getInstance($client) {
@@ -27,11 +28,17 @@ class GoogleDriveHelper {
     }
 
 
-    private function __construct(\Google_Client $client) {
-        if ($client->getAccessToken()) {
-            $this->driveService = new \Google_Service_Drive($client);
-        } else {
-            throw new BAException(self::CLIENT_NOT_HAVE_TOKEN_MESSAGE, BAException::INVALID_PARAM_EXCODE, null);
+    private function __construct(\Google_Service_Drive $service) {
+        $this->service = $service;
+        $client = $this->service->getClient();
+        $token = $client->getAccessToken();
+
+        if (!isset($token)) {
+            throw new BAException(self::CLIENT_NOT_HAVE_TOKEN_MSG, BAException::INVALID_PARAM_EXCODE, null);
+        }
+
+        if ($client->isAccessTokenExpired()) {
+            throw new BAException(self::CLIENT_TOKEN_WAS_EXPIRED_MSG, BAException::INVALID_PARAM_EXCODE, null);
         }
     }
 
@@ -44,7 +51,7 @@ class GoogleDriveHelper {
         if (!isset($fileName)) {
             return null;
         }
-        $response = $this->driveService->files->listFiles(array(
+        $response = $this->service->files->listFiles(array(
             'q' => "name='$fileName'",
             'spaces' => 'drive',
             'fields' => 'nextPageToken, files(id, name)',
@@ -75,7 +82,7 @@ class GoogleDriveHelper {
             $this->message = "No have fileId";
             return false;
         }
-        $this->driveService->files->delete($fileId);
+        $this->service->files->delete($fileId);
         return true;
     }
 
@@ -93,7 +100,7 @@ class GoogleDriveHelper {
             $params['q'] .= " and modifiedTime < '$datetime'";
         }
         try {
-            $response = $this->driveService->files->listFiles($params);
+            $response = $this->service->files->listFiles($params);
         } catch (\Google_Service_Exception $e) {
             Yii::error("Google_Service_Exception when try to get list of files");
             return null;
