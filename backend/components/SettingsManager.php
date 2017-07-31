@@ -9,8 +9,22 @@ namespace backend\components;
 
 use common\models\GoogleDriveFolder;
 
+/**
+ * Class SettingsManager
+ *
+ * Handle shared preferences of application
+ *
+ * @package backend\components
+ */
 class SettingsManager
 {
+    /**
+     * Handle shared preferences of application for webside and devices
+     *
+     * @param $user
+     * @param $settings
+     * @return null|string
+     */
     public function handleSettings($user, $settings) {
         if ($user != null) {
             $projectFolder = GoogleDriveFolder::findOne(['id' => $user->projectFolder->id]);
