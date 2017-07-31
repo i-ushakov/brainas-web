@@ -13,7 +13,13 @@ use backend\components\Factory\GoogleClientFactory;
 use common\models\User;
 
 
-
+/**
+ * Class GoogleAuthHelper
+ *
+ * Have a bundle of helpers static methods to work with Google Identity Toolkit
+ *
+ * @package backend\components
+ */
 class GoogleAuthHelper {
 
     /**
