@@ -30,27 +30,6 @@ class TaskSyncHelper {
         $this->client = GoogleAuthHelper::getClientWithToken($accessToken);
     }
 
-    public function doSynchronization() {
-        $lastSyncTime = $this->getLastSyncTimeFromPost();
-
-        //$this->processProjectFolders($this->syncDataFromDevice->);
-        // Get chnaged and deletet task
-        // from time of last sync for this user
-        $serverChanges = $this->getServerChanges($lastSyncTime);
-
-        // We process changes from device and we'll return ids of synchronized objects (task, conditions, events)
-        $synchronizedObjects = $this->processTaskChangesFromDevice($serverChanges);
-
-        // Build xml-document with server-changes
-        // and data about changes from device that were accepted
-        $lastSyncTime = $this->getCurrentTime();
-
-        $xmlResponse = XMLResponseBuilder::buildXMLResponse($serverChanges, $synchronizedObjects, $lastSyncTime, $this->token);
-
-        $this->deleteUnusedPictures();
-        return $xmlResponse;
-    }
-
     public function getServerChanges($lastSyncTime) {
         $serverChanges = array();
 
