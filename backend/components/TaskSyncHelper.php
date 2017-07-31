@@ -54,47 +54,6 @@ class TaskSyncHelper {
         return $serverChanges;
     }
 
-    public function processTaskChangesFromDevice(&$serverChanges) {
-        $synchronizedObjects = array();
-        $synchronizedTasks = array();
-
-        // Find tasks that exists on device (client) but absent on server (use serverId)
-        $existingTasksOnDevice = TaskXMLHelper::retrieveExistingTasksFromXML($this->syncDataFromDevice);
-        $serverChanges['tasks']['deleted'] = TaskHelper::getTasksRemovedOnServer($existingTasksOnDevice, $this->userId);
-
-        $changedTasks = $this->syncDataFromDevice->changedTasks;
-        foreach($changedTasks->changedTask as $changedTask) {
-            $statusOfChanges = (String)$changedTask->change[0]->status;
-            $globalId = (string)$changedTask['globalId'];
-            $localId = (string)$changedTask['id'];
-            if ($globalId == 0 && $statusOfChanges != "DELETED") {
-                $globalId = $this->addTaskFromDevice($changedTask, $synchronizedObjects);
-                $synchronizedTasks[$localId] = $globalId;
-            } else {
-                if (Task::findOne($globalId) != null) {
-                    $serverChangesTime = $this->getTimeOfTaskChanges($globalId);
-                    $clientChangesTime = (String)$changedTask->change[0]->changeDatetime;
-                    if (strtotime($serverChangesTime) < strtotime($clientChangesTime)) {
-                        $status = (String)$changedTask->change[0]->status;
-                        if ($status == "DELETED") {
-                            $this->deleteTaskFromDevice($changedTask);
-                            $localId = 0;
-                        } elseif ($status == "UPDATED" || $status == "CREATED") {
-                            $this->updateTaskFromDevice($changedTask, $synchronizedObjects);
-                        }
-                        unset($serverChanges['tasks']['updated'][$globalId]);
-                    }
-                    $synchronizedTasks[$localId] = $globalId;
-                } else {
-                    $serverChanges['tasks']['deleted'][$globalId] = $localId;
-                    $synchronizedTasks[$localId] = $globalId;
-                }
-            }
-        }
-        $synchronizedObjects['tasks'] = $synchronizedTasks;
-        return $synchronizedObjects;
-    }
-
     private function getChangedTasks($lastSyncTime) {
         if ($lastSyncTime != null) {
             $changesOfTasks = ChangeOfTask::find()
