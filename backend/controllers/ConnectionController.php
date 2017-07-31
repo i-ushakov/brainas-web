@@ -11,15 +11,12 @@ namespace backend\controllers;
 
 
 use backend\components\Factory\GoogleClientFactory;
-use Google_Client;
 use Yii;
-use backend\components\TaskSyncHelper;
 use backend\components\GoogleAuthHelper;
 
 
 use common\models\User;
 use common\models\GoogleDriveFolder;
-use common\components\logging\BALogger;
 
 
 use yii\web\Controller;
@@ -57,26 +54,6 @@ class ConnectionController extends Controller {
             $settings = $this->retrieveSettingsFomPost();
             return $this->handleSettings($user, $settings);
         }
-    }
-
-    public function actionGetTasks() {
-        // get user id and access token
-        $token = $this->getAccessTokenFromPost();
-        //try {
-            $authInfo = GoogleAuthHelper::verifyUserAccess($token);
-        /*} catch (\InvalidArgumentException $e) {
-            CustomLogger::log("Catch InvalidArgumentException: ".  http_build_query($token), CustomLogger::ERROR);
-            echo self::STATUS_INVALID_TOKEN;
-            exit();
-        }*/
-        $token = $authInfo['token'];
-        $userId =  $authInfo['userId'];
-        // retrive xml-document with device changes from file
-        $deviceChanges = $this->loadDeviceChangesFromXML();
-        $taskSyncHelper = new TaskSyncHelper($deviceChanges, $userId, $token);
-        $xmlResponse = $taskSyncHelper->doSynchronization();
-
-        echo $xmlResponse;
     }
 
     private function handleSettings($user, $settings) {

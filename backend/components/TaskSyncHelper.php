@@ -1,7 +1,6 @@
 <?php
 namespace backend\components;
 
-use common\models\GoogleDriveFolder;
 use common\models\PictureOfTask;
 use common\models\Task;
 use common\models\User;
@@ -30,27 +29,6 @@ class TaskSyncHelper {
         $this->client = GoogleAuthHelper::getClientWithToken($accessToken);
     }
 
-    public function doSynchronization() {
-        $lastSyncTime = $this->getLastSyncTimeFromPost();
-
-        //$this->processProjectFolders($this->syncDataFromDevice->);
-        // Get chnaged and deletet task
-        // from time of last sync for this user
-        $serverChanges = $this->getServerChanges($lastSyncTime);
-
-        // We process changes from device and we'll return ids of synchronized objects (task, conditions, events)
-        $synchronizedObjects = $this->processTaskChangesFromDevice($serverChanges);
-
-        // Build xml-document with server-changes
-        // and data about changes from device that were accepted
-        $lastSyncTime = $this->getCurrentTime();
-
-        $xmlResponse = XMLResponseBuilder::buildXMLResponse($serverChanges, $synchronizedObjects, $lastSyncTime, $this->token);
-
-        $this->deleteUnusedPictures();
-        return $xmlResponse;
-    }
-
     public function getServerChanges($lastSyncTime) {
         $serverChanges = array();
 
@@ -73,47 +51,6 @@ class TaskSyncHelper {
         }
 
         return $serverChanges;
-    }
-
-    public function processTaskChangesFromDevice(&$serverChanges) {
-        $synchronizedObjects = array();
-        $synchronizedTasks = array();
-
-        // Find tasks that exists on device (client) but absent on server (use serverId)
-        $existingTasksOnDevice = TaskXMLHelper::retrieveExistingTasksFromXML($this->syncDataFromDevice);
-        $serverChanges['tasks']['deleted'] = TaskHelper::getTasksRemovedOnServer($existingTasksOnDevice, $this->userId);
-
-        $changedTasks = $this->syncDataFromDevice->changedTasks;
-        foreach($changedTasks->changedTask as $changedTask) {
-            $statusOfChanges = (String)$changedTask->change[0]->status;
-            $globalId = (string)$changedTask['globalId'];
-            $localId = (string)$changedTask['id'];
-            if ($globalId == 0 && $statusOfChanges != "DELETED") {
-                $globalId = $this->addTaskFromDevice($changedTask, $synchronizedObjects);
-                $synchronizedTasks[$localId] = $globalId;
-            } else {
-                if (Task::findOne($globalId) != null) {
-                    $serverChangesTime = $this->getTimeOfTaskChanges($globalId);
-                    $clientChangesTime = (String)$changedTask->change[0]->changeDatetime;
-                    if (strtotime($serverChangesTime) < strtotime($clientChangesTime)) {
-                        $status = (String)$changedTask->change[0]->status;
-                        if ($status == "DELETED") {
-                            $this->deleteTaskFromDevice($changedTask);
-                            $localId = 0;
-                        } elseif ($status == "UPDATED" || $status == "CREATED") {
-                            $this->updateTaskFromDevice($changedTask, $synchronizedObjects);
-                        }
-                        unset($serverChanges['tasks']['updated'][$globalId]);
-                    }
-                    $synchronizedTasks[$localId] = $globalId;
-                } else {
-                    $serverChanges['tasks']['deleted'][$globalId] = $localId;
-                    $synchronizedTasks[$localId] = $globalId;
-                }
-            }
-        }
-        $synchronizedObjects['tasks'] = $synchronizedTasks;
-        return $synchronizedObjects;
     }
 
     private function getChangedTasks($lastSyncTime) {
