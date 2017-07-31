@@ -27,12 +27,27 @@ class GetInstance_Test extends \Codeception\TestCase\Test
     {
 
         $client = GoogleClientFactory::create();
+        $service = new Google_Service_Drive($client);
         $this->tester->expectException(
-            new BAException(GoogleDriveHelper::CLIENT_NOT_HAVE_TOKEN_MESSAGE, BAException::INVALID_PARAM_EXCODE),
-            function() use ($client){
-                GoogleDriveHelper::getInstance($client);
+            new BAException(GoogleDriveHelper::CLIENT_NOT_HAVE_TOKEN_MSG, BAException::INVALID_PARAM_EXCODE),
+            function() use ($service){
+                GoogleDriveHelper::getInstance($service);
             }
         );
+    }
 
+    public function testThrowTokenExpiredException()
+    {
+        $client = m::mock(Google_Client::class);
+        $client->shouldReceive('getAccessToken')->once()->andReturn('expiredToken');
+        $client->shouldReceive('isAccessTokenExpired')->once()->andReturn(true);
+
+        $service = new Google_Service_Drive($client);
+        $this->tester->expectException(
+            new BAException(GoogleDriveHelper::CLIENT_TOKEN_WAS_EXPIRED_MSG, BAException::INVALID_PARAM_EXCODE),
+            function() use ($service) {
+                GoogleDriveHelper::getInstance($service);
+            }
+        );
     }
 }

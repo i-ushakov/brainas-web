@@ -45,12 +45,6 @@ class TasksSyncManager
         return $this;
     }
 
-    public function setGoogleDriveHelper($googleDriveHelper) {
-        $this->googleDriveHelper = $googleDriveHelper;
-        $this->changeHandler->setGoogleDriveHelper($googleDriveHelper);
-        return $this;
-    }
-
     public function handleTasksFromDevice(\SimpleXMLElement $taskChangesXML)
     {
         $synchronizedTasks = [];

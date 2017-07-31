@@ -17,6 +17,8 @@ use common\components\GoogleDriveHelper;
 use common\models\User;
 use common\components\logging\BALogger;
 
+use \Google_Client;
+
 class SyncController extends Controller
 {
     public function beforeAction($action)
@@ -84,12 +86,12 @@ class SyncController extends Controller
 
         $changedTasksXml = $this->getChangedTaskFromPost();
 
+        Yii::$container->set(Google_Client::class . "_WithToken", GoogleAuthHelper::getClientWithToken($token));
+
         /* @var $tasksSyncManager TasksSyncManager */
         $tasksSyncManager = Yii::$container->get(TasksSyncManager::class);
 
-        $client = GoogleAuthHelper::getGoogleClientWithToken($token);
-        $googleDriveHelper = GoogleDriveHelper::getInstance($client);
-        $tasksSyncManager->setUserId($userId)->setGoogleDriveHelper($googleDriveHelper);
+        $tasksSyncManager->setUserId($userId);
 
         $syncObjectsXml = $tasksSyncManager->handleTasksFromDevice($changedTasksXml);
         return $syncObjectsXml;
@@ -108,6 +110,8 @@ class SyncController extends Controller
         $existsTasksFromDeviceXml = simplexml_load_file($_FILES['exists_tasks_xml']['tmp_name']);
         $existingTasksFromDevice = json_decode($existsTasksFromDeviceXml->existingTasks);
         $timeOfLastSync = $this->getTimeOfLastSync();
+
+        Yii::$container->set(Google_Client::class . "_WithToken", GoogleAuthHelper::getClientWithToken($token));
 
         /* @var $tasksSyncManager TasksSyncManager */
         $tasksSyncManager = Yii::$container->get(TasksSyncManager::class);

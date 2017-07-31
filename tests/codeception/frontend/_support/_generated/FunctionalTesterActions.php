@@ -7,7 +7,6 @@ namespace _generated;
 
 use Codeception\Module\Filesystem;
 use Codeception\Module\Yii2;
-use tests\codeception\common\_support\FixtureHelper;
 use Codeception\Module\Db;
 use Codeception\Module\REST;
 

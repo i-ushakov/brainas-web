@@ -27,7 +27,7 @@ class TaskSyncHelper {
         $this->syncDataFromDevice = $syncDataFromDevice;
         $this->userId = $userId;
         $this->token = $accessToken;
-        $this->client = GoogleAuthHelper::getGoogleClientWithToken($accessToken);
+        $this->client = GoogleAuthHelper::getClientWithToken($accessToken);
     }
 
     public function doSynchronization() {

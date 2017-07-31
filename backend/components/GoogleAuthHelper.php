@@ -22,7 +22,7 @@ class GoogleAuthHelper {
      * @param $accessToken
      * @return \Google_Client
      */
-    static public function getGoogleClientWithToken($accessToken) {
+    static public function getClientWithToken($accessToken) {
         $client = GoogleClientFactory::create();
         $client->setAccessToken($accessToken);
         if ($client->isAccessTokenExpired() && isset($accessToken['refresh_token'])) {
