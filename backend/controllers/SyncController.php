@@ -13,7 +13,6 @@ use yii\web\Controller;
 use backend\components\TasksSyncManager;
 use backend\components\GoogleAuthHelper;
 use backend\components\SettingsManager;
-use common\components\GoogleDriveHelper;
 use common\models\User;
 use common\components\logging\BALogger;
 
