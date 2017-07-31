@@ -34,7 +34,7 @@ class GoogleIdentityHelper {
         return $client;
     }
 
-    static public function GoogleIdentityHelper(User $user) {
+    static public function getGoogleClientWithToken(User $user) {
         $client = self::getGoogleClient();
         $client->setAccessToken($user->access_token);
         if ($client->isAccessTokenExpired()) {
