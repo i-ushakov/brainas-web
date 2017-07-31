@@ -77,8 +77,14 @@ class GoogleAuthHelper {
         return $authInfo;
     }
 
-    /*
-     *  Save refresh token if exist or retrieve from database and send to client
+    /**
+     * Saving refresh token if exist in array,
+     * or retrieve from database if not
+     *
+     * @param $token
+     * @param $userId
+     *
+     * @return mixed
      */
     static public function actualizeRefreshToken($token, $userId) {
         if (isset($token['refresh_token'])) {
@@ -93,7 +99,10 @@ class GoogleAuthHelper {
     }
 
     /**
+     * Get user id by email
+     *
      * @param $userEmail
+     *
      * @return int
      */
     static public function getUserIdByEmail($userEmail) {
@@ -111,6 +120,12 @@ class GoogleAuthHelper {
         }
     }
 
+    /**
+     * Save refresh token in DB
+     *
+     * @param $refreshToken
+     * @param $userId
+     */
     static private function saveRefreshToken($refreshToken, $userId) {
         $params = [
             ':user_id' => $userId,
@@ -127,6 +142,12 @@ class GoogleAuthHelper {
         return;
     }
 
+    /**
+     * Get refresh token from DB
+     *
+     * @param int $userId
+     * @return string
+     */
     static private function getRefreshToken($userId) {
         $refreshToken = null;
         $params = [':user_id' => $userId];
