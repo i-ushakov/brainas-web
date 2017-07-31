@@ -111,8 +111,9 @@ class TaskController extends Controller {
                if ((!isset($task->picture->file_id) || $taskForSave['picture_file_id'] != $task->picture->file_id)) {
                    $currentPicture = $task->picture;
                    if (isset($currentPicture)) {
+                       // TODO need to use DIC here
                        $googleDriveHelper = GoogleDriveHelper::getInstance(
-                           GoogleIdentityHelper::getGoogleClientWithToken(\Yii::$app->user->identity)
+                           new \Google_Service_Drive(GoogleIdentityHelper::getGoogleClientWithToken(\Yii::$app->user->identity))
                        );
                        $googleDriveHelper->removeFile($currentPicture->file_id);
                        $currentPicture->delete();
