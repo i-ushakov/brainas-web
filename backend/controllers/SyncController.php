@@ -18,6 +18,12 @@ use common\components\logging\BALogger;
 
 use \Google_Client;
 
+/**
+ * Class SyncController
+ * Responsible for communicate with clients device through exchange xml-files
+ *
+ * @package backend\controllers
+ */
 class SyncController extends Controller
 {
     public function beforeAction($action)
@@ -27,9 +33,12 @@ class SyncController extends Controller
         return parent::beforeAction($action);
     }
 
-    /*
+    /**
      * Refresh user's access token
+     *
+     * @return string
      */
+
     public function actionRefreshToken()
     {
         $token = $this->getAccessTokenFromPost();
@@ -54,8 +63,10 @@ class SyncController extends Controller
 
     }
 
-    /*
+    /**
      * Synchronization settings between dives and server
+     *
+     * @return null|string
      */
     public function actionGetSettings() {
         $token = $this->getAccessTokenFromPost();
@@ -68,8 +79,10 @@ class SyncController extends Controller
         }
     }
 
-    /*
+    /**
      * Synchronization tasks from device with server
+     *
+     * @return string
      */
     public function actionSendTasks()
     {
@@ -96,8 +109,10 @@ class SyncController extends Controller
         return $syncObjectsXml;
     }
 
-    /*
+    /**
      * Synchronization tasks from server with device
+     *
+     * @return string
      */
     public function actionGetTasks()
     {
@@ -121,6 +136,11 @@ class SyncController extends Controller
         return $resultXml;
     }
 
+    /**
+     * Retrieving access token from POST request
+     *
+     * @return mixed|null
+     */
     protected function getAccessTokenFromPost()
     {
         $post = Yii::$app->request->post();
@@ -156,6 +176,11 @@ class SyncController extends Controller
         return $changedTasksXml;
     }
 
+    /**
+     * Retrieving time of last sync from POST-request
+     *
+     * @return null
+     */
     protected function getTimeOfLastSync()
     {
         $post = Yii::$app->request->post();
@@ -167,6 +192,11 @@ class SyncController extends Controller
         return $timeOfLastSync;
     }
 
+    /**
+     * Retrieving settings of last sync from POST-request
+     *
+     * @return mixed|null
+     */
     protected function retrieveSettingsFomPost() {
         $post = Yii::$app->request->post();
         if(isset($post['settings'])) {
