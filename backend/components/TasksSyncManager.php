@@ -9,6 +9,7 @@
 namespace backend\components;
 
 use common\components\BAException;
+use common\components\GoogleDriveHelper;
 use common\infrastructure\ChangeOfTask;
 use common\models\Task;
 
@@ -26,10 +27,24 @@ class TasksSyncManager
     const WRONG_ROOT_ELEMNT = 'Param ($tasksXML) with WRONG ROOT ELEMENT was sent into synchronization method';
     const USER_ID_MUST_TO_BE_SET_MSG = "User id must to be set";
 
-    /* var ChangeOfTask */
+    /**
+     *  @var ChangeOfTaskHandler
+     */
     protected $changeHandler;
+
+    /**
+     * @var XMLResponseBuilder
+     */
     protected $responseBuilder;
+
+    /**
+     * @var int
+     */
     protected $userId = null;
+
+    /**
+     * @var GoogleDriveHelper
+     */
     protected $googleDriveHelper = null;
 
     public function __construct(ChangeOfTaskHandler $changeOfTaskHandler, XMLResponseBuilder $responseBuilder)
@@ -45,6 +60,14 @@ class TasksSyncManager
         return $this;
     }
 
+    /**
+     * We get XML with task's change from device and handle it
+     * to save new changes on server side
+     *
+     * @param \SimpleXMLElement $taskChangesXML
+     * @return string
+     * @throws BAException
+     */
     public function handleTasksFromDevice(\SimpleXMLElement $taskChangesXML)
     {
         $synchronizedTasks = [];
@@ -62,6 +85,15 @@ class TasksSyncManager
         return $this->responseBuilder->prepareSyncObjectsXml($synchronizedTasks);
     }
 
+    /**
+     * Gets all tasks changes on server and prepare them for sending
+     * in a form of xml-document form
+     *
+     * @param $existsTasksFromDevice
+     * @param $lastSyncTime
+     *
+     * @return string
+     */
     public function getXmlWithChanges($existsTasksFromDevice, $lastSyncTime)
     {
         $serverChanges = $this->getChangesOfTasks($lastSyncTime);
@@ -70,6 +102,12 @@ class TasksSyncManager
         return $this->responseBuilder->buildXmlWithTasksChanges($serverChanges, $this->getCurrentTime());
     }
 
+    /**
+     * Collects all tasks changes on server in array
+     *
+     * @param $lastSyncTime
+     * @return array
+     */
     public function getChangesOfTasks($lastSyncTime) {
         $changedTasks = ['created' => [], 'updated' => []];
 
@@ -91,6 +129,13 @@ class TasksSyncManager
         return $changedTasks;
     }
 
+    /**
+     * Retrieve all changes tasks that happened after $lastSyncTime
+     *
+     * @param $lastSyncTime
+     * @return array|\yii\db\ActiveRecord[]
+     * @throws BAException
+     */
     public function retrieveChangesOfTasksFromDB($lastSyncTime) {
         if (is_null($this->userId)) {
             throw new BAException(self::USER_ID_MUST_TO_BE_SET_MSG, BAException::PARAM_NOT_SET_EXCODE);
@@ -113,9 +158,12 @@ class TasksSyncManager
         return $changesOfTasks;
     }
 
-    /*
+    /**
      * Here we handle situation when we have info about task changes
      * and the same time task is not exist in database
+     *
+     * @param $changeOfTask
+     * @return bool
      */
     public function isChangedTaskExistInDb($changeOfTask) {
         if(isset($changeOfTask->task) && !empty($changeOfTask->task) && $changeOfTask->task instanceof Task) {
@@ -130,6 +178,11 @@ class TasksSyncManager
         }
     }
 
+    /**
+     * Getting current time (UTC timezone)
+     *
+     * @return string
+     */
     public function getCurrentTime() {
         $currentDatetime = new \DateTime();
         $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
@@ -137,9 +190,13 @@ class TasksSyncManager
         return $lastSyncTime;
     }
 
-    /*
+    /**
      * We are getting tasks that we have on device but they are absent on server side
+     *
+     * @param $existingTasksOnDevice
+     * @return array
      */
+
     public function getDeletedTasks($existingTasksOnDevice) {
         $removedTasks = array();
         $existingTasksOnServer = array();
