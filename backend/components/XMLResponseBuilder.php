@@ -10,10 +10,31 @@ namespace backend\components;
 
 use common\components\TaskXMLConverter;
 
+/**
+ * This class responsible for building XML response based
+ * on array with tasks changes ($serverChanges)
+ *
+ * Class XMLResponseBuilder
+ * @package backend\components
+ */
 class XMLResponseBuilder {
 
     private $taskConveter;
 
+    public function __construct(TaskXMLConverter $taskXMLConverter)
+    {
+        $this->taskConveter = $taskXMLConverter;
+    }
+
+    /**
+     * Build XML response with CREATED, UPDATED and DELETED tasks
+     *
+     * @param $serverChanges
+     * @param $synchronizedObjects
+     * @param $lastSyncTime
+     * @param $token
+     * @return string
+     */
     static function buildXMLResponse($serverChanges, $synchronizedObjects, $lastSyncTime, $token) {
         $xmlResponse = "";
         $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
@@ -104,11 +125,6 @@ class XMLResponseBuilder {
         return $xmlResponse;
     }
 
-    public function __construct(TaskXMLConverter $taskXMLConverter)
-    {
-        $this->taskConveter = $taskXMLConverter;
-    }
-
     public function buildXmlWithTasksChanges($changedTasks, $currentTime) {
         $xmlResponse = "";
         $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
@@ -134,6 +150,12 @@ class XMLResponseBuilder {
         return $xmlResponse;
     }
 
+    /**
+     * Building XML element with info about CREATED tasks
+     *
+     * @param $createdTasks
+     * @return string
+     */
     public function buildCreatedPart($createdTasks)
     {
         $xmlPart = '<created>';
@@ -144,6 +166,12 @@ class XMLResponseBuilder {
         return $xmlPart;
     }
 
+    /**
+     * Building XML element with info about UPDATED tasks
+     *
+     * @param $updatedTasks
+     * @return string
+     */
     public function buildUpdatedPart($updatedTasks)
     {
         $xmlPart = '<updated>';
@@ -162,6 +190,12 @@ class XMLResponseBuilder {
         return $xmlPart;
     }
 
+    /**
+     * Building XML element with info about DELETED tasks
+     *
+     * @param $deletedTasks
+     * @return string
+     */
     public function buildDeletedPart($deletedTasks)
     {
         $xmlPart = '<deleted>';
@@ -175,6 +209,12 @@ class XMLResponseBuilder {
         return $xmlPart;
     }
 
+    /**
+     * Preparing XML-response about synchronized objects for client device
+     *
+     * @param $synchronizedTasks
+     * @return string
+     */
     public function prepareSyncObjectsXml($synchronizedTasks)
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
