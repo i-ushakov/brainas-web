@@ -95,6 +95,7 @@ class BALogger
                 $logEvent->side = 'frontend';
             }
         }
+        $logEvent->datetime = self::getCurrentTime();
         $logEvent->addTags($tags);
         $logEvent->save();
     }
@@ -137,5 +138,17 @@ class BALogger
                 return Logger::LEVEL_PROFILE_END;
                 break;
         }
+    }
+
+    /**
+     * Getting current time (UTC timezone)
+     *
+     * @return string
+     */
+    protected static function getCurrentTime() {
+        $currentDatetime = new \DateTime();
+        $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
+        $currentTime = $currentDatetime->format('Y-m-d H:i:s');
+        return $currentTime;
     }
 }
