@@ -10,6 +10,7 @@ namespace frontend\controllers;
 
 use common\components\GoogleDriveHelper;
 use frontend\components\GoogleIdentityHelper;
+use frontend\components\StatusManager;
 use frontend\components\TaskConverter;
 use frontend\components\TasksQueryBuilde;
 use common\infrastructure\ChangeOfTask;
@@ -103,7 +104,6 @@ class TaskController extends Controller {
 
             if (isset($taskForSave['status'])) {
                 $task->status = $taskForSave['status'];
-                $task->save();
             }
 
             if (isset($taskForSave['picture_name']) && isset($taskForSave['picture_file_id']))
@@ -157,11 +157,14 @@ class TaskController extends Controller {
 
             ChangeOfTask::loggingChangesForSync($changeStatus, null, $task);
 
-            $task = Task::find($task->id)
+           /* $task = Task::find($task->id)
                 ->where(['id' => $task->id, 'user' => Yii::$app->user->id])
                 ->with('picture')
-                ->one();
+                ->one();*/
             if ($task->validate()) {
+                // TODO Use DIC in future
+                $sm = new StatusManager();
+                $sm->updateStatus($task);
                 $task->save();
                 $this->result['status'] = "OK";
                 $this->result['task'] = TaskConverter::prepareTaskForResponse($task);
