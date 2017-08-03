@@ -82,7 +82,7 @@ class BALogger
         $logEvent->class = $backTrace[2]['class'];
         $logEvent->function = $backTrace[2]['function'];
 
-        // callstack TODO: fro errors and exeptions
+        // callstack TODO: for errors and exeptions
         // https://stackoverflow.com/questions/8369275/how-can-i-save-a-php-backtrace-to-the-error-log
         //$logEvent->callstack = debug_print_backtrace();
 
