@@ -8,6 +8,11 @@
 
 namespace common\components;
 
+/**
+ * Class BAException
+ * Aims to highlight among others exceptions which are thrown from project's code
+ * @package common\components
+ */
 class BAException extends \Exception {
     const WRONG_NAME_OF_EVENT_TYPE_ERRORCODE = 1101;
     const PARAM_NOT_SET_EXCODE = 1102;
