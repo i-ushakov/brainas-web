@@ -12,6 +12,13 @@ namespace common\components\logging;
 use Yii;
 use yii\db\ActiveRecord;
 
+/**
+ * Class LogEvent
+ * Model for logging different type of events with important info in database
+ * and binding with Tag to easily retrieve needed information later
+ *
+ * @package common\components\logging
+ */
 class LogEvent extends ActiveRecord
 {
     protected $tags = [];
@@ -37,7 +44,6 @@ class LogEvent extends ActiveRecord
             $this->addTag($tag);
         }
     }
-
 
     public function afterSave($insert, $changedAttributes){
         parent::afterSave($insert, $changedAttributes);

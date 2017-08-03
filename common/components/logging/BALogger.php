@@ -12,6 +12,13 @@ use Yii;
 use yii\log\Logger;
 
 
+/**
+ * Class BALogger
+ *
+ * Logging sensitive info in database
+ *
+ * @package common\components\logging
+ */
 class BALogger
 {
     const ERROR = "error";
