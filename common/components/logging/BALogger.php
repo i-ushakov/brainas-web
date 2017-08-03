@@ -86,15 +86,8 @@ class BALogger
         // https://stackoverflow.com/questions/8369275/how-can-i-save-a-php-backtrace-to-the-error-log
         //$logEvent->callstack = debug_print_backtrace();
 
+        $logEvent->side = self::defineFrontendOrBackend();
 
-        // frontend or backend detect
-        if (!empty($_SERVER['REDIRECT_URL'])) {
-            if (preg_match('/(^\/backend\/)/', $_SERVER['REDIRECT_URL'])) {
-                $logEvent->side = 'backend';
-            } else if (preg_match('/(^\/frontend\/)/', $_SERVER['REDIRECT_URL'])) {
-                $logEvent->side = 'frontend';
-            }
-        }
         $logEvent->datetime = self::getCurrentTime();
         $logEvent->addTags($tags);
         $logEvent->save();
@@ -106,7 +99,8 @@ class BALogger
      * @param $level
      * @return int
      */
-    static private function convertLogLevel($level) {
+    static private function convertLogLevel($level)
+    {
         switch ($level) {
             case self::ERROR :
             case self::EXCEPTION :
@@ -145,10 +139,29 @@ class BALogger
      *
      * @return string
      */
-    protected static function getCurrentTime() {
+    protected static function getCurrentTime()
+    {
         $currentDatetime = new \DateTime();
         $currentDatetime->setTimezone(new \DateTimeZone("UTC"));
         $currentTime = $currentDatetime->format('Y-m-d H:i:s');
         return $currentTime;
+    }
+
+    /**
+     * Define What part (Frontend Or Backend) of project have got a request and making a log
+     *
+     * @return string
+     */
+    protected static function defineFrontendOrBackend()
+    {
+        // frontend or backend detect
+        if (!empty($_SERVER['REDIRECT_URL'])) {
+            if (preg_match('/(^\/backend\/)/', $_SERVER['REDIRECT_URL'])) {
+                $side = 'backend';
+            } else if (preg_match('/(^\/frontend\/)/', $_SERVER['REDIRECT_URL'])) {
+                $side = 'frontend';
+            }
+        }
+        return $side;
     }
 }
