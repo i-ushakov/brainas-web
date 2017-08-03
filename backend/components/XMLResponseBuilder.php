@@ -125,6 +125,12 @@ class XMLResponseBuilder {
         return $xmlResponse;
     }
 
+    /**
+     * Building XML element with info about CREATED, UPDATED and DELETED tasks
+     *
+     * @param $createdTasks
+     * @return string
+     */
     public function buildXmlWithTasksChanges($changedTasks, $currentTime) {
         $xmlResponse = "";
         $xmlResponse .= '<?xml version="1.0" encoding="UTF-8"?>';
