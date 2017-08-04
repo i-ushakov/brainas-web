@@ -11,6 +11,11 @@ namespace common\infrastructure;
 use yii\db\ActiveRecord;
 use common\models\Task;
 
+/**
+ * Class ChangeOfTask
+ * Represents entity of a record in Database with information about change of task
+ * @package common\infrastructure
+ */
 class ChangeOfTask extends ActiveRecord {
 
     const STATUS_CREATED = "CREATED";
@@ -22,10 +27,23 @@ class ChangeOfTask extends ActiveRecord {
         return 'sync_changed_tasks';
     }
 
+    /**
+     * Retrieve the task bound which the Change Task is
+     *
+     * @return \yii\db\ActiveQuery
+     */
     public function getTask() {
         return $this->hasOne(Task::className(), ['id' => 'task_id']);
     }
 
+    /**
+     * Logging changes of task in database
+     * using ChangeOfTask model
+     *
+     * @param $action
+     * @param null $changeDatetime
+     * @param $task
+     */
     static public function loggingChangesForSync($action, $changeDatetime = null, $task) {
         $changeOfTask = ChangeOfTask::find()
             ->where(['user_id' => $task->user, 'task_id' => $task->id])
@@ -49,6 +67,10 @@ class ChangeOfTask extends ActiveRecord {
         $changeOfTask->save();
     }
 
+    /**
+     * Remove log information (ChangeOfTask AC) from database
+     * @param $taskId
+     */
     static public function removeFromChangeLog($taskId) {
         $changeOfTask = ChangeOfTask::find()->where(['task_id' => $taskId])->one();
         if (!is_null($changeOfTask)) {
