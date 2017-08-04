@@ -10,6 +10,11 @@ namespace common\models;
 
 use yii\db\ActiveRecord;
 
+/**
+ * Class SingInLog
+ * AR for saving information about whan and who logged
+ * @package common\models
+ */
 class SingInLog extends ActiveRecord {
     public static function tableName() {
         return 'singin_log';
