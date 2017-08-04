@@ -11,8 +11,19 @@ namespace common\components;
 use common\models\EventType;
 use common\models\Condition;
 
+/**
+ * Class ConditionXMLConverter
+ * Responsible for converting SimpleXMLElement to Condition object and backward
+ * @package common\components
+ */
 class ConditionXMLConverter {
-
+    /**
+     * Convert from SimpleXMLElement to Conditions object
+     *
+     * @param \SimpleXMLElement $xml
+     * @return Condition|null
+     * @throws BAException
+     */
     public function fromXML(\SimpleXMLElement $xml) {
         if ($xml == null) {
             return null;
@@ -41,6 +52,12 @@ class ConditionXMLConverter {
         return $condition;
     }
 
+    /**
+     * Convert from SimpleXMLElement to Conditions object
+     *
+     * @param $task
+     * @return string
+     */
     public function toXML($task) {
         $xml = "";
         $conditions = $task->conditions;
