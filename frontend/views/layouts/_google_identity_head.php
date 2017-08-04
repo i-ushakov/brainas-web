@@ -1,7 +1,6 @@
 <!-- 1: Load the Google Identity Toolkit helpers -->
 <?php
-use common\models\User;
-use common\infrastructure\SingInLog;
+use common\models\SingInLog;
 
 if (!Yii::$app->user->isGuest) {
     \frontend\components\GoogleIdentityHelper::refreshUserAccessToken();
