@@ -12,6 +12,12 @@ use common\components\BAException;
 use common\models\PictureOfTask;
 use common\models\Task;
 
+/**
+ * Class TaskXMLConverter
+ * Responsible for converting SimpleXMLElement to Task object and backward (into XML-string)
+ * @package common\components
+ */
+
 class TaskXMLConverter {
     const WRONG_ROOT_ELEMNT = "XML root element have to be <task>";
 
@@ -21,15 +27,12 @@ class TaskXMLConverter {
         $this->conditionConverter = $conditionConverter;
     }
 
-    /*
+    /**
+     * Convert SimpleXMLElement element to Task object
+     *
      * @param \SimpleXMLElement
-     *
-     * Conver xml element to Task object without condition
-     *
      * @param \SimpleXMLElement $xml - xml obj with changeOfTask
-     *
      * @return array - Associative array('task'=>Task,'conditions'=>Condition[], 'picture' => Picture)
-     *
      * @throws BAException INCORRECT_SIMPLE_XML_OBJEST_ERRORCODE
      */
     public function fromXML(\SimpleXMLElement $xml) {
@@ -81,6 +84,13 @@ class TaskXMLConverter {
         return array('task'=>$task, 'conditions'=>$conditions, 'picture' => $picture);
     }
 
+    /**
+     *  Convert Task object to XML string
+     *
+     * @param $task
+     * @param $datetime
+     * @return string
+     */
     public function toXML($task, $datetime) {
         $xml = '' .
             '<task globalId="' . $task->id . '" timeOfChange="' . $datetime . '">' .
@@ -93,6 +103,11 @@ class TaskXMLConverter {
         return $xml;
     }
 
+    /**
+     * Add picture element to XML
+     * @param $picture
+     * @return string
+     */
     public function addPictureEntity($picture) {
         $xmlPart = "";
         if (isset($picture) && isset($picture->name)) {
