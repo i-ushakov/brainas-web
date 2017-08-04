@@ -10,7 +10,7 @@ use \common\models\Task;
 use \common\models\Condition;
 use \common\models\EventType;
 use \common\models\PictureOfTask;
-use \common\infrastructure\ChangeOfTask;
+use \common\models\ChangeOfTask;
 use \frontend\components\TaskConverter;
 
 use Mockery as m;

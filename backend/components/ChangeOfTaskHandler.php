@@ -13,7 +13,7 @@ use common\components\TaskXMLConverter;
 use common\models\Task;
 use common\models\Condition;
 use common\models\PictureOfTask;
-use common\infrastructure\ChangeOfTask;
+use common\models\ChangeOfTask;
 use common\components\GoogleDriveHelper;
 
 /*

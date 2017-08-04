@@ -7,7 +7,7 @@
  * Time: 5:07 PM
  */
 
-use  \common\infrastructure\ChangeOfTask;
+use  \common\models\ChangeOfTask;
 
 class GetTasksChangedFromLastSyncCest
 {

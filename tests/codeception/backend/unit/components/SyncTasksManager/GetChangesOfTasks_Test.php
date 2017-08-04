@@ -9,7 +9,7 @@
 use backend\components\ChangeOfTaskHandler;
 use backend\components\TasksSyncManager;
 use backend\components\XMLResponseBuilder;
-use common\infrastructure\ChangeOfTask;
+use common\models\ChangeOfTask;
 use common\models\Task;
 use \common\components\TaskXMLConverter;
 

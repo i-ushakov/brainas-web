@@ -6,7 +6,7 @@
  * Date: 12/26/2015
  * Time: 1:13 PM
  */
-namespace common\infrastructure;
+namespace common\models;
 
 use yii\db\ActiveRecord;
 use common\models\Task;

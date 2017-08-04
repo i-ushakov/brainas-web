@@ -8,7 +8,7 @@
 
 use backend\components\ChangeOfTaskHandler;
 use backend\components\TasksSyncManager;
-use common\infrastructure\ChangeOfTask;
+use common\models\ChangeOfTask;
 use common\models\Task;
 
 

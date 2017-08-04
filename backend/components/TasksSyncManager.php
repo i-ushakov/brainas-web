@@ -10,7 +10,7 @@ namespace backend\components;
 
 use common\components\BAException;
 use common\components\GoogleDriveHelper;
-use common\infrastructure\ChangeOfTask;
+use common\models\ChangeOfTask;
 use common\models\Task;
 
 /**

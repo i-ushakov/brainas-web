@@ -9,8 +9,6 @@
 namespace common\models;
 
 use yii\db\ActiveRecord;
-use common\infrastructure\ChangeOfTask;
-use common\models\PictureOfTask;
 
 class Task extends ActiveRecord {
 

@@ -8,7 +8,7 @@
 
 use backend\components\XMLResponseBuilder;
 use common\models\Task;
-use common\infrastructure\ChangeOfTask;
+use common\models\ChangeOfTask;
 use common\components\TaskXMLConverter;
 use common\components\ConditionXMLConverter;
 

@@ -13,13 +13,14 @@ use frontend\components\GoogleIdentityHelper;
 use frontend\components\StatusManager;
 use frontend\components\TaskConverter;
 use frontend\components\TasksQueryBuilde;
-use common\infrastructure\ChangeOfTask;
-use Yii;
-use yii\web\Controller;
+use common\models\ChangeOfTask;
 use common\models\Task;
 use common\models\Condition;
 use common\models\PictureOfTask;
 use common\models\EventType;
+
+use Yii;
+use yii\web\Controller;
 use yii\helpers\Json;
 
 class TaskController extends Controller {
