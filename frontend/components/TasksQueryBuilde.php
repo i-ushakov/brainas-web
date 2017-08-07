@@ -11,6 +11,13 @@ namespace frontend\components;
 
 use common\models\Task;
 
+/**
+ * Class TasksQueryBuilde
+ * Responsible for retrieving tasks from Databases
+ * depending on different filter's statuses
+ *
+ * @package frontend\components
+ */
 class TasksQueryBuilde
 {
 
@@ -26,6 +33,13 @@ class TasksQueryBuilde
         return $this;
     }
 
+    /**
+     * Retrieve task from DB
+     *
+     * @param null $statusesFilter
+     * @param null $typeOfSort
+     * @return mixed
+     */
     public function get($statusesFilter = null, $typeOfSort = null) {
         $tasksGetQuery = Task::find()
             ->where(['user' => $this->userId])
