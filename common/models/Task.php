@@ -10,6 +10,13 @@ namespace common\models;
 
 use yii\db\ActiveRecord;
 
+/**
+ * Class Task
+ * One of the crucial model of app.
+ * It has information about what adn when user has to do.
+ *
+ * @package common\models
+ */
 class Task extends ActiveRecord {
 
     public static function tableName()
@@ -29,18 +36,38 @@ class Task extends ActiveRecord {
         ];
     }
 
+    /**
+     * They determine when task will be active
+     *
+     * @return \yii\db\ActiveQuery
+     */
     public function getConditions() {
         return $this->hasMany(Condition::className(), ['task_id' => 'id']);
     }
 
+    /**
+     * The picture that bonded with task and presented it on a tile's face
+     *
+     * @return \yii\db\ActiveQuery
+     */
     public function getPicture() {
         return $this->hasOne(PictureOfTask::className(), ['task_id' => 'id']);
     }
 
+    /**
+     * Information about type and time of last change of task
+     * @return \yii\db\ActiveQuery
+     */
     public function getChangeOfTask() {
         return $this->hasOne(ChangeOfTask::className(), ['task_id' => 'id']);
     }
 
+    /**
+     * Some manipulation with data before save
+     *
+     * @param bool $insert
+     * @return bool
+     */
     public function beforeSave($insert)
     {
         $this->last_modify = date('Y-m-d H:i:s');
@@ -51,6 +78,11 @@ class Task extends ActiveRecord {
         }
     }
 
+    /**
+     * We need to remove all conditions bonded with task before remove this task
+     *
+     * @return bool
+     */
     public function beforeDelete()
     {
         if (parent::beforeDelete()) {
@@ -66,6 +98,10 @@ class Task extends ActiveRecord {
         }
     }
 
+    /**
+     * After delete of task we have to remove bonded ChangeOfTask model
+     * (in a nutshell, a record from database with info about last changes)
+     */
     public function afterDelete() {
         parent::afterDelete();
         ChangeOfTask::removeFromChangeLog($this->id);
