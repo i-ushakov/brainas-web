@@ -10,9 +10,13 @@
 namespace common\models;
 
 use yii\db\ActiveRecord;
-use common\models\EventType as EventType;
 
-
+/**
+ * Class Condition
+ * Represent task's condition, that determines when task will be activated
+ * 
+ * @package common\models
+ */
 class Condition extends ActiveRecord {
 
     public static function tableName() {
@@ -27,10 +31,21 @@ class Condition extends ActiveRecord {
         ];
     }
 
+    /**
+     * Every conditional has a type of event, which is activate this condition
+     *
+     * @return \yii\db\ActiveQuery
+     */
     public function getEventType() {
         return $this->hasOne(EventType::className(), ['id' => 'type']);
     }
 
+    /**
+     * Checking that event id is valid
+     *
+     * @param $attribute
+     * @param $params
+     */
     public function validateEventType($attribute, $params) {
         $typeId = $this->$attribute;
         if (EventType::findOne(['id' => $typeId]) == null) {
