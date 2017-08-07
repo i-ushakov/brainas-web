@@ -9,6 +9,7 @@
 namespace frontend\controllers;
 
 use common\components\GoogleDriveHelper;
+use common\components\TaskXMLConverter;
 use frontend\components\GoogleIdentityHelper;
 use frontend\components\StatusManager;
 use frontend\components\TaskConverter;
@@ -57,7 +58,8 @@ class TaskController extends Controller {
 
         $tasksArray = array();
         foreach ($tasks as $task) {
-            $tasksArray[] = TaskConverter::prepareTaskForResponse($task);
+            $taskConverter = new TaskConverter();
+            $tasksArray[] = $taskConverter->prepareTaskForResponse($task);
         }
 
         \Yii::$app->response->format = 'json';
@@ -168,7 +170,8 @@ class TaskController extends Controller {
                 $sm->updateStatus($task);
                 $task->save();
                 $this->result['status'] = "OK";
-                $this->result['task'] = TaskConverter::prepareTaskForResponse($task);
+                $taskConverter = new TaskConverter();
+                $this->result['task'] = $taskConverter->prepareTaskForResponse($task);
             } else {
                 $errors = $task->errors;
                 $this->result['status'] = "FAILED";

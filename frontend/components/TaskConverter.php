@@ -10,8 +10,20 @@ namespace frontend\components;
 
 use \common\models\Task;
 
-class TaskConverter {
-    public static function prepareTaskForResponse(Task $task) {
+/**
+ * Class TaskConverter
+ * Prepare task (\common\models\Task) object with conditions for sending to client side
+ * @package frontend\components
+ */
+class TaskConverter
+{
+    /**
+     * Prepare task (\common\models\Task) object with conditions for sending to client side
+     * @param Task $task
+     * @return mixed
+     */
+    public function prepareTaskForResponse(Task $task)
+    {
         $item['id'] = $task->id;
         $item['message'] = $task->message;
         $item['description'] = nl2br($task->description);
@@ -33,7 +45,6 @@ class TaskConverter {
             $c[$eventName]['params'] = json_decode($condition->params);
             $item['conditions'][] = $c;
         }
-
         return $item;
     }
 }
