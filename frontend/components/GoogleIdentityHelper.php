@@ -19,7 +19,8 @@ use \Yii;
  *
  * @package frontend\components
  */
-class GoogleIdentityHelper {
+class GoogleIdentityHelper
+{
     const PROBLEM_WITH_REFRESH_TOKEN_MSG = "Access token expired and we cannot to refresh it (may be refresh_token is broken)";
     const NO_REFRESH_TOKEN_MSG = "Access token expired havn't refresh_token";
 
@@ -30,7 +31,8 @@ class GoogleIdentityHelper {
      * @return \Google_Client
      * @throws BAException
      */
-    static public function getGoogleClientWithToken(User $user) {
+    static public function getGoogleClientWithToken(User $user)
+    {
         $client = GoogleClientFactory::create();
         $client->setAccessToken($user->access_token);
         if ($client->isAccessTokenExpired()) {
@@ -57,7 +59,8 @@ class GoogleIdentityHelper {
      * @param $clientWithToken \Google_Client
      * @return null
      */
-    static public function retrieveUserEmail($clientWithToken) {
+    static public function retrieveUserEmail($clientWithToken)
+    {
         $data = $clientWithToken->verifyIdToken();
         $userEmail = $data['email'];
         if (isset($userEmail)) {
@@ -75,7 +78,8 @@ class GoogleIdentityHelper {
      * @param $accessToken
      * @return User|null|\yii\web\IdentityInterface|static
      */
-    static public function loginUserInYii($userEmail, $accessToken) {
+    static public function loginUserInYii($userEmail, $accessToken)
+    {
         if ((!Yii::$app->user->isGuest)) {
             $user = \Yii::$app->user->identity;
         } else {
@@ -99,7 +103,8 @@ class GoogleIdentityHelper {
      * Just logout user from Yii
      * @param $user
      */
-    static public function logoutUserInYii($user) {
+    static public function logoutUserInYii($user)
+    {
         \Yii::$app->session->remove('googleAccessToken');
         $user->access_token = null;
         $user->save();
@@ -112,7 +117,8 @@ class GoogleIdentityHelper {
      * @param $user
      * @param $accessToken
      */
-    static public function saveAccessToken($user, $accessToken) {
+    static public function saveAccessToken($user, $accessToken)
+    {
         \Yii::$app->session->set('googleAccessToken', json_encode($accessToken));
         $user->access_token = json_encode($accessToken);
         if (isset($accessToken['refresh_token'])) {
@@ -124,7 +130,8 @@ class GoogleIdentityHelper {
     /**
      * If access token is expired we refresh it using refresh token
      */
-    static public function refreshUserAccessToken() {
+    static public function refreshUserAccessToken()
+    {
         if (Yii::$app->user->isGuest) {
             return;
         }
