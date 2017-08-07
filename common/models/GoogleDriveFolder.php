@@ -11,6 +11,12 @@ namespace common\models;
 use Yii;
 use yii\db\ActiveRecord;
 
+/**
+ * Class GoogleDriveFolder
+ * AR that contains info about folders on Google Drive
+ *
+ * @package common\models
+ */
 class GoogleDriveFolder extends ActiveRecord {
     const PROJECT_FOLDER_RESOURCE_ID = 'PROJECT_FOLDER_RESOURCE_ID';
     const PICTURE_FOLDER_RESOURCE_ID = 'PICTURE_FOLDER_RESOURCE_ID';
