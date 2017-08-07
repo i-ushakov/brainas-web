@@ -21,6 +21,11 @@ use yii\web\IdentityInterface;
  * @property integer $updated_at
  * @property string $password write-only password
  */
+
+/**
+ * Class User
+ * @package common\models
+ */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
@@ -55,6 +60,11 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
+    /**
+     * Gets folder in Google Drive with project data
+     *
+     * @return array|GoogleDriveFolder|null|ActiveRecord
+     */
     public function getProjectFolder() {
         $projectFolder = $this->hasMany(GoogleDriveFolder::className(), ['user_id' => 'id'])->where('folder_type = 1')->one();
         if ($projectFolder == null) {
@@ -66,6 +76,11 @@ class User extends ActiveRecord implements IdentityInterface
         return $projectFolder;
     }
 
+    /**
+     * Gets folder in Google Drive with pictures
+     *
+     * @return array|GoogleDriveFolder|null|ActiveRecord
+     */
     public function getPictureFolder() {
         $pictureFolder = $this->hasMany(GoogleDriveFolder::className(), ['user_id' => 'id'])->where('folder_type = 2')->one();
         if ($pictureFolder == null) {
@@ -77,6 +92,11 @@ class User extends ActiveRecord implements IdentityInterface
         return $pictureFolder;
     }
 
+    /**
+     * Gets Google Access Token to using Google API
+     *
+     * @return array|null|ActiveRecord
+     */
     public function getRefreshToken() {
         return $this->hasOne(RefreshToken::className(), ['user_id' => 'id'])->one();
     }
