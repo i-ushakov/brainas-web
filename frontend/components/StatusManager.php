@@ -8,7 +8,12 @@
 
 namespace frontend\components;
 
-
+/**
+ * Class StatusManager
+ * Checking and Updating statuses of tasks
+ *
+ * @package frontend\components
+ */
 class StatusManager
 {
     const STATUS_ACTIVE = "ACTIVE";
@@ -16,6 +21,11 @@ class StatusManager
     const STATUS_DISABLED = "DISABLED";
     const STATUS_TODO = "TODO";
 
+    /**
+     * Check and Update (if needed) status of task
+     * @param $task
+     * @return mixed
+     */
     public function updateStatus($task)
     {
         switch ($task->status) {
