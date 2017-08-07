@@ -8,12 +8,17 @@
 
 namespace frontend\controllers;
 
-use Yii;
 use yii\web\Controller;
 
+/**
+ * Class MainController
+ * Provide access to functional of Single Page Application Brainy Assistant
+ *
+ * @package frontend\controllers
+ */
 class MainController extends Controller {
     /**
-     * Displays main panel.
+     * Displays main panel with tasks and filters
      *
      * @return mixed
      */
