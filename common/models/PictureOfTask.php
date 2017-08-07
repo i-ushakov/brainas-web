@@ -11,6 +11,12 @@ namespace common\models;
 use Yii;
 use yii\db\ActiveRecord;
 
+/**
+ * Class PictureOfTask
+ * Picture that bonded with task
+ *
+ * @package common\models
+ */
 class PictureOfTask extends ActiveRecord {
 
     public static function tableName() {
