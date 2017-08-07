@@ -11,6 +11,12 @@ namespace common\models;
 use Yii;
 use yii\db\ActiveRecord;
 
+/**
+ * Class RefreshToken
+ * Active Record that stores access token bonded with user
+ *
+ * @package common\models
+ */
 class RefreshToken extends ActiveRecord {
 
     public static function tableName() {
