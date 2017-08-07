@@ -3,12 +3,8 @@ namespace frontend\controllers;
 
 use Yii;
 use common\models\LoginForm;
-use common\models\User;
 use common\components\MailSender;
-use frontend\models\PasswordResetRequestForm;
-use frontend\models\ResetPasswordForm;
-use frontend\models\SignupForm;
-use frontend\models\ContactForm;
+use frontend\components\Factory\GoogleClientFactory;
 use frontend\components\GoogleIdentityHelper;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
@@ -118,9 +114,9 @@ class SiteController extends Controller
         $authCode = file_get_contents('php://input');
 
         if (isset($authCode)) {
-            $client = GoogleIdentityHelper::getGoogleClient();
+            $client =  GoogleClientFactory::create();
             $accessToken = $client->authenticate($authCode);
-            $userEmail = GoogleIdentityHelper::authenticationOfUser($accessToken);
+            $userEmail = GoogleIdentityHelper::retrieveUserEmail($client);
             if ($userEmail != null) {
                 $user = GoogleIdentityHelper::loginUserInYii($userEmail, $accessToken);
                 if ($user != null){

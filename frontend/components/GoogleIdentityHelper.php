@@ -8,34 +8,30 @@ namespace frontend\components;
  */
 
 use common\components\BAException;
-use \Yii;
 use common\models\User;
-use yii\debug\models\search\Log;
+use frontend\components\Factory\GoogleClientFactory;
 
+use \Yii;
+
+/**
+ * Class GoogleIdentityHelper
+ * Helper class to work with Google Identity Toolkit
+ *
+ * @package frontend\components
+ */
 class GoogleIdentityHelper {
-    const APP_NAME = "Brain Assistant app";
-    const CLIENT_SECRET_PATH = "/var/www/brainas.net/backend/config/client_secret_925705811320-cenbqg1fe5jb804116oefl78sbishnga.apps.googleusercontent.com.json";
     const PROBLEM_WITH_REFRESH_TOKEN_MSG = "Access token expired and we cannot to refresh it (may be refresh_token is broken)";
     const NO_REFRESH_TOKEN_MSG = "Access token expired havn't refresh_token";
 
-    static public function getGoogleClient() {
-        $client = new \Google_Client();
-        $client->setApplicationName(self::APP_NAME);
-        $client->setScopes(implode(' ', array(
-            \Google_Service_Drive::DRIVE_APPDATA,
-            \Google_Service_Drive::DRIVE_METADATA,
-            \Google_Service_Drive::DRIVE_FILE,
-            \Google_Service_Drive::DRIVE
-        )));
-        $client->setAuthConfigFile(self::CLIENT_SECRET_PATH);
-        $client->setDeveloperKey(Yii::$app->params['ServiceAccountKey']);
-        $client->setRedirectUri("postmessage");
-        $client->setAccessType('offline');
-        return $client;
-    }
-
+    /**
+     * Getting Google Client and set access token to it
+     *
+     * @param User $user
+     * @return \Google_Client
+     * @throws BAException
+     */
     static public function getGoogleClientWithToken(User $user) {
-        $client = self::getGoogleClient();
+        $client = GoogleClientFactory::create();
         $client->setAccessToken($user->access_token);
         if ($client->isAccessTokenExpired()) {
             if (isset($user->refreshToken->refresh_token)) {
@@ -55,27 +51,30 @@ class GoogleIdentityHelper {
         return $client;
     }
 
-    static public function authenticationOfUser($accessToken) {
-        if ($accessToken != null) {
-            $client = self::getGoogleClient();
-            $client->setAccessToken($accessToken);
-            if ($client->isAccessTokenExpired()) {
-                    return null;
-            }
-            $data = $client->verifyIdToken();
-
-
-            $userEmail = $data['email'];
-            if (isset($userEmail)) {
-                return $userEmail;
-            } else {
-                return null;
-            }
+    /**
+     * The method get Google Client and retrieve user email
+     *
+     * @param $clientWithToken \Google_Client
+     * @return null
+     */
+    static public function retrieveUserEmail($clientWithToken) {
+        $data = $clientWithToken->verifyIdToken();
+        $userEmail = $data['email'];
+        if (isset($userEmail)) {
+            return $userEmail;
         } else {
             return null;
         }
     }
 
+    /**
+     * After user went through Google Identity and got authorization we have to log it in into Yii.
+     * If the user with this email not in the database yet we have to create the new one.
+     *
+     * @param $userEmail
+     * @param $accessToken
+     * @return User|null|\yii\web\IdentityInterface|static
+     */
     static public function loginUserInYii($userEmail, $accessToken) {
         if ((!Yii::$app->user->isGuest)) {
             $user = \Yii::$app->user->identity;
@@ -96,12 +95,23 @@ class GoogleIdentityHelper {
         return $user;
     }
 
+    /**
+     * Just logout user from Yii
+     * @param $user
+     */
     static public function logoutUserInYii($user) {
         \Yii::$app->session->remove('googleAccessToken');
         $user->access_token = null;
         $user->save();
     }
 
+    /**
+     * The app store access tokens of users on server side
+     * This sensitive information because access token contains refresh token that user gets only once
+     *
+     * @param $user
+     * @param $accessToken
+     */
     static public function saveAccessToken($user, $accessToken) {
         \Yii::$app->session->set('googleAccessToken', json_encode($accessToken));
         $user->access_token = json_encode($accessToken);
@@ -111,12 +121,15 @@ class GoogleIdentityHelper {
         $user->save();
     }
 
+    /**
+     * If access token is expired we refresh it using refresh token
+     */
     static public function refreshUserAccessToken() {
         if (Yii::$app->user->isGuest) {
             return;
         }
         $user = Yii::$app->user->identity;
-        $client = self::getGoogleClient();
+        $client =  GoogleClientFactory::create();;
         $accessToken = $user->access_token;
         $client->setAccessToken($accessToken);
         if ($client->isAccessTokenExpired() && isset($user->refresh_token)) {
