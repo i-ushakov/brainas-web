@@ -25,6 +25,13 @@ class GoogleIdentityHelper
     const NO_REFRESH_TOKEN_MSG = "Access token expired havn't refresh_token";
     const AUTH_CODE_MUSTNT_BE_EMPTY = "Auth code mustn't to be empty";
 
+    protected $client;
+
+    public function __construct(\Google_Client $client)
+    {
+        $this->client = $client;
+    }
+
     /**
      * Getting Google Client and set access token to it
      *
@@ -34,24 +41,24 @@ class GoogleIdentityHelper
      */
     public function getGoogleClientWithToken(User $user)
     {
-        $client = GoogleClientFactory::create();
-        $client->setAccessToken($user->access_token);
-        if ($client->isAccessTokenExpired()) {
+
+        $this->client->setAccessToken($user->access_token);
+        if ($this->client->isAccessTokenExpired()) {
             if (isset($user->refreshToken->refresh_token)) {
-                $refreshedAccessToken = $client->refreshToken($user->refreshToken->refresh_token);
+                $refreshedAccessToken = $this->client->refreshToken($user->refreshToken->refresh_token);
                 try {
-                    $client->setAccessToken($refreshedAccessToken);
+                    $this->client->setAccessToken($refreshedAccessToken);
                 } catch (\InvalidArgumentException $e) {
                     throw new BAException(self::PROBLEM_WITH_REFRESH_TOKEN_MSG, BAException::INVALID_PARAM_EXCODE, $e);
                 }
-                $user->access_token = json_encode($client->getAccessToken());
+                $user->access_token = json_encode($this->client->getAccessToken());
                 $user->refresh_token = $refreshedAccessToken['refresh_token'];
                 $user->save();
             } else {
                 throw new BAException(self::NO_REFRESH_TOKEN_MSG, BAException::NOT_ENOUGH_DATA, null);
             }
         }
-        return $client;
+        return $this->client;
     }
 
     /**
@@ -137,12 +144,11 @@ class GoogleIdentityHelper
             return;
         }
         $user = Yii::$app->user->identity;
-        $client =  GoogleClientFactory::create();;
         $accessToken = $user->access_token;
-        $client->setAccessToken($accessToken);
-        if ($client->isAccessTokenExpired() && isset($user->refresh_token)) {
-            $client->refreshToken($user->refresh_token);
-            $accessToken = $client->getAccessToken();
+        $this->client->setAccessToken($accessToken);
+        if ($this->client->isAccessTokenExpired() && isset($user->refresh_token)) {
+            $this->client->refreshToken($user->refresh_token);
+            $accessToken = $this->client->getAccessToken();
             $user->access_token = json_encode($accessToken);
             $user->save();
         }
@@ -153,9 +159,8 @@ class GoogleIdentityHelper
         if (empty($authCode)) {
             throw new BAException(self::AUTH_CODE_MUSTNT_BE_EMPTY, BAException::EMPTY_PARAM_EXCODE, null);
         }
-        $client =  GoogleClientFactory::create();
-        $accessToken = $client->authenticate($authCode);
-        $userEmail = $this->retrieveUserEmail($client);
+        $accessToken = $this->client->authenticate($authCode);
+        $userEmail = $this->retrieveUserEmail($this->client);
         if ($userEmail != null) {
             $user = $this->loginUserInYii($userEmail, $accessToken);
             if ($user != null) {

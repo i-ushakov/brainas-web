@@ -9,6 +9,7 @@ use common\models\User;
 use common\models\RefreshToken;
 use common\components\BAException;
 use frontend\components\GoogleIdentityHelper;
+use frontend\components\Factory\GoogleClientFactory;
 
 
 use \Mockery as m;
@@ -36,7 +37,7 @@ class GetGoogleClientWithToken_Test extends \Codeception\TestCase\Test
                 BAException::NOT_ENOUGH_DATA
             ),
             function() use ($user) {
-                $googleIdentityHelper = new GoogleIdentityHelper();
+                $googleIdentityHelper = new GoogleIdentityHelper(GoogleClientFactory::create());
                 $googleIdentityHelper->getGoogleClientWithToken($user);
             }
         );
@@ -55,7 +56,7 @@ class GetGoogleClientWithToken_Test extends \Codeception\TestCase\Test
                 BAException::INVALID_PARAM_EXCODE
             ),
             function() use ($user) {
-                $googleIdentityHelper = new GoogleIdentityHelper();
+                $googleIdentityHelper = new GoogleIdentityHelper(GoogleClientFactory::create());
                 $googleIdentityHelper->getGoogleClientWithToken($user);
             }
         );
