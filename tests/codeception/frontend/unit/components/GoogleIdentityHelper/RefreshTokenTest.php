@@ -14,7 +14,7 @@ use frontend\components\Factory\GoogleClientFactory;
 
 use \Mockery as m;
 
-class GetGoogleClientWithToken_Test extends \Codeception\TestCase\Test
+class RefreshTokenTests extends \Codeception\TestCase\Test
 {
     /**
      * @var UnitTester
