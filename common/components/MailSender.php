@@ -21,7 +21,7 @@ class MailSender
      * @param $params
      * @return bool
      */
-    static public function sendFeedbackEmail($userEmail, $params) {
+    public function sendFeedbackEmail($userEmail, $params) {
         if (!isset($params['subject']) || !isset($params['message']) || !isset($params['contactemail'])) {
             return false;
         }
@@ -34,7 +34,7 @@ class MailSender
         $recipient = \Yii::$app->params['adminEmail'];
         $from = ['brainas.net@gmail' => 'BA Feedback'];
         $subject = "Feedback from " . $userEmail;
-        self::sendEmail($view, $recipient, $from, $subject, $mailContent);
+        $this->sendEmail($view, $recipient, $from, $subject, $mailContent);
         return true;
     }
 
@@ -46,7 +46,7 @@ class MailSender
      * @param null $category
      * @return bool
      */
-    static public function sendLogReport($message, $userName= null, $level, $category = null) {
+    public function sendLogReport($message, $userName= null, $level, $category = null) {
         $view = 'log_report_email-html';
         $recipient = \Yii::$app->params['adminEmail'];
         $from = array('log@brainas.net' => 'Log Report');
@@ -57,7 +57,7 @@ class MailSender
             'message' => $message,
             'userName' => $userName
         ];
-        self::sendEmail($view, $recipient, $from, $subject, $mailContent);
+        $this->sendEmail($view, $recipient, $from, $subject, $mailContent);
         return true;
     }
 
@@ -70,7 +70,7 @@ class MailSender
      * @param $subject
      * @param $params
      */
-    static public function sendEmail($view, $recipient, $from, $subject, $params) {
+    public function sendEmail($view, $recipient, $from, $subject, $params) {
         \Yii::$app->mail->compose($view, $params)
             ->setFrom($from)
             ->setTo($recipient)
