@@ -53,7 +53,9 @@ class PictureController extends Controller {
         if ((!Yii::$app->user->isGuest)) {
             $user = \Yii::$app->user->identity;
 
-            $client = GoogleIdentityHelper::getGoogleClientWithToken($user);
+            /* @var $googleIdentityHelper GoogleIdentityHelper */ //TODO use DI
+            $googleIdentityHelper = Yii::$container->get(GoogleIdentityHelper::class);
+            $client = $googleIdentityHelper->getGoogleClientWithToken($user);
 
             if ($client != null) {
                 $pictureFolderId = $this->getPictureFolder($client, $user);
@@ -104,7 +106,9 @@ class PictureController extends Controller {
                 if ($this->checkResponseCodeIsOk($imageUrl)) {
                     $imageContent = file_get_contents($imageUrl);
 
-                    $client = GoogleIdentityHelper::getGoogleClientWithToken($user);
+                    /* @var $googleIdentityHelper GoogleIdentityHelper */ //TODO use DI
+                    $googleIdentityHelper = Yii::$container->get(GoogleIdentityHelper::class);
+                    $client = $googleIdentityHelper->getGoogleClientWithToken($user);
                     if ($client != null) {
                         $pictureFolderId = $this->getPictureFolder($client, $user);
                         file_put_contents(self::TMP_PICTURTE . $user->id, $imageContent);
@@ -177,7 +181,9 @@ class PictureController extends Controller {
 
             }
             if (isset($pictureForRemove['file_id'])) {
-                $client = GoogleIdentityHelper::getGoogleClientWithToken($user);
+                /* @var $googleIdentityHelper GoogleIdentityHelper */ //TODO use DI
+                $googleIdentityHelper = Yii::$container->get(GoogleIdentityHelper::class);
+                $client = $googleIdentityHelper->getGoogleClientWithToken($user);
                 $googleDriveHelper = GoogleDriveHelper::getInstance(new \Google_Service_Drive($client));
                 $googleDriveHelper->removeFile($pictureForRemove['file_id']);
             }

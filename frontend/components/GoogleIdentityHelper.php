@@ -32,7 +32,7 @@ class GoogleIdentityHelper
      * @return \Google_Client
      * @throws BAException
      */
-    static public function getGoogleClientWithToken(User $user)
+    public function getGoogleClientWithToken(User $user)
     {
         $client = GoogleClientFactory::create();
         $client->setAccessToken($user->access_token);
@@ -60,7 +60,7 @@ class GoogleIdentityHelper
      * @param $clientWithToken \Google_Client
      * @return null
      */
-    static public function retrieveUserEmail($clientWithToken)
+    public function retrieveUserEmail($clientWithToken)
     {
         $data = $clientWithToken->verifyIdToken();
         $userEmail = $data['email'];
@@ -79,7 +79,7 @@ class GoogleIdentityHelper
      * @param $accessToken
      * @return User|null|\yii\web\IdentityInterface|static
      */
-    static public function loginUserInYii($userEmail, $accessToken)
+    public function loginUserInYii($userEmail, $accessToken)
     {
         if ((!Yii::$app->user->isGuest)) {
             $user = \Yii::$app->user->identity;
@@ -95,7 +95,7 @@ class GoogleIdentityHelper
             }
 
             Yii::$app->user->login($user);
-            self::saveAccessToken($user, $accessToken);
+            $this->saveAccessToken($user, $accessToken);
         }
         return $user;
     }
@@ -104,7 +104,7 @@ class GoogleIdentityHelper
      * Just logout user from Yii
      * @param $user
      */
-    static public function logoutUserInYii($user)
+    public function logoutUserInYii($user)
     {
         \Yii::$app->session->remove('googleAccessToken');
         $user->access_token = null;
@@ -118,7 +118,7 @@ class GoogleIdentityHelper
      * @param $user
      * @param $accessToken
      */
-    static public function saveAccessToken($user, $accessToken)
+    public function saveAccessToken($user, $accessToken)
     {
         \Yii::$app->session->set('googleAccessToken', json_encode($accessToken));
         $user->access_token = json_encode($accessToken);
@@ -131,7 +131,7 @@ class GoogleIdentityHelper
     /**
      * If access token is expired we refresh it using refresh token
      */
-    static public function refreshUserAccessToken()
+    public function refreshUserAccessToken()
     {
         if (Yii::$app->user->isGuest) {
             return;
@@ -148,16 +148,16 @@ class GoogleIdentityHelper
         }
     }
 
-    static public function signIn($authCode)
+    public function signIn($authCode)
     {
         if (empty($authCode)) {
             throw new BAException(self::AUTH_CODE_MUSTNT_BE_EMPTY, BAException::EMPTY_PARAM_EXCODE, null);
         }
         $client =  GoogleClientFactory::create();
         $accessToken = $client->authenticate($authCode);
-        $userEmail = self::retrieveUserEmail($client);
+        $userEmail = $this->retrieveUserEmail($client);
         if ($userEmail != null) {
-            $user = self::loginUserInYii($userEmail, $accessToken);
+            $user = $this->loginUserInYii($userEmail, $accessToken);
             if ($user != null) {
                 return true;
             } else {

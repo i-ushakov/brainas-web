@@ -1,9 +1,12 @@
 <!-- 1: Load the Google Identity Toolkit helpers -->
 <?php
 use common\models\SingInLog;
+use frontend\components\GoogleIdentityHelper;
 
 if (!Yii::$app->user->isGuest) {
-    \frontend\components\GoogleIdentityHelper::refreshUserAccessToken();
+    /* @var $googleIdentityHelper GoogleIdentityHelper */
+    $googleIdentityHelper = Yii::$container->get(GoogleIdentityHelper::class);
+    $googleIdentityHelper->refreshUserAccessToken();
 }
 ?>
 

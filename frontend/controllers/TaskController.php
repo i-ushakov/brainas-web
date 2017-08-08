@@ -115,8 +115,10 @@ class TaskController extends Controller {
                    $currentPicture = $task->picture;
                    if (isset($currentPicture)) {
                        // TODO need to use DIC here
+                       /* @var $googleIdentityHelper GoogleIdentityHelper */ //TODO use DI
+                       $googleIdentityHelper = Yii::$container->get(GoogleIdentityHelper::class);
                        $googleDriveHelper = GoogleDriveHelper::getInstance(
-                           new \Google_Service_Drive(GoogleIdentityHelper::getGoogleClientWithToken(\Yii::$app->user->identity))
+                           new \Google_Service_Drive($googleIdentityHelper->getGoogleClientWithToken(\Yii::$app->user->identity))
                        );
                        $googleDriveHelper->removeFile($currentPicture->file_id);
                        $currentPicture->delete();

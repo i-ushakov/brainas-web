@@ -95,8 +95,11 @@ class SiteController extends Controller
         $result = array();
         $authCode = file_get_contents('php://input');
 
+        /* @var $googleIdentityHelper GoogleIdentityHelper */
+        $googleIdentityHelper = Yii::$container->get(GoogleIdentityHelper::class);
+
         try {
-            if (GoogleIdentityHelper::signIn($authCode)) {
+            if ($googleIdentityHelper->signIn($authCode)) {
                 $result['status'] = "SUCCESS";
                 $result['message'] = "User was logged as " . Yii::$app->user->identity['username'];
             }

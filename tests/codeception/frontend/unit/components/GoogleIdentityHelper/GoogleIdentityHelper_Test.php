@@ -36,7 +36,8 @@ class GetGoogleClientWithToken_Test extends \Codeception\TestCase\Test
                 BAException::NOT_ENOUGH_DATA
             ),
             function() use ($user) {
-                GoogleIdentityHelper::getGoogleClientWithToken($user);
+                $googleIdentityHelper = new GoogleIdentityHelper();
+                $googleIdentityHelper->getGoogleClientWithToken($user);
             }
         );
     }
@@ -54,7 +55,8 @@ class GetGoogleClientWithToken_Test extends \Codeception\TestCase\Test
                 BAException::INVALID_PARAM_EXCODE
             ),
             function() use ($user) {
-                GoogleIdentityHelper::getGoogleClientWithToken($user);
+                $googleIdentityHelper = new GoogleIdentityHelper();
+                $googleIdentityHelper->getGoogleClientWithToken($user);
             }
         );
     }
