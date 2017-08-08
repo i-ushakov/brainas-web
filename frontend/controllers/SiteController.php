@@ -2,9 +2,9 @@
 namespace frontend\controllers;
 
 use common\components\BAException;
+use frontend\components\FeedbackManager;
 use Yii;
 use common\models\LoginForm;
-use common\components\MailSender;
 use frontend\components\Factory\GoogleClientFactory;
 use frontend\components\GoogleIdentityHelper;
 use yii\base\InvalidParamException;
@@ -114,24 +114,13 @@ class SiteController extends Controller
     }
 
     /**
-     * SignOut with google.
+     * SignOut
      *
      */
     public function actionSignOut() {
         Yii::$app->user->logout();
     }
 
-    /**
-     * Logs out the current user.
-     *
-     * @return mixed
-     */
-    public function actionLogout()
-    {
-        Yii::$app->user->logout();
-
-        return $this->goHome();
-    }
 
     /**
      * Displays contact page.
@@ -162,29 +151,16 @@ class SiteController extends Controller
      */
     public function actionFeedback()
     {
-        $request = Yii::$app->request;
         if (!Yii::$app->user->isGuest) {
+            $request = Yii::$app->request;
             $userEmail = Yii::$app->user->identity['username'];
             if ($request->isPost) {
                 $params = $request->post();
-                if (!isset($params['subject'])) {
-                    $result = array(
-                        'status' => 'failed',
-                        'type' => 'no_subject'
-                    );
-                } else if (!isset($params['message']) || empty($params['message'])){
-                    $result = array(
-                        'status' => 'failed',
-                        'type' => 'no_message'
-                    );
-                } else if (MailSender::sendFeedbackEmail($userEmail, $params)) {
-                    $result = array('status' => 'success');
-                } else {
-                    $result = array(
-                        'status' => 'failed',
-                        'type' => 'sending_is_failed'
-                    );
-                }
+
+                /* @var $feedbackManager FeedbackManager */
+                $feedbackManager = Yii::$container->get(FeedbackManager::class);
+                $result = $feedbackManager->sendFeedback($params, $userEmail);
+
                 Yii::$app->response->format = 'json';
                 echo json_encode($result);
             } else {
