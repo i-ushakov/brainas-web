@@ -1,6 +1,7 @@
 <?php
 namespace frontend\controllers;
 
+use common\components\BAException;
 use Yii;
 use common\models\LoginForm;
 use common\components\MailSender;
@@ -14,6 +15,7 @@ use yii\filters\AccessControl;
 
 /**
  * Site controller
+ * Supplies access to usual site functional like: About Page, Login, Logout, Home and etc.
  */
 class SiteController extends Controller
 {
@@ -23,9 +25,6 @@ class SiteController extends Controller
         return parent::beforeAction($action);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function behaviors()
     {
         return [
@@ -54,9 +53,6 @@ class SiteController extends Controller
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function actions()
     {
         return [
@@ -71,7 +67,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays homepage.
+     * Redirect to Single Page Application
      *
      * @return mixed
      */
@@ -80,30 +76,16 @@ class SiteController extends Controller
         return $this->redirect(\Yii::$app->urlManager->createUrl("main/panel"));
     }
 
+    /**
+     * Privacy Policy
+     *
+     * @return string
+     */
     public function actionPolicy()
     {
         return $this->render('policy', []);
     }
-    /**
-     * Logs in a user.
-     *
-     * @return mixed
-     */
-    public function actionLogin()
-    {
-        if (!\Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
 
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        } else {
-            return $this->render('login', [
-                'model' => $model,
-            ]);
-        }
-    }
 
     /**
      * SignIn with google.
@@ -113,26 +95,14 @@ class SiteController extends Controller
         $result = array();
         $authCode = file_get_contents('php://input');
 
-        if (isset($authCode)) {
-            $client =  GoogleClientFactory::create();
-            $accessToken = $client->authenticate($authCode);
-            $userEmail = GoogleIdentityHelper::retrieveUserEmail($client);
-            if ($userEmail != null) {
-                $user = GoogleIdentityHelper::loginUserInYii($userEmail, $accessToken);
-                if ($user != null){
-                    $result['status'] = "SUCCESS";
-                    $result['message'] = "User was logged as " . Yii::$app->user->identity['username'];
-                } else {
-                    $result['status'] = "FAILED";
-                    $result['message'] = "Cannot authenticate user";
-                }
-            } else {
-                $result['status'] = "FAILED";
-                $result['message'] = "Cannot authenticate user";
+        try {
+            if (GoogleIdentityHelper::signIn($authCode)) {
+                $result['status'] = "SUCCESS";
+                $result['message'] = "User was logged as " . Yii::$app->user->identity['username'];
             }
-        } else {
+        } catch (BAException $ex) {
             $result['status'] = "FAILED";
-            $result['message'] = "Code is null";
+            $result['message'] = $ex->getMessage();;
         }
 
         \Yii::$app->response->format = 'json';

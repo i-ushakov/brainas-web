@@ -23,6 +23,7 @@ class GoogleIdentityHelper
 {
     const PROBLEM_WITH_REFRESH_TOKEN_MSG = "Access token expired and we cannot to refresh it (may be refresh_token is broken)";
     const NO_REFRESH_TOKEN_MSG = "Access token expired havn't refresh_token";
+    const AUTH_CODE_MUSTNT_BE_EMPTY = "Auth code mustn't to be empty";
 
     /**
      * Getting Google Client and set access token to it
@@ -145,5 +146,24 @@ class GoogleIdentityHelper
             $user->access_token = json_encode($accessToken);
             $user->save();
         }
+    }
+
+    static public function signIn($authCode)
+    {
+        if (empty($authCode)) {
+            throw new BAException(self::AUTH_CODE_MUSTNT_BE_EMPTY, BAException::EMPTY_PARAM_EXCODE, null);
+        }
+        $client =  GoogleClientFactory::create();
+        $accessToken = $client->authenticate($authCode);
+        $userEmail = self::retrieveUserEmail($client);
+        if ($userEmail != null) {
+            $user = self::loginUserInYii($userEmail, $accessToken);
+            if ($user != null) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
 }
