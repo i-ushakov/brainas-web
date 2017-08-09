@@ -17,7 +17,7 @@ $container->setDefinitions([
     ],
 
     TaskXMLConverter::class => [
-        ['class' => ConditionXMLConverter::class],
+        ['class' => TaskXMLConverter::class],
     ],
 
 
