@@ -9,7 +9,7 @@
 
 namespace common\utils;
 
-class DatatimeUtils
+class DatetimeUtils
 {
     static public function getCurrentUTCTime()
     {
