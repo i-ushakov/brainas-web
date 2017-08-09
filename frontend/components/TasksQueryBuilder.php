@@ -9,6 +9,7 @@
 namespace frontend\components;
 
 
+use common\components\BAException;
 use common\models\Task;
 
 /**
@@ -25,14 +26,15 @@ class TasksQueryBuilder
     const SORTTYPE_OLDEST= "TIME_ADDED_OLDEST";
     const SORTTYPE_LATEST_CHANGES= "LATEST_CHANGES";
     const SORTTYPE_TITLE= "TASK_TITLE";
+    const USER_ID_HAVE_TO_BE_SET_MSG = "User Id have to be set";
 
     private $userId;
 
-    public function __construct($userId) {
+    public function setUserId($userId)
+    {
         $this->userId = $userId;
         return $this;
     }
-
     /**
      * Retrieve task from DB
      *
@@ -40,7 +42,12 @@ class TasksQueryBuilder
      * @param null $typeOfSort
      * @return mixed
      */
-    public function get($statusesFilter = null, $typeOfSort = null) {
+    public function get($statusesFilter = null, $typeOfSort = null)
+    {
+        if (empty($this->userId)) {
+            throw new BAException(self::USER_ID_HAVE_TO_BE_SET_MSG, BAException::PARAM_NOT_SET_EXCODE, null);
+        }
+
         $tasksGetQuery = Task::find()
             ->where(['user' => $this->userId])
             ->leftJoin('sync_changed_tasks', '`sync_changed_tasks`.`task_id` = `tasks`.`id`')

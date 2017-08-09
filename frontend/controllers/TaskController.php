@@ -42,16 +42,19 @@ class TaskController extends Controller {
         if (!Yii::$app->user->isGuest) {
             $userId =  Yii::$app->user->id;
 
-            $tasksQueryBuilde = new TasksQueryBuilder($userId);
             $statusesFilter = (isset($_GET['statusesFilter']) ? $_GET['statusesFilter'] : null);
             $typeOfSort = (isset($_GET['typeOfSort']) ? $_GET['typeOfSort'] : null);
-            $tasks = $tasksQueryBuilde->get($statusesFilter, $typeOfSort);
 
+            /* @var $tasksQueryBuilder TasksQueryBuilder */
+            $tasksQueryBuilder = Yii::$container->get(TasksQueryBuilder::class);
+            $tasksQueryBuilder->setUserId($userId);
+
+            $tasks = $tasksQueryBuilder->get($statusesFilter, $typeOfSort);
         } else {
             $result = array();
             $result['status'] = "FAILED";
             $result['type'] = "must_be_signed_in";
-            \Yii::$app->response->format = 'json';
+            Yii::$app->response->format = 'json';
             return $result;
         }
 
@@ -61,7 +64,7 @@ class TaskController extends Controller {
             $tasksArray[] = $taskConverter->prepareTaskForResponse($task);
         }
 
-        \Yii::$app->response->format = 'json';
+        Yii::$app->response->format = 'json';
         return $tasksArray;
     }
 

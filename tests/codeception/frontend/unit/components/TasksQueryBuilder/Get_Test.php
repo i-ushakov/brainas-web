@@ -86,10 +86,11 @@ class Get_Test extends \Codeception\TestCase\Test
         $userID = 1;
         $statusesFilter = ["TODO", "WAITING", "ACTIVE", "DISABLED", "DONE", "CANCELED"];
         $typeOfSort = TasksQueryBuilder::SORTTYPE_NEWEST;
-        $tasksQueryBuilde = new TasksQueryBuilder($userID);
+        $tasksQueryBuilder = new TasksQueryBuilder($userID);
+        $tasksQueryBuilder->setUserId($userID);
 
         // testing ...
-        $tasks = $tasksQueryBuilde->get($statusesFilter, $typeOfSort);
+        $tasks = $tasksQueryBuilder->get($statusesFilter, $typeOfSort);
 
         // assertions:
         $this->tester->assertEquals(6, count($tasks), "Wrong number of tasks");
@@ -119,10 +120,11 @@ class Get_Test extends \Codeception\TestCase\Test
         $userID = 1;
         $statusesFilter = ["TODO", "WAITING", "ACTIVE", "DISABLED", "DONE", "CANCELED"];
         $typeOfSort = TasksQueryBuilder::SORTTYPE_OLDEST;
-        $tasksQueryBuilde = new TasksQueryBuilder($userID);
+        $tasksQueryBuilder = new TasksQueryBuilder();
+        $tasksQueryBuilder->setUserId($userID);
 
         // testing ...
-        $tasks = $tasksQueryBuilde->get($statusesFilter, $typeOfSort);
+        $tasks = $tasksQueryBuilder->get($statusesFilter, $typeOfSort);
 
         // assertions:
         $this->tester->assertEquals(6, count($tasks), "Wrong number of tasks");
@@ -152,10 +154,11 @@ class Get_Test extends \Codeception\TestCase\Test
         $userID = 1;
         $statusesFilter = ["ACTIVE"];
         $typeOfSort = TasksQueryBuilder::SORTTYPE_OLDEST;
-        $tasksQueryBuilde = new TasksQueryBuilder($userID);
+        $tasksQueryBuilder = new TasksQueryBuilder();
+        $tasksQueryBuilder->setUserId($userID);
 
         // testing ...
-        $tasks = $tasksQueryBuilde->get($statusesFilter, $typeOfSort);
+        $tasks = $tasksQueryBuilder->get($statusesFilter, $typeOfSort);
 
         // assertions:
         $this->tester->assertEquals(1, count($tasks), "Wrong number of tasks");
