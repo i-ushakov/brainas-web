@@ -6,7 +6,7 @@
  * Time: 3:46 PM
  */
 
-use \frontend\components\TasksQueryBuilde;
+use \frontend\components\TasksQueryBuilder;
 
 use Mockery as m;
 
@@ -85,8 +85,8 @@ class Get_Test extends \Codeception\TestCase\Test
     {
         $userID = 1;
         $statusesFilter = ["TODO", "WAITING", "ACTIVE", "DISABLED", "DONE", "CANCELED"];
-        $typeOfSort = TasksQueryBuilde::SORTTYPE_NEWEST;
-        $tasksQueryBuilde = new TasksQueryBuilde($userID);
+        $typeOfSort = TasksQueryBuilder::SORTTYPE_NEWEST;
+        $tasksQueryBuilde = new TasksQueryBuilder($userID);
 
         // testing ...
         $tasks = $tasksQueryBuilde->get($statusesFilter, $typeOfSort);
@@ -118,8 +118,8 @@ class Get_Test extends \Codeception\TestCase\Test
     {
         $userID = 1;
         $statusesFilter = ["TODO", "WAITING", "ACTIVE", "DISABLED", "DONE", "CANCELED"];
-        $typeOfSort = TasksQueryBuilde::SORTTYPE_OLDEST;
-        $tasksQueryBuilde = new TasksQueryBuilde($userID);
+        $typeOfSort = TasksQueryBuilder::SORTTYPE_OLDEST;
+        $tasksQueryBuilde = new TasksQueryBuilder($userID);
 
         // testing ...
         $tasks = $tasksQueryBuilde->get($statusesFilter, $typeOfSort);
@@ -151,8 +151,8 @@ class Get_Test extends \Codeception\TestCase\Test
     {
         $userID = 1;
         $statusesFilter = ["ACTIVE"];
-        $typeOfSort = TasksQueryBuilde::SORTTYPE_OLDEST;
-        $tasksQueryBuilde = new TasksQueryBuilde($userID);
+        $typeOfSort = TasksQueryBuilder::SORTTYPE_OLDEST;
+        $tasksQueryBuilde = new TasksQueryBuilder($userID);
 
         // testing ...
         $tasks = $tasksQueryBuilde->get($statusesFilter, $typeOfSort);

@@ -18,7 +18,7 @@ use common\models\Task;
  *
  * @package frontend\components
  */
-class TasksQueryBuilde
+class TasksQueryBuilder
 {
 
     const SORTTYPE_NEWEST= "TIME_ADDED_NEWEST";

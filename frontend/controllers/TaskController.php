@@ -9,11 +9,10 @@
 namespace frontend\controllers;
 
 use common\components\GoogleDriveHelper;
-use common\components\TaskXMLConverter;
 use frontend\components\GoogleIdentityHelper;
 use frontend\components\StatusManager;
 use frontend\components\TaskConverter;
-use frontend\components\TasksQueryBuilde;
+use frontend\components\TasksQueryBuilder;
 use common\models\ChangeOfTask;
 use common\models\Task;
 use common\models\Condition;
@@ -43,7 +42,7 @@ class TaskController extends Controller {
         if (!Yii::$app->user->isGuest) {
             $userId =  Yii::$app->user->id;
 
-            $tasksQueryBuilde = new TasksQueryBuilde($userId);
+            $tasksQueryBuilde = new TasksQueryBuilder($userId);
             $statusesFilter = (isset($_GET['statusesFilter']) ? $_GET['statusesFilter'] : null);
             $typeOfSort = (isset($_GET['typeOfSort']) ? $_GET['typeOfSort'] : null);
             $tasks = $tasksQueryBuilde->get($statusesFilter, $typeOfSort);
