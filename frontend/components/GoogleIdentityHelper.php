@@ -163,6 +163,13 @@ class GoogleIdentityHelper
         }
     }
 
+    /**
+     * SignIn using google account and after login in Yii
+     *
+     * @param $authCode
+     * @return bool
+     * @throws BAException
+     */
     public function signIn($authCode)
     {
         if (empty($authCode)) {
