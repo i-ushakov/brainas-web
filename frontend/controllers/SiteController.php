@@ -172,8 +172,11 @@ class SiteController extends Controller
         }
     }
 
+    /**
+     * This method allow to refresh authentication for client side if user is not active
+     */
     public function actionRefreshAuthorization() {
         require_once(Yii::$app->basePath . '/views/layouts/_google_identity_head.php');
-        echo "You are logined under email: " . Yii::$app->user->identity['username'];
+        echo "You are logged under email: " . Yii::$app->user->identity['username'];
     }
 }
