@@ -9,9 +9,9 @@ namespace frontend\components;
 
 use common\components\BAException;
 use common\models\User;
-use frontend\components\Factory\GoogleClientFactory;
 
-use \Yii;
+use \Google_Client;
+use \yii\web\Application;
 
 /**
  * Class GoogleIdentityHelper
@@ -25,18 +25,27 @@ class GoogleIdentityHelper
     const NO_REFRESH_TOKEN_MSG = "Access token expired havn't refresh_token";
     const AUTH_CODE_MUSTNT_BE_EMPTY = "Auth code mustn't to be empty";
 
+    /**
+     * @var Google_Client
+     */
     protected $client;
 
-    public function __construct(\Google_Client $client)
+    /**
+     * @var Application
+     */
+    protected $app;
+
+    public function __construct(Google_Client $client, Application $app)
     {
         $this->client = $client;
+        $this->app = $app;
     }
 
     /**
      * Getting Google Client and set access token to it
      *
      * @param User $user
-     * @return \Google_Client
+     * @return Google_Client
      * @throws BAException
      */
     public function getGoogleClientWithToken(User $user)
@@ -64,7 +73,7 @@ class GoogleIdentityHelper
     /**
      * The method get Google Client and retrieve user email
      *
-     * @param $clientWithToken \Google_Client
+     * @param $clientWithToken Google_Client
      * @return null
      */
     public function retrieveUserEmail($clientWithToken)
@@ -88,12 +97,12 @@ class GoogleIdentityHelper
      */
     public function loginUserInYii($userEmail, $accessToken)
     {
-        if ((!Yii::$app->user->isGuest)) {
-            $user = \Yii::$app->user->identity;
+        if ((!$this->app->user->isGuest)) {
+            $user = $this->app->user->identity;
         } else {
             $user = User::findOne(['username' => $userEmail]);
             if (!is_null($user)) {
-                Yii::$app->user->login($user);
+                $this->app->user->login($user);
             } else {
                 $user = new User();
                 $user->username = $userEmail;
@@ -101,7 +110,7 @@ class GoogleIdentityHelper
                 $user->save();
             }
 
-            Yii::$app->user->login($user);
+            $this->app->user->login($user);
             $this->saveAccessToken($user, $accessToken);
         }
         return $user;
@@ -113,7 +122,7 @@ class GoogleIdentityHelper
      */
     public function logoutUserInYii($user)
     {
-        \Yii::$app->session->remove('googleAccessToken');
+        $this->app->session->remove('googleAccessToken');
         $user->access_token = null;
         $user->save();
     }
@@ -127,7 +136,7 @@ class GoogleIdentityHelper
      */
     public function saveAccessToken($user, $accessToken)
     {
-        \Yii::$app->session->set('googleAccessToken', json_encode($accessToken));
+        $this->app->session->set('googleAccessToken', json_encode($accessToken));
         $user->access_token = json_encode($accessToken);
         if (isset($accessToken['refresh_token'])) {
             $user->refresh_token = $accessToken['refresh_token'];
@@ -140,10 +149,10 @@ class GoogleIdentityHelper
      */
     public function refreshUserAccessToken()
     {
-        if (Yii::$app->user->isGuest) {
+        if ($this->app->user->isGuest) {
             return;
         }
-        $user = Yii::$app->user->identity;
+        $user = $this->app->user->identity;
         $accessToken = $user->access_token;
         $this->client->setAccessToken($accessToken);
         if ($this->client->isAccessTokenExpired() && isset($user->refresh_token)) {
@@ -163,7 +172,7 @@ class GoogleIdentityHelper
         $userEmail = $this->retrieveUserEmail($this->client);
         if ($userEmail != null) {
             $user = $this->loginUserInYii($userEmail, $accessToken);
-            if ($user != null) {
+            if (!empty($user)) {
                 return true;
             } else {
                 return false;

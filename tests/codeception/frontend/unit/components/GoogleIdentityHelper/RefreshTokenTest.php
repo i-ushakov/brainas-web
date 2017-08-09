@@ -11,7 +11,7 @@ use common\components\BAException;
 use frontend\components\GoogleIdentityHelper;
 use frontend\components\Factory\GoogleClientFactory;
 
-
+use \Google_Client;
 use \Mockery as m;
 
 class RefreshTokenTests extends \Codeception\TestCase\Test
@@ -37,7 +37,13 @@ class RefreshTokenTests extends \Codeception\TestCase\Test
                 BAException::NOT_ENOUGH_DATA
             ),
             function() use ($user) {
-                $googleIdentityHelper = new GoogleIdentityHelper(GoogleClientFactory::create());
+                /* @var $client Google_Client */
+                $client = m::mock(Google_Client::class . "[authenticate]");
+
+                /* @var $app \yii\web\Application */
+                $app = Yii::$app;
+
+                $googleIdentityHelper = new GoogleIdentityHelper($client, $app);
                 $googleIdentityHelper->getGoogleClientWithToken($user);
             }
         );
@@ -56,7 +62,13 @@ class RefreshTokenTests extends \Codeception\TestCase\Test
                 BAException::INVALID_PARAM_EXCODE
             ),
             function() use ($user) {
-                $googleIdentityHelper = new GoogleIdentityHelper(GoogleClientFactory::create());
+                /* @var $client Google_Client */
+                $client = m::mock(Google_Client::class . "[authenticate]");
+
+                /* @var $app \yii\web\Application */
+                $app = Yii::$app;
+
+                $googleIdentityHelper = new GoogleIdentityHelper($client, $app);
                 $googleIdentityHelper->getGoogleClientWithToken($user);
             }
         );
