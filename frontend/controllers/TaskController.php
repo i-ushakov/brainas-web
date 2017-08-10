@@ -98,27 +98,22 @@ class TaskController extends Controller {
             $taskForRemove = Json::decode($post['task']);
             $taskId = $taskForRemove['id'];
 
-            $task = Task::find($taskId)
-                ->where(['id' => $taskId, 'user' => Yii::$app->user->id])
-                ->one();
 
-            if (!empty($task)) {
-                if ($task->delete()) {
-                    $this->result['status'] = "OK";
-                }
+            /** @var $tasksManager TasksManager */
+            $tasksManager = Yii::$container->get(TasksManager::class);
+            $tasksManager->setUser(Yii::$app->user->identity);
+            if ($tasksManager->removeTask($taskId)) {
+                $this->result['status'] = "OK";
             } else {
                 $this->result['status'] = "FAILED";
                 $this->result['type'] = "remove_error";
                 $this->result['message'] = "No task with id = " . $taskId . "that is owned of user  " . $task->user->name;;
             }
 
-
-            \Yii::$app->response->format = 'json';
-            return $this->result;
-        } else {
-            \Yii::$app->response->format = 'json';
-            return $this->result;
         }
+        \Yii::$app->response->format = 'json';
+        return $this->result;
+
     }
 
     /**

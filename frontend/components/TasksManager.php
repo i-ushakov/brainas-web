@@ -241,4 +241,17 @@ class TasksManager
             }
         }
     }
+
+    public function removeTask($taskId)
+    {
+        $task = Task::find($taskId)
+            ->where(['id' => $taskId, 'user' => $this->user->id])
+            ->one();
+
+        if ($task->delete()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
