@@ -10,6 +10,8 @@ namespace frontend\components;
 
 
 use common\utils\DatetimeUtils;
+use common\models\ChangeOfTask;
+
 
 /**
  * Class ChangesLogger
