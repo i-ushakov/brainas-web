@@ -104,6 +104,9 @@ class Task extends ActiveRecord {
      */
     public function afterDelete() {
         parent::afterDelete();
-        ChangeOfTask::removeFromChangeLog($this->id);
+        $changeOfTask = ChangeOfTask::find()->where(['task_id' => $this->id])->one();
+        if (!is_null($changeOfTask)) {
+            $changeOfTask->delete();
+        }
     }
 }

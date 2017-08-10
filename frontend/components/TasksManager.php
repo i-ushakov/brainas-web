@@ -36,10 +36,19 @@ class TasksManager
      */
     protected $user;
 
-    public function __construct(GoogleIdentityHelper $googleIdentityHelper, StatusManager $statusManager)
+    /**
+     * @var $changesLogger ChangesLogger
+     */
+    protected $changesLogger;
+
+    public function __construct(
+        GoogleIdentityHelper $googleIdentityHelper,
+        StatusManager $statusManager,
+        ChangesLogger $changesLogger)
     {
         $this->googleIdentityHelper = $googleIdentityHelper;
         $this->statusManager = $statusManager;
+        $this->changesLogger = $changesLogger;
     }
 
     public function setUser($user)
@@ -157,7 +166,7 @@ class TasksManager
     {
         if (!empty($task)) {
             $task->save();
-            ChangeOfTask::loggingChangesForSync($changeStatus, null, $task);
+            $this->changesLogger->logChanges($changeStatus, $task);
             return $task;
         } else {
             return null;
