@@ -18,6 +18,7 @@ use common\models\PictureOfTask;
 use common\components\GoogleDriveHelper;
 
 use yii\helpers\Json;
+use \Google_Service_Drive;
 
 class TasksManager
 {
@@ -173,6 +174,13 @@ class TasksManager
         }
     }
 
+    /**
+     * Save picture  of task
+     *
+     * @param $task
+     * @param $pictureFileId
+     * @param $pictureName
+     */
     public function savePicture($task, $pictureFileId, $pictureName)
     {
         if ((!isset($task->picture->file_id) || $pictureFileId != $task->picture->file_id)) {
@@ -180,7 +188,7 @@ class TasksManager
             if (isset($currentPicture)) {
                 $user = $this->user;
                 $googleDriveHelper = GoogleDriveHelper::getInstance(
-                    new \Google_Service_Drive($this->googleIdentityHelper->getGoogleClientWithToken($user))
+                    new Google_Service_Drive($this->googleIdentityHelper->getGoogleClientWithToken($user))
                 );
                 $googleDriveHelper->removeFile($currentPicture->file_id);
                 $currentPicture->delete();
@@ -194,6 +202,12 @@ class TasksManager
         }
     }
 
+    /**
+     * Clean deleted conditions from DB
+     *
+     * @param $conditionsForSave
+     * @param $taskId
+     */
     public function cleanDeletedConditions($conditionsForSave, $taskId)
     {
         $conditionsIds = array();
@@ -215,6 +229,12 @@ class TasksManager
         }
     }
 
+    /**
+     * Save current conditions in DB
+     *
+     * @param $conditionsData
+     * @param $taskId
+     */
     public function saveConditions($conditionsData, $taskId)
     {
         foreach ($conditionsData as $conditionData) {
@@ -242,6 +262,12 @@ class TasksManager
         }
     }
 
+    /**
+     * Remove task by $taskId
+     *
+     * @param $taskId
+     * @return bool
+     */
     public function removeTask($taskId)
     {
         $task = Task::find($taskId)
