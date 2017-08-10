@@ -29,7 +29,7 @@ class PrepareTaskForResponse_Test extends \Codeception\TestCase\Test
 
     public function test()
     {
-        /* var $changeOfTask Mockery */
+        /* var $changeOfTask ChangeOfTask */
         $changeOfTask = new ChangeOfTask([
             'datetime' => '2017-05-04 13:37:05'
         ]);
