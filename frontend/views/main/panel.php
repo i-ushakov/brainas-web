@@ -7,6 +7,4 @@
  */
 ?>
 
-<div id="main-panel" class="container">
-
-</div>
+<div id="main-panel" class="container"></div>
