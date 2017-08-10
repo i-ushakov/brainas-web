@@ -30,20 +30,20 @@ class StatusManager
     {
         switch ($task->status) {
             case self::STATUS_ACTIVE :
-                return $task;
+                break;
 
             case self::STATUS_WAITING :
                 $conditions = $task->getConditions();
                 if (count($conditions) == 0) {
                     $task->status = self::STATUS_DISABLED;
                 }
-                return $task;
+                break;
 
             case self::STATUS_TODO :
                 if (count($task->conditions) > 0) {
                     $task->status = self::STATUS_WAITING;
                 }
-                return $task;
+                break;
         }
         return $task;
     }
