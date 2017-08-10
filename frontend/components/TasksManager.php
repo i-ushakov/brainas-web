@@ -22,6 +22,7 @@ use \Google_Service_Drive;
 
 class TasksManager
 {
+    const NEW_MESSAGE_TITLE = "New task";
     /**
      * @var GoogleIdentityHelper;
      */
@@ -105,10 +106,10 @@ class TasksManager
         /* @var Task */
         $task = new Task();
         $task->user = $this->user->id;
-        $task->message = "New task";
+        $task->message = self::NEW_MESSAGE_TITLE;
         $task->last_modify = DatetimeUtils::getCurrentUTCTime();
         $this->setTaskData($task, $taskDataForSave);
-        $task = $this->saveTask($task, ChangeOfTask::STATUS_CREATED);
+        $this->saveTask($task, ChangeOfTask::STATUS_CREATED);
         return $task;
     }
 
