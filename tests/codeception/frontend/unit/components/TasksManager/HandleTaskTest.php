@@ -11,7 +11,7 @@ use common\models\User;
 use \frontend\components\TasksManager;
 use \frontend\components\GoogleIdentityHelper;
 use \frontend\components\StatusManager;
-
+use \frontend\components\ChangesLogger;
 
 use Mockery as m;
 
@@ -52,7 +52,8 @@ class handleTaskTest extends \Codeception\TestCase\Test
         $tasksManagerSpy = m::mock(TasksManager::class . "[createTask, savePicture, cleanDeletedConditions, saveConditions, saveTask]",
             [
                 m::mock(GoogleIdentityHelper::class),
-                $statusManagerMock
+                $statusManagerMock,
+                m::mock(ChangesLogger::class),
             ]);
         $tasksManagerSpy->shouldReceive('createTask')->once()->andReturn($testTaskMock);
         $tasksManagerSpy->shouldReceive('savePicture')->once();
@@ -105,7 +106,8 @@ class handleTaskTest extends \Codeception\TestCase\Test
         $tasksManagerSpy = m::mock(TasksManager::class . "[createTask, updateTask, savePicture, cleanDeletedConditions, saveConditions, saveTask]",
             [
                 m::mock(GoogleIdentityHelper::class),
-                $statusManagerMock
+                $statusManagerMock,
+                m::mock(ChangesLogger::class)
 
             ]);
         $tasksManagerSpy->setUser($testUser);
