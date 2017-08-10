@@ -29,14 +29,13 @@ class TaskConverter
         $item['description'] = nl2br($task->description);
         $item['status'] = nl2br($task->status);
         $item['created'] = $task->created;
-        if (!empty($task->changeOfTask)) {
-            $item['changed'] = $task->changeOfTask->datetime;
-        }
+        $item['changed'] = $task->changeOfTask->datetime;
 
         if ($task->picture != null) {
             $item['picture_name'] = $task->picture->name;
             $item['picture_file_id'] = $task->picture->file_id;
         }
+
         $conditions = $task->conditions;
         foreach ($conditions as $condition) {
             $c = array();
