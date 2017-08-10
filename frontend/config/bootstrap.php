@@ -5,6 +5,7 @@ use common\components\MailSender;
 use frontend\components\GoogleIdentityHelper;
 use frontend\components\FeedbackManager;
 use frontend\components\Factory\GoogleClientFactory;
+use frontend\components\TasksManager;
 
 $container = Yii::$container;
 
@@ -33,6 +34,14 @@ $container->setDefinitions([
         ['class' => FeedbackManager::class],
         [
             Instance::of(MailSender::class)
+        ]
+    ],
+
+    TasksManager::class => [
+        ['class' => TasksManager::class],
+        [
+            Instance::of(GoogleIdentityHelper::class),
+            Instance::of(\frontend\components\StatusManager::class)
         ]
     ]
 ]);
