@@ -43,8 +43,14 @@ var Tasks = Backbone.Collection.extend({
         _.each(response, function(task) {
             var taskModel;
             var currentTaskModel = collection.get(task.id);
-            if (currentTaskModel && !currentTaskModel.get("preventUpdateFromServer")) {
-                taskModel = currentTaskModel;
+
+            if (currentTaskModel) {
+                if (currentTaskModel.get("preventUpdateFromServer")) {
+                    taskModel = currentTaskModel;
+                } else {
+                    currentTaskModel.update(task);
+                    taskModel = currentTaskModel;
+                }
             } else {
                 taskModel = new Task(task);
             }
@@ -93,5 +99,4 @@ var Tasks = Backbone.Collection.extend({
         }
         this.sort();
     }
-
 });
