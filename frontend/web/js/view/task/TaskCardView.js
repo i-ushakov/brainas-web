@@ -16,16 +16,14 @@ var TaskCardView = Backbone.View.extend({
         wrongPictureFormat : "You can upload only JPG and PNG files"
     },
 
+    messageView: null,
+
+    taskStatusView : null,
+
     conditionViews: [],
 
-    messageTextArea : null,
-    messageView: null,
-    messageEditView: null,
-
     events: {
-        'click .task-message-cont': 'editMessage',
         'click .task-description-cont': 'editDescription',
-        'click .task-message-edit .cancel-edit-icon': 'cancelEditMessage',
         'click .task-description-edit .cancel-edit-icon': 'cancelEditDescription',
         'click #save-changes-btn': 'save',
         'click #addConditionBtn': 'addConditionHandler',
@@ -37,7 +35,6 @@ var TaskCardView = Backbone.View.extend({
         'change #pictureUploadBtn' : 'uploadPictureHandler',
         'input #downloadRefInput' : 'onDownloadRefChanged',
 
-        'keyup .task-message-edit textarea': 'changeMessageHandler',
         'keyup .task-description-edit textarea': 'changeDescriptionHandler',
     },
 
@@ -53,30 +50,34 @@ var TaskCardView = Backbone.View.extend({
             'uploadPictureHandler',
             'cancelChangePicture',
             'taskWasChangedHandler',
+            'changeMessageHandler',
             'close');
 
         if (this.model === undefined) {
             return;
         }
-        this.model.set("preventUpdateFromServer", true);
+
+        if (options.createMode) {
+            this.createMode = options.createMode;
+        } else {
+            this.model.set("preventUpdateFromServer", true);
+        }
 
         this.render();
-        this.messageTextArea = this.$el.find('.task-message-edit textarea');
-        this.messageView = this.$el.find('.task-message-cont');
-        this.messageEditView = this.$el.find('.task-message-edit');
-        this.cancelEditIcon = this.messageEditView.find('.cancel-edit-icon-cont');
+
         this.descriptionView = this.$el.find('.task-description-cont');
         this.descriptionEditView = this.$el.find('.task-description-edit');
-
         this.saveBtn = this.$el.find('#save-changes-btn');
-        if (options.createMode == true) {
-            this.prepareForNewTask();
-            this.createMode = true;
+
+        if (this.createMode == true) {
             this.model.set("id", null);
             this.saveBtn.text("Create");
         }
 
         //this.listenTo(this.model, 'change', this.renderContent); //TODO render internal part of window updatable
+
+        debugger
+        this.model.on({"change": this.changeMessageHandler});
         this.model.on({"save": this.onSaveHandler});
     },
 
@@ -85,33 +86,33 @@ var TaskCardView = Backbone.View.extend({
         var modal = this.renderCard();
         this.setElement(modal.modal('show'));
         $(modal.on('hidden.bs.modal', function () {
-            self.removeTmpPicture();
             self.close();
         }));
+
         this.renderConditions();
     },
 
     renderStatus: function(taskCardEl) {
         var taskStatusEl= taskCardEl.find('.task-status-lbl');
-        var taskStatusView = new TaskStatusView({status: this.model.get('status')});
-        taskStatusEl.append(taskStatusView.render());
-    },
-
-    refreshCard: function() {
-        this.renderCard();
-        var modal = this.renderCard();
-        this.$el.html(modal.html())
-        this.renderConditions();
+        this.taskStatusView = new TaskStatusView({status: this.model.get('status')});
+        taskStatusEl.append(this.taskStatusView.render());
     },
 
     renderCard: function() {
         var params = {
-            message: this.model.get("message"),
             description: this.model.get("description"),
             picture_id: this.model.get("picture_file_id"),
             createMode: this.createMode
         };
         var taskCardEl = $(this.template(params).trim());
+
+        if (this.messageView == null) {
+            this.messageView = new TaskMessageView({
+                model: this.model,
+                createMode: this.createMode,
+                el: taskCardEl.find('#messageCont')
+            });
+        }
         this.renderStatus(taskCardEl);
         return taskCardEl;
     },
@@ -145,26 +146,18 @@ var TaskCardView = Backbone.View.extend({
     },
 
     close: function(){
+        this.taskStatusView.remove();
+        this.conditionViews.forEach(function (condition) {
+            condition.remove();
+        });
         this.removeTmpPicture();
-        // COMPLETELY UNBIND THE VIEW
         this.undelegateEvents();
 
         this.$el.removeData().unbind();
 
-        // Remove view from DOM
         this.remove();
+        this.unbind();
         Backbone.View.prototype.remove.call(this);
-    },
-
-    editMessage: function() {
-        this.messageView.toggle();
-        this.messageEditView.toggle();
-        this.messageTextArea.css('background-color', '');
-    },
-
-    cancelEditMessage() {
-        this.messageView.toggle();
-        this.messageEditView.toggle();
     },
 
     cancelEditDescription: function() {
@@ -178,10 +171,19 @@ var TaskCardView = Backbone.View.extend({
     },
 
     changeMessageHandler: function() {
-        this.messageTextArea.css('background-color', '');
-        this.saveBtn.show();
-        if (this.messageTextArea.val().length >= 100) {
-            this.addInfoAlert('moreThan100Chars');
+        if (!this.model.isValid()) {
+            this.saveBtn.hide();
+            switch (this.model.validationError ) {
+                case Task.prototype.erorrTypes.moreThan100Chars :
+                    this.addInfoAlert('moreThan100Chars');
+                    break;
+                case Task.prototype.erorrTypes.emptyMessage :
+                    this.messageView.setRedColorWhenError();
+                    this.addInfoAlert('emptyMessage');
+                    break;
+            }
+        } else {
+            this.saveBtn.show();
         }
     },
 
@@ -194,22 +196,12 @@ var TaskCardView = Backbone.View.extend({
     },
 
     save: function() {
-        if (!this.validate()) {
+        if (!this.model.isValid()) {
             return false;
         }
-        this.model.set("message", this.messageEditView.find("textarea").val());
         this.model.set("description", this.descriptionEditView.find("textarea").val());
         var result = this.model.save();
         this.saveBtn.hide();
-    },
-
-    validate: function() {
-        if (this.messageTextArea.val() == '') {
-            this.messageTextArea.css('background-color', '#ff80a0');
-            this.addInfoAlert('emptyMessage');
-            return false;
-        }
-        return true;
     },
 
     addInfoAlert: function (messageId) {
@@ -223,12 +215,6 @@ var TaskCardView = Backbone.View.extend({
         }
     },
 
-    prepareForNewTask: function() {
-        this.messageView.hide();
-        this.messageEditView.show();
-        this.cancelEditIcon.hide();
-    },
-
     onSaveHandler: function(result) {
         if (result.status == "OK") {
             this.saveBtn.hide();
@@ -238,8 +224,8 @@ var TaskCardView = Backbone.View.extend({
                 app.MainPanelView.taskPanelView.model.tasks.add(newTask);
             }
             this.tmpPicture = null;
-            this.model.update(result.task);
-            this.refreshCard();
+            this.model.update(result.task,  {silent: true}); //TODO we won't needthis late
+            this.renderConditions();
         }
     },
 
