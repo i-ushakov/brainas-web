@@ -4,13 +4,13 @@ var ConditionTypeSelectorView = Backbone.View.extend({
     template: _.template($('#condition-type-selector-template').html()),
 
     events: {
-        'click .add-gps-event': 'addLocationEvent',
-        'click .add-time-event': 'addTimeEvent',
+        'click .add-gps-event': 'addLocationCondition',
+        'click .add-time-event': 'addTimeCondition',
         'click .cancel-condition-icon': 'cancelAddingCondition'
     },
 
     initialize: function (conditions) {
-        _.bindAll(this, 'addLocationEvent');
+        _.bindAll(this, 'addLocationCondition', 'addTimeCondition');
         this.conditions = conditions;
         this.render();
     },
@@ -23,50 +23,35 @@ var ConditionTypeSelectorView = Backbone.View.extend({
         this.$el.html(this.template(params));
     },
 
-    addLocationEvent: function(e) {
+    addLocationCondition: function(e) {
         condition = this.createEmptyCondition();
-
-        eventJSON = {};
-        eventJSON.id = null;
-        eventJSON.type = "LOCATION";
+        condition.set('eventType', 'LOCATION');
 
         if (navigator.geolocation) {
             var location = app.getCurrentUserLocation();
             if (location != null) {
-                eventJSON.params = {lat: location.latitude, lng: location.longitude, radius: 100};
+                var params = {lat: location.latitude, lng: location.longitude, radius: 100};
             } else {
-                eventJSON.params = {lat: 0, lng: 0, radius: 100};
+                var params = {lat: 0, lng: 0, radius: 100};
             }
         }
         else {
             console.log('Geolocation is not supported for this Browser/OS version yet.');
         }
 
-
-
-        var events = {
-            LOCATION: new Event(eventJSON) || null
-        }
-
-        condition.set('events', events);
+        condition.set('params', params);
         this.conditions.trigger("eventWasAdded", this);
         this.remove();
     },
 
-    addTimeEvent: function(e) {
+    addTimeCondition: function(e) {
         var condition = this.createEmptyCondition();
-
-        eventJSON = {};
-        eventJSON.id = null;
-        eventJSON.type = "TIME";
+        condition.set('eventType', 'TIME');
 
         date = new Date();
-        eventJSON.params = {datetime:  moment(date).format("DD-MM-YYYY HH:mm:ss"), offset: date.getTimezoneOffset()}
-        var events = {
-            TIME: new Event(eventJSON) || null
-        }
+        var params = {datetime:  moment(date).format("DD-MM-YYYY HH:mm:ss"), offset: date.getTimezoneOffset()}
 
-        condition.set('events', events);
+        condition.set('params', params);
         this.conditions.trigger("eventWasAdded", this);
         this.remove();
     },
@@ -86,7 +71,7 @@ var ConditionTypeSelectorView = Backbone.View.extend({
     haveATimeCondition: function () {
         var result = false;
         this.conditions.each(function(condition) {
-            if (condition.get("events").TIME != undefined) {
+            if (condition.get("eventType") == 'TIME') {
                 result = true;
             }
         });

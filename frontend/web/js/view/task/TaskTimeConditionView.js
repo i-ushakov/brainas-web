@@ -24,13 +24,12 @@ var TaskTimeConditionView = Backbone.View.extend({
 
     initialize: function (options) {
         this.parent = options.parent;
-        this.event = this.model.get("events").TIME || null;
         this.render();
     },
 
     render: function() {
         var params = {
-            event: this.event
+            condition: this.model
         };
         this.$el.html(this.template(params));
         return this.$el;
@@ -50,7 +49,7 @@ var TaskTimeConditionView = Backbone.View.extend({
 
     initializeDatePicker: function() {
         var self = this;
-        var datetime = this.event.get("params").datetime;
+        var datetime = this.model.get("params").datetime;
         this.$el.find(".datetimepicker").datetimepicker({
             inline: true,
             sideBySide: true,
@@ -59,7 +58,7 @@ var TaskTimeConditionView = Backbone.View.extend({
 
         this.$el.find(".datetimepicker").on("dp.change", function (e) {
             params = {datetime: e.date.format('DD-MM-YYYY HH:mm:ss'), offset: e.date.utcOffset()};
-            self.event.set("params", params);
+            self.model.set("params", params);
             self.model.trigger("conditionWasChanged", this.model);
         });
     },
