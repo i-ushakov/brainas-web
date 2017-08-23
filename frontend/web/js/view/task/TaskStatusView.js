@@ -24,6 +24,15 @@ var TaskStatusView = Backbone.View.extend({
 
     render: function() {
         this.$el.html(this.template({status: this.model.get('status')}));
+        this.$el.attr('id','statusView_' + this.model.get('id'));
         return this.$el;
+    },
+
+    destroy: function () {
+        this.model.off();
+        this.undelegateEvents();
+        this.$el.removeData().unbind();
+        this.remove();
+        Backbone.View.prototype.remove.call(this);
     }
 });

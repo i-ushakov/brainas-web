@@ -45,6 +45,8 @@ TaskMessageView = Backbone.View.extend({
         if (this.createMode) {
             this.prepareForNewTask();
         }
+
+        this.$el.attr('messageCont_' + this.model.get('id'))
     },
 
     editMessage: function() {
@@ -65,6 +67,14 @@ TaskMessageView = Backbone.View.extend({
 
     setRedColorWhenError: function () {
         this.messageTextArea.css('background-color', '#ff80a0');
+    },
+
+    destroy: function () {
+        this.model.off();
+        this.undelegateEvents();
+        this.$el.removeData().unbind();
+        this.remove();
+        Backbone.View.prototype.remove.call(this);
     }
 });
 

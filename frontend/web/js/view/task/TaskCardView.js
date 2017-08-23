@@ -17,7 +17,6 @@ var TaskCardView = Backbone.View.extend({
     },
 
     messageView: null,
-
     taskStatusView : null,
 
     conditionViews: [],
@@ -107,7 +106,7 @@ var TaskCardView = Backbone.View.extend({
         };
         var taskCardEl = $(this.template(params).trim());
 
-        if (this.messageView == null) {
+        if (this.messageView == null) {// TODO maybe we don't need this IF
             this.messageView = new TaskMessageView({
                 model: this.model,
                 createMode: this.createMode,
@@ -125,13 +124,13 @@ var TaskCardView = Backbone.View.extend({
         self.$el.find('.task-conditions-cont').html('');
 
         self.model.get("conditions").each(function(condition) {
-            if (condition.getType() == 'LOCATION') {
+            if (condition.get('eventType') == 'LOCATION') {
                 var conditionView = new TaskLocationConditionView({
                         model: condition,
                         parent: self
                     }
                 );
-            } else if (condition.getType() == 'TIME') {
+            } else if (condition.get('eventType') == 'TIME') {
                 var conditionView = new TaskTimeConditionView({
                         model: condition,
                         parent: self
@@ -146,11 +145,11 @@ var TaskCardView = Backbone.View.extend({
         });
     },
 
-    close: function(){
-        this.taskStatusView.remove();
+    close: function() {
         this.conditionViews.forEach(function (condition) {
             condition.remove();
         });
+
         this.removeTmpPicture();
         this.undelegateEvents();
 
@@ -159,6 +158,10 @@ var TaskCardView = Backbone.View.extend({
         this.remove();
         this.unbind();
         Backbone.View.prototype.remove.call(this);
+
+        //remove iternal Views
+        this.taskStatusView.destroy();
+        this.messageView.destroy();
     },
 
     cancelEditDescription: function() {
