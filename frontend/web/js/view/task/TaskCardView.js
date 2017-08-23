@@ -65,6 +65,8 @@ var TaskCardView = Backbone.View.extend({
 
         this.render();
 
+        // elements
+        this.pictureEl = this.$el.find('.task-picture-cont img');
         this.descriptionView = this.$el.find('.task-description-cont');
         this.descriptionEditView = this.$el.find('.task-description-edit');
         this.saveBtn = this.$el.find('#save-changes-btn');
@@ -76,7 +78,6 @@ var TaskCardView = Backbone.View.extend({
 
         //this.listenTo(this.model, 'change', this.renderContent); //TODO render internal part of window updatable
 
-        debugger
         this.model.on({"change": this.changeMessageHandler});
         this.model.on({"save": this.onSaveHandler});
     },
@@ -94,7 +95,7 @@ var TaskCardView = Backbone.View.extend({
 
     renderStatus: function(taskCardEl) {
         var taskStatusEl= taskCardEl.find('.task-status-lbl');
-        this.taskStatusView = new TaskStatusView({status: this.model.get('status')});
+        this.taskStatusView = new TaskStatusView({model: this.model});
         taskStatusEl.append(this.taskStatusView.render());
     },
 
@@ -171,6 +172,8 @@ var TaskCardView = Backbone.View.extend({
     },
 
     changeMessageHandler: function() {
+        this.updatePicture();
+
         if (!this.model.isValid()) {
             this.saveBtn.hide();
             switch (this.model.validationError ) {
@@ -184,6 +187,15 @@ var TaskCardView = Backbone.View.extend({
             }
         } else {
             this.saveBtn.show();
+        }
+    },
+
+    updatePicture: function () {
+        var pictureFileId = this.model.get("picture_file_id");
+        if (pictureFileId === undefined) {
+            this.pictureEl.attr('src', app.url + "images/pictures.png");
+        } else {
+            this.pictureEl.attr('src', app.googleDriveImageUrl + this.model.get("picture_file_id"));
         }
     },
 
@@ -292,7 +304,6 @@ var TaskCardView = Backbone.View.extend({
 
     saveNewPicture: function() {
         if(this.tmpPicture){
-            var self = this;
             this.model.set('picture_file_id', this.tmpPicture.pictureFileId);
             this.model.set('picture_name', this.tmpPicture.pictureName);
             this.model.save();

@@ -15,15 +15,9 @@ var TaskPanelView = Backbone.View.extend({
     template: _.template($('#task-panel-template').html()),
 
     initialize: function() {
-        _.bindAll(this, 'onTaskSaveHandler', 'rerenderAllTiles');
+        _.bindAll(this, 'rerenderAllTiles');
 
         var self = this;
-
-        self.model.tasks.on("add", function(model) {
-            model.on({"save": self.onTaskSaveHandler});
-            model.on({"change": self.onTaskSaveHandler});
-            //self.addTask(model);
-        });
 
         self.model.tasks.on('sort', this.rerenderAllTiles)
 
@@ -50,8 +44,8 @@ var TaskPanelView = Backbone.View.extend({
     },
 
     addTask: function(task) {
-        var taskTileView = new TaskTileView({model : task})
-        this.$el.find(".add-new-task-btn").after(taskTileView.render());
+        var taskTileView = new TaskTileView({model : task});
+        this.$el.find(".add-new-task-btn").after(taskTileView.$el);
         this.taskTileViews[task.id] = taskTileView;
     },
 
@@ -61,16 +55,8 @@ var TaskPanelView = Backbone.View.extend({
     },
 
     addNewTaskButton: function() {
-        var taskEl = new TaskTileView({addTaskButton: true}).render();
+        var taskEl = new TaskTileView({addTaskButton: true}).$el;
         this.$el.append(taskEl);
-    },
-
-    onTaskSaveHandler: function (task) {
-        //var task = result.task;
-        var taskTileView = this.taskTileViews[task.id];
-        if (taskTileView != undefined && taskTileView != null) {
-            taskTileView.refresh();
-        }
     },
 
     signInBtnHandler : function () {

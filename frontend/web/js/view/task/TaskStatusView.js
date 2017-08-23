@@ -17,11 +17,13 @@ var TaskStatusView = Backbone.View.extend({
     events: {},
 
     initialize: function (options) {
-        this.status = options.status;
+        _.bindAll(this, 'render');
+
+       this.model.on({"change": this.render});
     },
 
     render: function() {
-        this.$el.html(this.template({status: this.status}));
+        this.$el.html(this.template({status: this.model.get('status')}));
         return this.$el;
     }
 });
