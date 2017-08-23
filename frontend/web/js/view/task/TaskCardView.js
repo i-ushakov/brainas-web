@@ -146,6 +146,8 @@ var TaskCardView = Backbone.View.extend({
     },
 
     close: function() {
+        this.model.set("preventUpdateFromServer", false);
+
         this.conditionViews.forEach(function (condition) {
             condition.remove();
         });
