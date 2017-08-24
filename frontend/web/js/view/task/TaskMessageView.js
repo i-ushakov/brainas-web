@@ -46,7 +46,7 @@ TaskMessageView = Backbone.View.extend({
             this.prepareForNewTask();
         }
 
-        this.$el.attr('messageCont_' + this.model.get('id'))
+        this.$el.attr('id','messageCont_' + this.model.get('id'))
     },
 
     editMessage: function() {
@@ -70,7 +70,6 @@ TaskMessageView = Backbone.View.extend({
     },
 
     destroy: function () {
-        this.model.off();
         this.undelegateEvents();
         this.$el.removeData().unbind();
         this.remove();

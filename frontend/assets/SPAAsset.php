@@ -44,7 +44,7 @@ class SPAAsset extends AssetBundle
         'js/view/task/TaskTimeConditionView.js',
 
         // Task card
-        'js/view/task/card/TaskMessageView.js',
+        'js/view/task/TaskMessageView.js',
         'js/view/task/TaskCardView.js',
         'js/view/task/TaskCardView.js',
         'js/collections/Tasks.js',
