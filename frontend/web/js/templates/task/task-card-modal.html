@@ -18,15 +18,7 @@
                             <% } %>
                         </div>
                         <div class="task-general-info-cont col-md-4">
-                            <div class="task-message-cont"><%= message %></div>
-                            <div class="task-message-edit" style="display:none">
-                                <% if (createMode == false) { %>
-                                    <div class="cancel-edit-icon-cont">
-                                        <img class="cancel-edit-icon" src = "<%= app.url %>images/cancel_edit_icon.png" />
-                                    </div>
-                                <% } %>
-                                <textarea maxlength="100"><%= message %></textarea>
-                            </div>
+                            <div id="messageCont"></div>
                             <div class="task-info-icons">
                                 <div class="task-status-lbl"></div>
                                 <div class="category-label task-info-icon"

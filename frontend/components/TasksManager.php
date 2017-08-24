@@ -252,14 +252,11 @@ class TasksManager
                 $condition = new Condition();
                 $condition->task_id = $taskId;
             }
-            foreach ($conditionData['events'] as $eventType => $eventAr) {
-                if (empty($eventAr)) {
-                    continue;
-                }
-                $condition->type = EventType::getTypeIdByName($eventAr['type']);
-                $condition->params = Json::encode($eventAr['params']);
-                $condition->save();
-            }
+
+            $condition->type = EventType::getTypeIdByName($conditionData['eventType']);
+            $condition->params = Json::encode($conditionData['params']);
+            $condition->save();
+
         }
     }
 

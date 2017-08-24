@@ -11,6 +11,7 @@ require_once(Yii::$app->basePath . '/web/js/templates/panels/task-panel.html');
 require_once(Yii::$app->basePath . '/web/js/templates/panels/tasks-control-board.html');
 require_once(Yii::$app->basePath . '/web/js/templates/task/task-tile.html');
 require_once(Yii::$app->basePath . '/web/js/templates/task/task-status.html');
+require_once(Yii::$app->basePath . '/web/js/templates/task/card/message.html');
 require_once(Yii::$app->basePath . '/web/js/templates/task/task-card-modal.html');
 require_once(Yii::$app->basePath . '/web/js/templates/task/task-condition.html');
 require_once(Yii::$app->basePath . '/web/js/templates/task/task-time-condition.html');

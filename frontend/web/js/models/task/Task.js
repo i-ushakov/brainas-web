@@ -32,10 +32,13 @@ var Task = Backbone.Model.extend({
         this.set('conditions', conditions);
     },
 
-    validate: function (attr) {
-        //if (!attr.BookName) {
-            //return "Invalid BookName supplied."
-        //}
+    validate: function (attrs, options) {
+        if (attrs.message.length > 100 ) {
+            return "more_than_100_Chars";
+        }
+        if (attrs.message == 0) {
+            return Task.prototype.erorrTypes.emptyMessage;
+        }
     },
 
     save: function() {
@@ -85,17 +88,22 @@ var Task = Backbone.Model.extend({
         });
     },
 
-    update: function(task) {
-        this.set("id", task.id);
-        this.set("message", task.message);
-        this.set("description", task.description);
-        this.set("status", task.status);
+    update: function(task, options) {
+        this.set("id", task.id, options);
+        this.set("message", task.message, options);
+        this.set("description", task.description, options);
+        this.set("status", task.status, options);
         //this.set("picture", task.picture);
         var conditions = new Conditions();
         _.each(task.conditions, function(condition) {
             var condition = new Condition(condition);
             conditions.push(condition);
         });
-        this.set('conditions', conditions);
+        this.set('conditions', conditions, options);
     },
 });
+
+Task.prototype.erorrTypes  = {
+    moreThan100Chars: 'more_than_100_chars',
+    emptyMessage : 'empty_message'
+};

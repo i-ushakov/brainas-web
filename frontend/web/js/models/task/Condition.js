@@ -9,44 +9,36 @@ var Condition = Backbone.Model.extend({
     type : null,
 
     defaults : {
-        id : null,
-        events: {}
+        id : null
     },
 
     initialize : function(condition) {
         if (condition != null) {
             this.set('id', condition.conditionId);
             this.set('conditionId', condition.conditionId);
-            var events = {};
-            if (condition.LOCATION) {
-                events.LOCATION = new Event(condition.LOCATION);
-            } else if (condition.TIME) {
-                events.TIME = new Event(condition.TIME);
-            }
-
-            this.set('events', events);
+            this.set('eventType', condition.eventType);
+            this.set('params', condition.params);
         }
     },
 
-    getType: function() {
-        if (this.get("events")['LOCATION'] != undefined) {
-            return "LOCATION";
-        } else if (this.get("events")['TIME'] != undefined) {
-            return "TIME";
+    getConditionInfo: function() {
+        var info = "";
+        switch (this.get('eventType')) {
+            case "LOCATION" :
+                if (this.get('params').address != undefined && this.get('params').address !="") {
+                    info = "<span>Location:</span> " + this.get('params').address;
+                } else {
+                    info = "<span>Location:</span> " + "{lat:" + this.get('params').lat.toFixed(3) +
+                        ", lng:" + this.get('params').lng.toFixed(3) + ", rad:" + this.get('params').radius + "}";
+                    //GoogleApiHelper googleApiHelper = ((BrainasApp)BrainasApp.getAppContext()).getGoogleApiHelper();
+                    //googleApiHelper.setAddressByLocation((EventGPS)event);
+                }
+                break;
+            case "TIME" :
+                info = this.get('params').datetime;
+                break;
         }
-    },
 
-    validate: function(attributes) {
-        this.validationErrors = [];
-        var event = attributes.events[Object.keys(attributes.events)[0]];
-        if (typeof event === 'undefined') {
-            this.validationErrors.push("No events in condition");
-        }
-        else if (!event.isValid()) {
-            this.validationErrors.push(event.validationErrors);
-        }
-        if(!_.isEmpty(this.validationErrors)) {
-            return this.validationErrors;
-        }
+        return info;
     }
 });

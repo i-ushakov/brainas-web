@@ -41,9 +41,8 @@ class TaskConverter
             $c = array();
             $c['conditionId'] = $condition->id;
             $eventName = $condition->eventType->name;
-            $c[$eventName]['eventId'] = $condition->id;
-            $c[$eventName]['type'] = $eventName;
-            $c[$eventName]['params'] = json_decode($condition->params);
+            $c['eventType'] = $eventName;
+            $c['params'] = json_decode($condition->params);
             $item['conditions'][] = $c;
         }
         return $item;
