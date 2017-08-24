@@ -19,7 +19,7 @@ var TaskPanelView = Backbone.View.extend({
 
         var self = this;
 
-        self.model.tasks.on('sort', this.rerenderAllTiles)
+        self.model.tasks.on('sort', this.rerenderAllTiles);
 
         self.model.tasks.on("remove", function(model) {
             self.removeTask(model);
