@@ -19,7 +19,7 @@ var TaskStatusView = Backbone.View.extend({
     initialize: function (options) {
         _.bindAll(this, 'render');
 
-       this.model.on({"change": this.render});
+       this.listenTo(this.model, 'change', this.render);
     },
 
     render: function() {
@@ -29,7 +29,6 @@ var TaskStatusView = Backbone.View.extend({
     },
 
     destroy: function () {
-        this.model.off();
         this.undelegateEvents();
         this.$el.removeData().unbind();
         this.remove();
