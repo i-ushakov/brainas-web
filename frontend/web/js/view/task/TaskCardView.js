@@ -22,8 +22,6 @@ var TaskCardView = Backbone.View.extend({
     conditionViews: [],
 
     events: {
-        'click .task-description-cont': 'editDescription',
-        'click .task-description-edit .cancel-edit-icon': 'cancelEditDescription',
         'click #save-changes-btn': 'save',
         'click #addConditionBtn': 'addConditionHandler',
         'mouseenter .task-picture-cont' : 'showChangePictureBtn',
@@ -66,8 +64,6 @@ var TaskCardView = Backbone.View.extend({
 
         // elements
         this.pictureEl = this.$el.find('.task-picture-cont img');
-        this.descriptionView = this.$el.find('.task-description-cont');
-        this.descriptionEditView = this.$el.find('.task-description-edit');
         this.saveBtn = this.$el.find('#save-changes-btn');
 
         if (this.createMode == true) {
@@ -106,6 +102,7 @@ var TaskCardView = Backbone.View.extend({
         };
         var taskCardEl = $(this.template(params).trim());
 
+        // message
         if (this.messageView == null) {// TODO maybe we don't need this IF
             this.messageView = new TaskMessageView({
                 model: this.model,
@@ -113,6 +110,13 @@ var TaskCardView = Backbone.View.extend({
                 el: taskCardEl.find('#messageCont')
             });
         }
+
+        // description
+        this.descriptionView = new TaskDescriptionView({
+            model: this.model,
+            el: taskCardEl.find('#taskDescriptionCont')
+        });
+
         this.renderStatus(taskCardEl);
         return taskCardEl;
     },
@@ -166,16 +170,6 @@ var TaskCardView = Backbone.View.extend({
         this.messageView.destroy();
     },
 
-    cancelEditDescription: function() {
-        this.descriptionView.toggle();
-        this.descriptionEditView.toggle();
-    },
-
-    editDescription: function() {
-        this.descriptionView.toggle();
-        this.descriptionEditView.toggle();
-    },
-
     changeMessageHandler: function() {
         this.updatePicture();
 
@@ -216,7 +210,6 @@ var TaskCardView = Backbone.View.extend({
         if (!this.model.isValid()) {
             return false;
         }
-        this.model.set("description", this.descriptionEditView.find("textarea").val());
         var result = this.model.save();
         this.saveBtn.hide();
     },
