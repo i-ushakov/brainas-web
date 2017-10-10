@@ -191,12 +191,19 @@ var TaskLocationConditionView = Backbone.View.extend({
             }
         });
 
-        this.parent.changeLOCATIONHandler();
+        this.parent.model.trigger('change', this.parent.model);
     },
 
     deleteConditionHandler: function() {
         this.model.trigger("conditionWasRemoved", this.model);
         this.remove();
         return false;
+    },
+
+    destroy: function () {
+        this.undelegateEvents();
+        this.$el.removeData().unbind();
+        this.remove();
+        Backbone.View.prototype.remove.call(this);
     }
 });
