@@ -7,16 +7,7 @@
                     <!-- Bootstrap info alert -->
                     <div class="alerts-cont"></div>
                     <div class="task-card-top container">
-                        <div class="task-picture-cont col-md-2">
-                            <div class="change-picture-btn">
-                                <div class="inner" data-toggle="collapse" data-target=".picture-picker-block">Change picture</div>
-                            </div>
-                            <% if (picture_id) { %>
-                                <img class="task-card-image" src = "<%= app.googleDriveImageUrl + picture_id %>" />
-                            <% } else { %>
-                                <img class='task-card-image' src="<%= app.url %>images/pictures.png" />
-                            <% } %>
-                        </div>
+                        <div id="taskPictureCont" class="task-picture-cont col-md-2"></div>
                         <div class="task-general-info-cont col-md-4">
                             <div id="messageCont"></div>
                             <div class="task-info-icons">
@@ -31,30 +22,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="picture-picker-block panel panel-default panel-collapse collapse">
-                        <div class="picture-picker-left col-md-3">
-                            <div class="picture-placeholder">Picture  is not selected</div>
-                            <div class="picture-preview-cont" style="display: none;">
-                                <img id="picture-preview" src="" />
-                            </div>
-                        </div>
-                        <div class="col-md-9">
-                            <div class="upload-btn-cont">
-                                <form action="/" method="post" id="uploadTaskPicture" name="upload_picture" enctype="multipart/form-data">
-                                    <input type="file" name="pictureUploadBtn" id="pictureUploadBtn">
-                                </form>
-                            </div>
-                            <div class="download-ref-cont">
-                                <input id="downloadRefInput" placeholder="Enter image url"/>
-                                <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
-                            </div>
-                            <div class="buttons-cont">
-                                <button type="button" id="cancelPictureBtn" class="btn btn-default">Cancel</button>
-                                <button type="button" id="savePictureBtn" class="btn btn-primary disabled">Save</button>
-                            </div>
-                        </div>
-                        <div class="clear"></div>
-                    </div>
+                    <div id="pictureUploaderCont" class="picture-picker-block panel panel-default panel-collapse collapse"></div>
                     <div class="task-card-middle">
                         <div id="taskDescriptionCont"></div>
                         <div id="taskConditionsPanel"></div>

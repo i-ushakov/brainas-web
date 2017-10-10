@@ -21,16 +21,11 @@ var TaskCardView = Backbone.View.extend({
     descriptionView: null,
     conditionsPanelView: null,
     taskStatusView : null,
+    pictureView: null,
+    pictureUploaderView: null,
 
     events: {
-        'click #save-changes-btn': 'save',
-        'mouseenter .task-picture-cont' : 'showChangePictureBtn',
-        'mouseleave .task-picture-cont' : 'hideChangePictureBtn',
-        'click .task-picture-cont' : 'showChangePictureBlock',
-        'click #cancelPictureBtn' : 'cancelChangePicture',
-        'click #savePictureBtn' : 'saveNewPicture',
-        'change #pictureUploadBtn' : 'uploadPictureHandler',
-        'input #downloadRefInput' : 'onDownloadRefChanged'
+        'click #save-changes-btn': 'save'
     },
 
     template: _.template( $('#task-card-modal-template').html()),
@@ -38,9 +33,6 @@ var TaskCardView = Backbone.View.extend({
     initialize: function (options) {
         _.bindAll(this,
             'onSaveHandler',
-            'saveNewPicture',
-            'uploadPictureHandler',
-            'cancelChangePicture',
             'changeTaskHandler',
             'close');
 
@@ -94,6 +86,13 @@ var TaskCardView = Backbone.View.extend({
         };
         var taskCardEl = $(this.template(params).trim());
 
+        // picture view
+        this.pictureView = new PictureView({
+                model: this.model,
+                el: taskCardEl.find('#taskPictureCont')
+            }
+        );
+
         // message
         if (this.messageView == null) {// TODO maybe we don't need this IF
             this.messageView = new TaskMessageView({
@@ -102,6 +101,14 @@ var TaskCardView = Backbone.View.extend({
                 el: taskCardEl.find('#messageCont')
             });
         }
+
+        // picture uploader view
+        this.pictureUploaderView = new PictureUploaderView({
+                model: this.model,
+                el: taskCardEl.find('#pictureUploaderCont'),
+                parent: this
+            }
+        );
 
         // description
         this.descriptionView = new TaskDescriptionView({
@@ -122,7 +129,6 @@ var TaskCardView = Backbone.View.extend({
     close: function() {
         this.model.set("preventUpdateFromServer", false);
 
-        this.removeTmpPicture();
         this.undelegateEvents();
 
         this.$el.removeData().unbind();
@@ -133,6 +139,7 @@ var TaskCardView = Backbone.View.extend({
 
         //remove iternal Views
         this.taskStatusView.destroy();
+        this.pictureView.destroy();
         this.messageView.destroy();
         this.descriptionView.destroy();
         this.conditionsPanelView.destroy();
@@ -201,174 +208,6 @@ var TaskCardView = Backbone.View.extend({
 
     remove: function(){
         this.model.set("preventUpdateFromServer", false);
-    },
-
-    showChangePictureBtn: function() {
-        $('.change-picture-btn').show();
-    },
-
-    hideChangePictureBtn: function() {
-        $('.change-picture-btn').hide();
-    },
-
-    showChangePictureBlock: function() {
-
-    },
-
-    saveNewPicture: function() {
-        if(this.tmpPicture){
-            this.model.set('picture_file_id', this.tmpPicture.pictureFileId);
-            this.model.set('picture_name', this.tmpPicture.pictureName);
-            this.model.save();
-        }
-        $('.picture-picker-block').collapse('toggle');
-    },
-
-    cancelChangePicture: function() {
-        this.removeTmpPicture();
-        this.setPlaceHolderText();
-        $('#savePictureBtn').addClass('disabled');
-        $('.picture-picker-block').collapse('toggle');
-    },
-
-    removeTmpPicture: function() {
-        if (this.tmpPicture) {
-            var pictureForRemove = new Picture({
-                task_id: null,
-                name: this.tmpPicture.pictureName,
-                file_id: this.tmpPicture.pictureFileId
-            });
-            pictureForRemove.remove();
-            this.tmpPicture = null;
-            $('img#picture-preview').attr('src', '');
-            $('#pictureUploadBtn').replaceWith($('#pictureUploadBtn').clone(true));
-
-        }
-    },
-
-    uploadPictureHandler: function(event) {
-        var self = this;
-        function readURL(input) {
-            // TODO move to separate function
-            // and use this http://stackoverflow.com/questions/12281775/get-data-from-file-input-in-jquery
-            if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-                alert('The File APIs are not fully supported in this browser.');
-                return;
-            }
-
-            if (input.files && input.files[0]) {
-                // max size 10 MB for picture
-                if (input.files[0].size > 10485760) {
-                    self.addInfoAlert('bigPicture');
-                    return;
-                }
-
-                if (input.files[0].type != "image/jpeg" && input.files[0].type != "image/png") {
-                    self.addInfoAlert('wrongPictureFormat');
-                    return;
-                }
-                var reader = new FileReader();
-                /*var fd = new FormData(document.getElementById("uploadTaskPicture"));
-                fd.append("CustomField", "This is some extra data");
-
-                $.ajax({
-                    url: "/picture/upload",
-                    type: "POST",
-                    data: fd,
-                    processData: false,  // tell jQuery not to process the data
-                    contentType: 'application/x-www-form-urlencoded',   // tell jQuery not to set contentType
-                    success: function(response){
-                        console.log("Response was "  + response);
-                    },
-                    failure: function(result){
-                        console.log("FAILED");
-                        console.log(result);
-                    }
-                });*/
-                reader.onload = function (e) {
-                    self.addSpinerLoader();
-                    $('#image').attr('src', e.target.result);
-                    $.post('/picture/upload', {imageData:e.target.result}, function(data){
-                        $('#savePictureBtn').removeClass('disabled');
-                        dataJson = JSON.parse(data);
-                        if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
-                            self.removeTmpPicture();
-                            self.tmpPicture = {
-                                pictureName : dataJson.picture_name,
-                                pictureFileId : dataJson.picture_file_id,
-                            }
-                            $('img#picture-preview').attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
-                            $('.picture-preview-cont').show();
-                            $('.picture-placeholder').hide();
-                            $('#savePictureBtn').removeClass('disabled');
-                            self.setPlaceHolderText();
-                        } else {
-                            $('.picture-preview-con').hide();
-                            $('.picture-placeholder').show();
-                            self.setPlaceHolderText();
-                        }
-                        //recieve information back from php through the echo function(not required)
-
-                    }).fail(function(data) {
-                    });
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        var inputElement = event.target
-        readURL(inputElement);
-    },
-
-
-    onDownloadRefChanged : function () {
-        var self = this;
-        var imageUrl = $("#downloadRefInput").val();
-        this.addSpinerLoader();
-        $.post('/picture/download', {imageUrl:imageUrl}, function(data){
-            dataJson = JSON.parse(data);
-            if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
-                $('#savePictureBtn').removeClass('disabled');
-                self.removeTmpPicture();
-                self.tmpPicture = {
-                    pictureName : dataJson.picture_name,
-                    pictureFileId : dataJson.picture_file_id,
-                }
-                $('img#picture-preview').attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
-                $('.picture-preview-cont').show();
-                $('.picture-placeholder').hide();
-                $('#savePictureBtn').removeClass('disabled');
-                self.setPlaceHolderText();
-            } else if (dataJson.code === "bad_url" || dataJson.code === "bad_image_format") {
-                self.showErrorIconWithMessage(dataJson.message);
-                $('.picture-preview-cont').hide();
-                $('.picture-placeholder').show();
-            } else {
-                $('.picture-preview-cont').hide();
-                $('.picture-placeholder').show();
-                self.setPlaceHolderText();
-            }
-            //recieve information back from php through the echo function(not required)
-
-        }).always(function(data) {
-
-        });
-    },
-
-    addSpinerLoader: function() {
-        $('#savePictureBtn').addClass('disabled');
-        $('.picture-preview-cont').hide();
-        $('.picture-placeholder').show();
-        $('.picture-placeholder').html("<div class='loader'></div>");
-    },
-
-    removeSpinnerLoader: function() {
-
-    },
-
-    setPlaceHolderText: function() {
-        $('.picture-placeholder').html("Picture is not selected");
     },
 
     showErrorIconWithMessage: function(message) {

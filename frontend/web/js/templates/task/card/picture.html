@@ -1,0 +1,10 @@
+<script type="text/template" id="task-card-picture-template">
+    <div class="change-picture-btn">
+        <div class="inner" data-toggle="collapse" data-target=".picture-picker-block">Change picture</div>
+    </div>
+    <% if (picture_id) { %>
+        <img class="task-card-image" src = "<%= app.googleDriveImageUrl + picture_id %>" />
+    <% } else { %>
+        <img class='task-card-image' src="<%= app.url %>images/pictures.png" />
+    <% } %>
+</script>
