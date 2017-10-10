@@ -35,7 +35,7 @@ TaskDescriptionView = Backbone.View.extend({
         this.descriptionEditView = this.$el.find('.task-description-edit');
         this.messageTextArea = this.$el.find('textarea');
 
-        this.$el.attr('id','descriptionCont_' + this.model.get('id'))
+        this.$el.attr('id','descriptionCont_' + this.model.get('id'));
     },
 
     cancelEditDescription: function() {
@@ -52,4 +52,11 @@ TaskDescriptionView = Backbone.View.extend({
         this.messageTextArea.css('background-color', '');
         this.model.set('description', this.messageTextArea.val());
     },
+
+    destroy: function () {
+        this.undelegateEvents();
+        this.$el.removeData().unbind();
+        this.remove();
+        Backbone.View.prototype.remove.call(this);
+    }
 });
