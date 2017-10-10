@@ -34,7 +34,7 @@ class SPAAsset extends AssetBundle
         'js/collections/Conditions.js',
         'js/models/task/Task.js',
         'js/models/task/Picture.js',
-        'js/view/ConditionTypeSelectorView.js',
+        'js/view/task/ConditionTypeSelectorView.js',
         'js/view/panels/MainPanelView.js',
         'js/view/panels/TaskControlBoardView.js',
         'js/view/panels/TaskPanelView.js',
@@ -45,7 +45,8 @@ class SPAAsset extends AssetBundle
 
         // Task card
         'js/view/task/TaskMessageView.js',
-        'js/view/task/TaskCardView.js',
+        'js/view/task/TaskDescriptionView.js',
+        'js/view/task/ConditionsPanelView.js',
         'js/view/task/TaskCardView.js',
         'js/collections/Tasks.js',
         'js/app.js'

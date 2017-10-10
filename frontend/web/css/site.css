@@ -288,13 +288,14 @@ a.desc:after {
     margin: 3px;
     border-radius: 3px;
 }
-.task-description-cont {
+.descriptionCont {
     margin-bottom: 20px;
     border: solid 1px white;
     margin-top: 20px;
+    padding: 4px;
 }
 
-.task-description-cont:hover {
+.descriptionCont:hover {
     cursor: pointer;
     border: solid 1px black;
     background-color: cornsilk;

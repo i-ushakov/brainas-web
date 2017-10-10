@@ -56,29 +56,8 @@
                         <div class="clear"></div>
                     </div>
                     <div class="task-card-middle">
-                        <div class="task-description-cont">
-                            <%if (description!=undefined && description != null && description != "") { %>
-                            <%= description %>
-                            <% } else { %>
-                            <div class="task-empty-description">
-                                <div class="plus-desc">+</div><div class="add-desc">&nbsp;Add description</div>
-                                <div class="clear"></div>
-                            </div>
-                            <% } %>
-                        </div>
-                        <div class="task-description-edit" style="display:none">
-                            <div class="cancel-edit-icon-cont">
-                                <img class="cancel-edit-icon" src = "<%= app.url %>images/cancel_edit_icon.png" />
-                            </div>
-                            <textarea maxlength="5000"><%= description %></textarea>
-                        </div>
-                        <div class="task-conditions-cont"></div>
-                        <div class="condition-type-selector-cont"></div>
-                        <div id="addConditionBtnCont">
-                            <button type="button" id = "addConditionBtn" class="btn btn-success">
-                                <span class="glyphicon glyphicon-plus"></span> <span class="addConditionBtnLable">Add condition</span>
-                            </button>
-                        </div>
+                        <div id="taskDescriptionCont"></div>
+                        <div id="taskConditionsPanel"></div>
                     </div>
                 </div>
                 <div class="modal-footer">

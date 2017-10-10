@@ -67,5 +67,12 @@ var TaskTimeConditionView = Backbone.View.extend({
         this.model.trigger("conditionWasRemoved", this.model);
         this.remove();
         return false;
+    },
+
+    destroy: function () {
+        this.undelegateEvents();
+        this.$el.removeData().unbind();
+        this.remove();
+        Backbone.View.prototype.remove.call(this);
     }
 });

@@ -16,25 +16,21 @@ var TaskCardView = Backbone.View.extend({
         wrongPictureFormat : "You can upload only JPG and PNG files"
     },
 
+    // inner views
     messageView: null,
+    descriptionView: null,
+    conditionsPanelView: null,
     taskStatusView : null,
 
-    conditionViews: [],
-
     events: {
-        'click .task-description-cont': 'editDescription',
-        'click .task-description-edit .cancel-edit-icon': 'cancelEditDescription',
         'click #save-changes-btn': 'save',
-        'click #addConditionBtn': 'addConditionHandler',
         'mouseenter .task-picture-cont' : 'showChangePictureBtn',
         'mouseleave .task-picture-cont' : 'hideChangePictureBtn',
         'click .task-picture-cont' : 'showChangePictureBlock',
         'click #cancelPictureBtn' : 'cancelChangePicture',
         'click #savePictureBtn' : 'saveNewPicture',
         'change #pictureUploadBtn' : 'uploadPictureHandler',
-        'input #downloadRefInput' : 'onDownloadRefChanged',
-
-        'keyup .task-description-edit textarea': 'changeDescriptionHandler',
+        'input #downloadRefInput' : 'onDownloadRefChanged'
     },
 
     template: _.template( $('#task-card-modal-template').html()),
@@ -42,14 +38,10 @@ var TaskCardView = Backbone.View.extend({
     initialize: function (options) {
         _.bindAll(this,
             'onSaveHandler',
-            'onEventTypeSelectedHandler',
-            'onConditionCancledHandler',
-            'onDeleteConditionHandler',
             'saveNewPicture',
             'uploadPictureHandler',
             'cancelChangePicture',
-            'taskWasChangedHandler',
-            'changeMessageHandler',
+            'changeTaskHandler',
             'close');
 
         if (this.model === undefined) {
@@ -66,8 +58,6 @@ var TaskCardView = Backbone.View.extend({
 
         // elements
         this.pictureEl = this.$el.find('.task-picture-cont img');
-        this.descriptionView = this.$el.find('.task-description-cont');
-        this.descriptionEditView = this.$el.find('.task-description-edit');
         this.saveBtn = this.$el.find('#save-changes-btn');
 
         if (this.createMode == true) {
@@ -77,7 +67,7 @@ var TaskCardView = Backbone.View.extend({
 
         //this.listenTo(this.model, 'change', this.renderContent); //TODO render internal part of window updatable
 
-        this.model.on({"change": this.changeMessageHandler});
+        this.model.on({"change": this.changeTaskHandler});
         this.model.on({"save": this.onSaveHandler});
     },
 
@@ -88,8 +78,6 @@ var TaskCardView = Backbone.View.extend({
         $(modal.on('hidden.bs.modal', function () {
             self.close();
         }));
-
-        this.renderConditions();
     },
 
     renderStatus: function(taskCardEl) {
@@ -106,6 +94,7 @@ var TaskCardView = Backbone.View.extend({
         };
         var taskCardEl = $(this.template(params).trim());
 
+        // message
         if (this.messageView == null) {// TODO maybe we don't need this IF
             this.messageView = new TaskMessageView({
                 model: this.model,
@@ -113,44 +102,25 @@ var TaskCardView = Backbone.View.extend({
                 el: taskCardEl.find('#messageCont')
             });
         }
+
+        // description
+        this.descriptionView = new TaskDescriptionView({
+            model: this.model,
+            el: taskCardEl.find('#taskDescriptionCont')
+        });
+
+        //conditions panel
+        this.conditionsPanelView = new ConditionsPanelView({
+            model: this.model,
+            el: taskCardEl.find('#taskConditionsPanel')
+        });
+
         this.renderStatus(taskCardEl);
         return taskCardEl;
     },
 
-    renderConditions: function() {
-        var self = this;
-        self.conditionViews = [];
-
-        self.$el.find('.task-conditions-cont').html('');
-
-        self.model.get("conditions").each(function(condition) {
-            if (condition.get('eventType') == 'LOCATION') {
-                var conditionView = new TaskLocationConditionView({
-                        model: condition,
-                        parent: self
-                    }
-                );
-            } else if (condition.get('eventType') == 'TIME') {
-                var conditionView = new TaskTimeConditionView({
-                        model: condition,
-                        parent: self
-                    }
-                );
-            }
-            self.$el.find('.task-conditions-cont').append(
-                conditionView.render());
-            self.conditionViews.push(conditionView);
-            condition.on('conditionWasRemoved', self.onDeleteConditionHandler);
-            condition.on('conditionWasChanged', self.taskWasChangedHandler);
-        });
-    },
-
     close: function() {
         this.model.set("preventUpdateFromServer", false);
-
-        this.conditionViews.forEach(function (condition) {
-            condition.remove();
-        });
 
         this.removeTmpPicture();
         this.undelegateEvents();
@@ -164,19 +134,11 @@ var TaskCardView = Backbone.View.extend({
         //remove iternal Views
         this.taskStatusView.destroy();
         this.messageView.destroy();
+        this.descriptionView.destroy();
+        this.conditionsPanelView.destroy();
     },
 
-    cancelEditDescription: function() {
-        this.descriptionView.toggle();
-        this.descriptionEditView.toggle();
-    },
-
-    editDescription: function() {
-        this.descriptionView.toggle();
-        this.descriptionEditView.toggle();
-    },
-
-    changeMessageHandler: function() {
+    changeTaskHandler: function() {
         this.updatePicture();
 
         if (!this.model.isValid()) {
@@ -204,19 +166,10 @@ var TaskCardView = Backbone.View.extend({
         }
     },
 
-    changeDescriptionHandler: function() {
-        this.saveBtn.show();
-    },
-
-    changeLOCATIONHandler: function() {
-        this.saveBtn.show();
-    },
-
     save: function() {
         if (!this.model.isValid()) {
             return false;
         }
-        this.model.set("description", this.descriptionEditView.find("textarea").val());
         var result = this.model.save();
         this.saveBtn.hide();
     },
@@ -242,53 +195,8 @@ var TaskCardView = Backbone.View.extend({
             }
             this.tmpPicture = null;
             this.model.update(result.task,  {silent: true}); //TODO we won't needthis late
-            this.renderConditions();
+            this.conditionsPanelView.render();
         }
-    },
-
-    addConditionHandler: function(event) {
-        this.collapseAllConditions();
-        this.$el.find('#addConditionBtn').addClass('disabled');
-        $(this.el).off('click', '#addConditionBtn');
-        var conditions = this.model.get("conditions");
-
-        conditions.on('eventWasAdded', this.onEventTypeSelectedHandler);
-        conditions.on('conditionWasCancled', this.onConditionCancledHandler);
-        var conditionSelectorView = new ConditionTypeSelectorView(conditions);
-        this.$el.find('.condition-type-selector-cont').html(conditionSelectorView.$el);
-    },
-
-    onEventTypeSelectedHandler: function (obj) {
-        var self = this;
-        self.renderConditions();
-        var addedConditionView = self.conditionViews[self.conditionViews.length - 1];
-        addedConditionView.$el.find('.condition-row').trigger("click");
-        $('#addConditionBtn').removeClass('disabled');
-        $(this.el).on('click', '#addConditionBtn', function() {self.addConditionHandler();});
-        this.saveBtn.show();
-    },
-
-    onConditionCancledHandler: function(condition) {
-        var self = this;
-        self.model.get("conditions").remove(condition)
-        $('#addConditionBtn').removeClass('disabled');
-        $(self.el).on('click', '#addConditionBtn', function() {self.addConditionHandler();});
-    },
-
-    collapseAllConditions: function () {
-        var self = this;
-        _.each(self.conditionViews, function (condition) {
-            condition.collapseConditionArea()
-        });
-    },
-
-    onDeleteConditionHandler: function(condition) {
-        this.model.get("conditions").remove(condition);
-        this.saveBtn.show();
-    },
-
-    taskWasChangedHandler: function() {
-        this.saveBtn.show();
     },
 
     remove: function(){
