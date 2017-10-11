@@ -6,11 +6,7 @@ var app = app || {};
 
 PictureUploaderView = Backbone.View.extend({
 
-
-    messageLable : null,
-    messageEditCont : null,
-    messageTextArea : null,
-    cancelEditIcon : null,
+    tmpPicture : null,
 
     events : {
         'click #cancelPictureBtn' : 'cancelChangePicture',
@@ -31,7 +27,8 @@ PictureUploaderView = Backbone.View.extend({
             'cancelChangePicture',
             'onDownloadRefChanged',
             'uploadPictureHandler',
-            'saveNewPicture'
+            'saveNewPicture',
+            'pictureUploadCallback'
         );
     },
 
@@ -41,6 +38,9 @@ PictureUploaderView = Backbone.View.extend({
 
         // view elements
         this.$saveBtn = this.$el.find('#savePictureBtn');
+        this.$previewImage = this.$el.find('img#picture-preview');
+        this.$previewCont = this.$el.find('.picture-preview-cont');
+        this.$picturePlaceholder = this.$el.find('.picture-placeholder');
 
         // set unique id
         this.$el.attr('id','taskPictureUploaderCont_' + this.model.get('id'))
@@ -60,132 +60,85 @@ PictureUploaderView = Backbone.View.extend({
         $.post('/picture/download', {imageUrl:imageUrl}, function(data){
             dataJson = JSON.parse(data);
             if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
-                $('#savePictureBtn').removeClass('disabled');
+                self.$saveBtn.removeClass('disabled');
                 self.removeTmpPicture();
                 self.tmpPicture = {
                     pictureName : dataJson.picture_name,
                     pictureFileId : dataJson.picture_file_id,
-                }
-                $('img#picture-preview').attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
-                $('.picture-preview-cont').show();
-                $('.picture-placeholder').hide();
-                $('#savePictureBtn').removeClass('disabled');
+                };
+                self.$previewImage.attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
+                self.$previewCont.show();
+                self.$picturePlaceholder.hide();
+                self.$saveBtn.removeClass('disabled');
                 self.setPlaceHolderText();
             } else if (dataJson.code === "bad_url" || dataJson.code === "bad_image_format") {
                 self.showErrorIconWithMessage(dataJson.message);
-                $('.picture-preview-cont').hide();
-                $('.picture-placeholder').show();
+                self.$previewCont.hide();
+                self.$picturePlaceholder.show();
             } else {
-                $('.picture-preview-cont').hide();
-                $('.picture-placeholder').show();
+                self.$previewCont.hide();
+                self.$picturePlaceholder.show();
                 self.setPlaceHolderText();
             }
-            //recieve information back from php through the echo function(not required)
-
         }).always(function(data) {
 
         });
     },
 
     uploadPictureHandler: function(event) {
-        var self = this;
-        function readURL(input) {
-            // TODO move to separate function
-            // and use this http://stackoverflow.com/questions/12281775/get-data-from-file-input-in-jquery
-            if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-                alert('The File APIs are not fully supported in this browser.');
-                return;
-            }
+        this.addSpinerLoader();
 
-            if (input.files && input.files[0]) {
-                // max size 10 MB for picture
-                if (input.files[0].size > 10485760) {
-                    self.addInfoAlert('bigPicture');
-                    return;
-                }
+        var uploadedPicture = event.target;
 
-                if (input.files[0].type != "image/jpeg" && input.files[0].type != "image/png") {
-                    self.addInfoAlert('wrongPictureFormat');
-                    return;
-                }
-                var reader = new FileReader();
-                /*var fd = new FormData(document.getElementById("uploadTaskPicture"));
-                 fd.append("CustomField", "This is some extra data");
+        var result = PictureHelper.upload(uploadedPicture, this.pictureUploadCallback);
 
-                 $.ajax({
-                 url: "/picture/upload",
-                 type: "POST",
-                 data: fd,
-                 processData: false,  // tell jQuery not to process the data
-                 contentType: 'application/x-www-form-urlencoded',   // tell jQuery not to set contentType
-                 success: function(response){
-                 console.log("Response was "  + response);
-                 },
-                 failure: function(result){
-                 console.log("FAILED");
-                 console.log(result);
-                 }
-                 });*/
-                reader.onload = function (e) {
-                    self.addSpinerLoader();
-                    $('#image').attr('src', e.target.result);
-                    $.post('/picture/upload', {imageData:e.target.result}, function(data){
-                        $('#savePictureBtn').removeClass('disabled');
-                        dataJson = JSON.parse(data);
-                        if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
-                            self.removeTmpPicture();
-                            self.tmpPicture = {
-                                pictureName : dataJson.picture_name,
-                                pictureFileId : dataJson.picture_file_id,
-                            }
-                            $('img#picture-preview').attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
-                            $('.picture-preview-cont').show();
-                            $('.picture-placeholder').hide();
-                            $('#savePictureBtn').removeClass('disabled');
-                            self.setPlaceHolderText();
-                        } else {
-                            $('.picture-preview-con').hide();
-                            $('.picture-placeholder').show();
-                            self.setPlaceHolderText();
-                        }
-                        //recieve information back from php through the echo function(not required)
-
-                    }).fail(function(data) {
-                    });
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            }
+        if (result == PictureHelper.TOO_BIG_SIZE_ERORR) {
+            this.addInfoAlert('bigPicture');
+        } else if (result == PictureHelper.WRONG_PICTURE_FORMAT) {
+            this.addInfoAlert('wrongPictureFormat');
         }
+    },
 
-        var inputElement = event.target;
-        readURL(inputElement);
+    pictureUploadCallback : function(data) {
+        var self = this;
+        self.$saveBtn.removeClass('disabled');
+        var dataJson = JSON.parse(data);
+        if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
+            self.removeTmpPicture();
+            self.tmpPicture = {
+                pictureName : dataJson.picture_name,
+                pictureFileId : dataJson.picture_file_id,
+            };
+            self.$previewImage.attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
+            self.$previewCont.show();
+            self.$picturePlaceholder.hide();
+            self.$saveBtn.removeClass('disabled');
+            self.setPlaceHolderText();
+        } else {
+            this.$previewCont.hide();
+            self.$picturePlaceholder.show();
+            self.setPlaceHolderText();
+        }
     },
 
     addSpinerLoader: function() {
-        $('#savePictureBtn').addClass('disabled');
-        $('.picture-preview-cont').hide();
-        $('.picture-placeholder').show();
-        $('.picture-placeholder').html("<div class='loader'></div>");
+        this.$saveBtn.addClass('disabled');
+        this.$previewCont.hide();
+        this.$picturePlaceholder.show();
+        this.$picturePlaceholder.html("<div class='loader'></div>");
     },
 
     removeTmpPicture: function() {
         if (this.tmpPicture) {
-            var pictureForRemove = new Picture({
-                task_id: null,
-                name: this.tmpPicture.pictureName,
-                file_id: this.tmpPicture.pictureFileId
-            });
-            pictureForRemove.remove();
+            PictureHelper.remove(this.tmpPicture);
             this.tmpPicture = null;
-            $('img#picture-preview').attr('src', '');
+            this.$previewImage.attr('src', '');
             $('#pictureUploadBtn').replaceWith($('#pictureUploadBtn').clone(true));
-
         }
     },
 
     setPlaceHolderText: function() {
-        $('.picture-placeholder').html("Picture is not selected");
+        this.$picturePlaceholder.html("Picture is not selected");
     },
 
     removeSpinnerLoader: function() {
