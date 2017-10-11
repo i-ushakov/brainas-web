@@ -135,7 +135,6 @@ PictureUploaderView = Backbone.View.extend({
 
     destroy: function () {
         this.removeTmpPicture();
-
         this.undelegateEvents();
         this.$el.removeData().unbind();
         this.remove();
