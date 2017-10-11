@@ -140,6 +140,7 @@ var TaskCardView = Backbone.View.extend({
         //remove iternal Views
         this.taskStatusView.destroy();
         this.pictureView.destroy();
+        this.pictureUploaderView.destroy();
         this.messageView.destroy();
         this.descriptionView.destroy();
         this.conditionsPanelView.destroy();

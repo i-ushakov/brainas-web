@@ -47,8 +47,8 @@ PictureUploaderView = Backbone.View.extend({
     },
 
     cancelChangePicture: function() {
-        this.parent.removeTmpPicture();
-        this.parent.setPlaceHolderText();
+        this.removeTmpPicture();
+        this.setPlaceHolderText();
         this.$saveBtn.addClass('disabled');
         this.$el.collapse('toggle');
     },
@@ -117,10 +117,6 @@ PictureUploaderView = Backbone.View.extend({
 
     setPlaceHolderText: function() {
         this.$picturePlaceholder.html("Picture is not selected");
-    },
-
-    removeSpinnerLoader: function() {
-
     },
 
     saveNewPicture: function() {
