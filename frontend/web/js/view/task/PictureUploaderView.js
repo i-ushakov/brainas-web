@@ -54,35 +54,9 @@ PictureUploaderView = Backbone.View.extend({
     },
 
     onDownloadRefChanged : function () {
-        var self = this;
         var imageUrl = $("#downloadRefInput").val();
         this.addSpinerLoader();
-        $.post('/picture/download', {imageUrl:imageUrl}, function(data){
-            dataJson = JSON.parse(data);
-            if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
-                self.$saveBtn.removeClass('disabled');
-                self.removeTmpPicture();
-                self.tmpPicture = {
-                    pictureName : dataJson.picture_name,
-                    pictureFileId : dataJson.picture_file_id,
-                };
-                self.$previewImage.attr('src', app.googleDriveImageUrl + dataJson.picture_file_id);
-                self.$previewCont.show();
-                self.$picturePlaceholder.hide();
-                self.$saveBtn.removeClass('disabled');
-                self.setPlaceHolderText();
-            } else if (dataJson.code === "bad_url" || dataJson.code === "bad_image_format") {
-                self.showErrorIconWithMessage(dataJson.message);
-                self.$previewCont.hide();
-                self.$picturePlaceholder.show();
-            } else {
-                self.$previewCont.hide();
-                self.$picturePlaceholder.show();
-                self.setPlaceHolderText();
-            }
-        }).always(function(data) {
-
-        });
+        PictureHelper.downloadByUrl(imageUrl, this.pictureUploadCallback);
     },
 
     uploadPictureHandler: function(event) {
@@ -101,9 +75,9 @@ PictureUploaderView = Backbone.View.extend({
 
     pictureUploadCallback : function(data) {
         var self = this;
-        self.$saveBtn.removeClass('disabled');
         var dataJson = JSON.parse(data);
         if (dataJson.status == "SUCCESS" && dataJson.picture_file_id) {
+            self.$saveBtn.removeClass('disabled');
             self.removeTmpPicture();
             self.tmpPicture = {
                 pictureName : dataJson.picture_name,
@@ -114,6 +88,10 @@ PictureUploaderView = Backbone.View.extend({
             self.$picturePlaceholder.hide();
             self.$saveBtn.removeClass('disabled');
             self.setPlaceHolderText();
+        } else if (dataJson.code === "bad_url" || dataJson.code === "bad_image_format") {
+            self.showErrorIconWithMessage(dataJson.message);
+            self.$previewCont.hide();
+            self.$picturePlaceholder.show();
         } else {
             this.$previewCont.hide();
             self.$picturePlaceholder.show();
@@ -152,6 +130,11 @@ PictureUploaderView = Backbone.View.extend({
             this.model.save();
         }
         $('.picture-picker-block').collapse('toggle');
+    },
+
+    showErrorIconWithMessage: function(message) {
+        this.$picturePlaceholder.html(
+            "<div>" + message + "</div><div class='thumbsDownCont'><span class='glyphicon glyphicon-thumbs-down'></span></div>");
     },
 
     destroy: function () {

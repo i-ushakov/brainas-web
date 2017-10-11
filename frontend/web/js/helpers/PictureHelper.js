@@ -59,3 +59,9 @@ PictureHelper.upload = function (input, callback) {
         reader.readAsDataURL(input.files[0]);
     }
 };
+
+PictureHelper.downloadByUrl = function (imageUrl, callback) {
+    $.post('/picture/download', {imageUrl:imageUrl}, function(data) {
+            callback(data);
+    }).always(function(data) {});
+};

@@ -208,10 +208,5 @@ var TaskCardView = Backbone.View.extend({
 
     remove: function(){
         this.model.set("preventUpdateFromServer", false);
-    },
-
-    showErrorIconWithMessage: function(message) {
-        $('.picture-placeholder').html(
-            "<div>" + message + "</div><div class='thumbsDownCont'><span class='glyphicon glyphicon-thumbs-down'></span></div>");
     }
 });
