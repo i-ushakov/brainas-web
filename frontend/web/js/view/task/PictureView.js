@@ -21,14 +21,14 @@ PictureView = Backbone.View.extend({
     template: _.template( $('#task-card-picture-template').html()),
 
     initialize: function () {
-
-        this.render();
-
         _.bindAll(this,
             'showChangePictureBtn',
             'hideChangePictureBtn',
-            'cancelChangePicture'
+            'cancelChangePicture',
+            'updatePicture'
         );
+
+        this.render();
     },
 
     render: function () {
@@ -40,9 +40,13 @@ PictureView = Backbone.View.extend({
 
         // view elements
         this.$changePictureBtn = this.$el.find('.change-picture-btn');
+        this.pictureEl = this.$el.find('img');
 
         // set unique id
-        this.$el.attr('id','taskPictureCont_' + this.model.get('id'))
+        this.$el.attr('id','taskPictureCont_' + this.model.get('id'));
+
+        // listening chsnges
+        this.model.on({"change:picture_file_id": this.updatePicture});
     },
 
     showChangePictureBtn: function() {
@@ -62,6 +66,15 @@ PictureView = Backbone.View.extend({
 
     setPlaceHolderText: function() {
         $('.picture-placeholder').html("Picture is not selected");
+    },
+
+    updatePicture: function () {
+        var pictureFileId = this.model.get("picture_file_id");
+        if (pictureFileId === undefined) {
+            this.pictureEl.attr('src', app.url + "images/pictures.png");
+        } else {
+            this.pictureEl.attr('src', app.googleDriveImageUrl + this.model.get("picture_file_id"));
+        }
     },
 
     destroy: function () {

@@ -49,7 +49,6 @@ var TaskCardView = Backbone.View.extend({
         this.render();
 
         // elements
-        this.pictureEl = this.$el.find('.task-picture-cont img');
         this.saveBtn = this.$el.find('#save-changes-btn');
 
         if (this.createMode == true) {
@@ -147,8 +146,6 @@ var TaskCardView = Backbone.View.extend({
     },
 
     changeTaskHandler: function() {
-        this.updatePicture();
-
         if (!this.model.isValid()) {
             this.saveBtn.hide();
             switch (this.model.validationError ) {
@@ -162,15 +159,6 @@ var TaskCardView = Backbone.View.extend({
             }
         } else {
             this.saveBtn.show();
-        }
-    },
-
-    updatePicture: function () {
-        var pictureFileId = this.model.get("picture_file_id");
-        if (pictureFileId === undefined) {
-            this.pictureEl.attr('src', app.url + "images/pictures.png");
-        } else {
-            this.pictureEl.attr('src', app.googleDriveImageUrl + this.model.get("picture_file_id"));
         }
     },
 
